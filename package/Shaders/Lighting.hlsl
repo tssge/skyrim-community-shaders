@@ -22,6 +22,10 @@
 #	define DYNAMIC_CUBEMAPS
 #endif
 
+#if defined(HAIR) && defined(CS_HAIR)
+#	define DYNAMIC_CUBEMAPS
+#endif
+
 #if defined(SKINNED) || defined(ENVMAP) || defined(EYE) || defined(MULTI_LAYER_PARALLAX)
 #	define DRAW_IN_WORLDSPACE
 #endif
@@ -972,6 +976,10 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 #		define EMAT_ENVMAP
 #	endif
 
+#	if defined(EMAT) && (defined(ENVMAP) || defined(MULTI_LAYER_PARALLAX) || defined(EYE))
+#		define EMAT_ENVMAP
+#	endif
+
 #	if defined(DYNAMIC_CUBEMAPS)
 #		include "DynamicCubemaps/DynamicCubemaps.hlsli"
 #	endif
@@ -1030,6 +1038,22 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 
 #	if defined(TERRAIN_VARIATION)
 #		include "TerrainVariation/TerrainVariation.hlsli"
+#	endif
+
+#	define LinearSampler SampColorSampler
+
+#	include "Common/ShadowSampling.hlsli"
+
+#	if defined(IBL)
+#		include "IBL/IBL.hlsli"
+#	endif
+
+#	if defined(HAIR) && defined(CS_HAIR)
+#		include "Hair/Hair.hlsli"
+#	endif
+
+#	if defined(TERRAIN_VARIATION)
+#		include "TerrainVariation/TerrainVariation.hlsli"
 #   endif
 
 #	if defined(SSPLS)
@@ -1053,6 +1077,19 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 {
 	PS_OUTPUT psout;
 	uint eyeIndex = Stereo::GetEyeIndexPS(input.Position, VPOSOffset);
+
+	float3 viewPosition = mul(FrameBuffer::CameraView[eyeIndex], float4(input.WorldPosition.xyz, 1)).xyz;
+	float2 screenUV = FrameBuffer::ViewToUV(viewPosition, true, eyeIndex);
+	float screenNoise = Random::InterleavedGradientNoise(input.Position.xy, SharedData::FrameCount);
+
+#	if defined(DEFERRED)
+	const bool inWorld = true;
+#	else
+	const bool inWorld = (Permutation::ExtraShaderDescriptor & Permutation::ExtraFlags::InWorld);
+#	endif
+
+	float nearFactor = smoothstep(4096.0 * 2.5, 0.0, viewPosition.z);
+
 
 	float3 viewPosition = mul(FrameBuffer::CameraView[eyeIndex], float4(input.WorldPosition.xyz, 1)).xyz;
 	float2 screenUV = FrameBuffer::ViewToUV(viewPosition, true, eyeIndex);
@@ -3490,6 +3527,10 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #		else
 	psout.Reflectance = float4(0.0.xxx, psout.Diffuse.w);
 	psout.NormalGlossiness = float4(GBuffer::EncodeNormal(screenSpaceNormal), outGlossiness, psout.Diffuse.w);
+#		endif
+
+#		if defined(TERRAIN_BLENDING)
+	psout.NormalGlossiness.w = 1;
 #		endif
 
 #		if defined(TERRAIN_BLENDING)
