@@ -12,6 +12,7 @@
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
+#include "Features/PostProcessing.h"
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
@@ -157,7 +158,8 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		globals::features::interiorSunShadows,
 		globals::features::terrainVariation,
 		globals::features::ibl,
-		globals::features::skin
+		globals::features::skin,
+		globals::features::postProcessing
 	};
 
 	static std::vector<Feature*> featuresVR = [] {
