@@ -91,6 +91,8 @@ private:
 
 	void InitialiseOnNewCell(const RE::NiPointer<RE::BSPortalGraph>& portalGraph);
 
+	static bool IsInteriorWithSun(const RE::TESObjectCELL* cell);
+
 	bool IsInSunDirectionAndWithinShadowDistance(const RE::NiPointer<RE::NiAVObject>& object, const RE::NiPoint3& lightDir, const RE::NiPoint3& playerPos) const;
 
 	void PopulateReplacementJobArrays(RE::TESObjectCELL* cell, const RE::NiPointer<RE::BSPortalGraph>& portalGraph, const RE::BSShadowDirectionalLight* dirLight, RE::BSTArray<RE::BSTArray<RE::NiPointer<RE::NiAVObject>>>& jobArrays);

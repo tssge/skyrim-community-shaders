@@ -195,6 +195,12 @@ namespace SharedData
 		float Strength;      // [0, 1.0] The inverse blend weight of the effect
 	};
 
+	struct PostProcessingSettings
+	{
+		uint DisableVanillaTonemapping;
+		uint3 pad0;
+	};
+
 	struct SkinData
 	{
 		float4 skinParams;
@@ -223,7 +229,11 @@ namespace SharedData
 		ExtendedTranslucencySettings extendedTranslucencySettings;
 =======
 		SkinData skinData;
+<<<<<<< HEAD
 >>>>>>> 86fc4180 (Advanced Skin)
+=======
+		PostProcessingSettings postProcessingSettings;
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	};
 
 	Texture2D<float4> DepthTexture : register(t17);

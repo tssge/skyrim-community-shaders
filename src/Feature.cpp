@@ -14,7 +14,11 @@
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
+<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
+=======
+#include "Features/PostProcessing.h"
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
@@ -256,8 +260,13 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 =======
 		globals::features::ibl,
+<<<<<<< HEAD
 		globals::features::skin
 >>>>>>> 86fc4180 (Advanced Skin)
+=======
+		globals::features::skin,
+		globals::features::postProcessing
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	};
 
 	if (REL::Module::IsVR()) {

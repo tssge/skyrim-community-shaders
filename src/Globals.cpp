@@ -23,7 +23,11 @@
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
+<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
+=======
+#include "Features/PostProcessing.h"
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
@@ -115,7 +119,11 @@ namespace globals
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 =======
 		Skin* skin = nullptr;
+<<<<<<< HEAD
 >>>>>>> 86fc4180 (Advanced Skin)
+=======
+		PostProcessing* postProcessing = nullptr;
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 
 		namespace llf
 		{
@@ -216,6 +224,7 @@ namespace globals
 		features::vr = VR::GetSingleton();
 		features::waterEffects = WaterEffects::GetSingleton();
 		features::wetnessEffects = WetnessEffects::GetSingleton();
+		features::postProcessing = PostProcessing::GetSingleton();
 
 		features::llf::particleLights = ParticleLights::GetSingleton();
 >>>>>>> 7d5aac61 (HDR)
