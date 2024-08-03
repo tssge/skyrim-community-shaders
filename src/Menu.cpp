@@ -1,5 +1,7 @@
 #include "Menu.h"
 
+#include "IconsFontAwesome5.h"
+
 #ifndef DIRECTINPUT_VERSION
 #	define DIRECTINPUT_VERSION 0x0800
 #endif
@@ -172,7 +174,22 @@ void Menu::Init()
 	font_config.PixelSnapH = ThemeManager::Constants::FCONF_PIXELSNAP_H;
 	font_config.RasterizerMultiply = ThemeManager::Constants::FCONF_RASTERIZER_MULTIPLY;
 
+<<<<<<< HEAD
 	DXGI_SWAP_CHAIN_DESC desc{};
+=======
+	imgui_io.Fonts->AddFontFromFileTTF("Data\\Interface\\CommunityShaders\\Fonts\\Jost-Regular.ttf", 36, &font_config);
+
+	// add font awesome 5
+	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+	ImFontConfig icons_config;
+	icons_config.MergeMode = true;
+	icons_config.PixelSnapH = true;
+	icons_config.FontDataOwnedByAtlas = true;
+
+	imgui_io.Fonts->AddFontFromFileTTF("Data\\Interface\\CommunityShaders\\Fonts\\fa-solid-900.ttf", 24, &icons_config, icons_ranges);
+
+	DXGI_SWAP_CHAIN_DESC desc;
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	globals::d3d::swapChain->GetDesc(&desc);
 
 	float fontSize = settings.Theme.FontSize;

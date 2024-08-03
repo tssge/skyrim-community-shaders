@@ -29,8 +29,12 @@ struct WeatherPicker;
 struct PerformanceOverlay;
 struct WetnessEffects;
 <<<<<<< HEAD
+<<<<<<< HEAD
 struct ExtendedTranslucency;
 =======
+=======
+struct PostProcessing;
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 struct Skin;
 >>>>>>> 86fc4180 (Advanced Skin)
 
@@ -116,8 +120,12 @@ namespace globals
 		extern WaterEffects* waterEffects;
 		extern WetnessEffects* wetnessEffects;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 =======
+=======
+		extern PostProcessing* postProcessing;
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 		extern Skin* skin;
 >>>>>>> 86fc4180 (Advanced Skin)
 

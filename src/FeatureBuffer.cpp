@@ -9,6 +9,7 @@
 #include "Features/IBL.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
+#include "Features/PostProcessing.h"
 #include "Features/Skin.h"
 #include "Features/Skylighting.h"
 #include "Features/TerrainShadows.h"
@@ -63,6 +64,11 @@ std::pair<unsigned char*, size_t> GetFeatureBufferData(bool a_inWorld)
 		globals::features::hairSpecular->settings,
 		globals::features::terrainVariation->settings,
 		globals::features::ibl->settings,
+<<<<<<< HEAD
 		globals::features::skin->GetCommonBufferData());
 >>>>>>> 86fc4180 (Advanced Skin)
+=======
+		globals::features::skin->GetCommonBufferData(),
+		globals::features::postProcessing->settings);
+>>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 }

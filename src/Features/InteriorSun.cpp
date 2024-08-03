@@ -13,7 +13,7 @@ void InteriorSun::DrawSettings()
 	ImGui::Checkbox("Force Double-Sided Rendering", &settings.ForceDoubleSidedRendering);
 	if (auto _tt = Util::HoverTooltipWrapper()) {
 		ImGui::Text(
-			"Disables backface culling during sun shadowmap rendering in interiors. "
+			"Forces double-sided vertices during sun shadowmap rendering on interiors. "
 			"Will prevent most light leaking through unmasked/unprepared interiors at a small performance cost. ");
 	}
 	if (ImGui::SliderFloat("Interior Shadow Distance", &settings.InteriorShadowDistance, 1000.0f, 8000.0f)) {
@@ -124,6 +124,9 @@ void InteriorSun::DirShadowLightCulling::thunk(RE::BSShadowDirectionalLight* dir
 
 void InteriorSun::ClearArrays()
 {
+	if (arraysCleared)
+		return;
+
 	currentCellRoomsAndPortals.clear();
 
 	for (auto& jobArray : replacementJobArrays)

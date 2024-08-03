@@ -5,6 +5,8 @@
 #include "HDR.h"
 #include "State.h"
 #include "Upscaling.h"
+
+#include "DX12SwapChain.h"
 #include <dx12/ffx_api_dx12.hpp>
 
 ffxFunctions ffxModule;
