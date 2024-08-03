@@ -183,6 +183,12 @@ namespace SharedData
 		uint3 pad;
 	};
 
+	struct PostProcessingSettings
+	{
+		uint DisableVanillaTonemapping;
+		uint3 pad0;
+	};
+
 	struct SkinData
 	{
 		float4 skinParams;
@@ -208,6 +214,7 @@ namespace SharedData
 		TerrainVariationSettings terrainVariationSettings;
 		IBLSettings iblSettings;
 		SkinData skinData;
+		PostProcessingSettings postProcessingSettings;
 	};
 
 	Texture2D<float4> DepthTexture : register(t17);

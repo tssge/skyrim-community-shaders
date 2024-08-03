@@ -239,7 +239,13 @@ void Streamline::CheckFrameConstants()
 
 void Streamline::Upscale(Texture2D* a_upscaleTexture, Texture2D* a_alphaMask, sl::DLSSPreset a_preset)
 {
+<<<<<<< HEAD
+	UapdateConstants();
+
+	Hooks::BSGraphics_SetDirtyStates::func(false);  // Our hook skips this call so we need to call manually
+=======
 	CheckFrameConstants();
+>>>>>>> 72547383 (fix: water brightness (#738))
 
 	auto state = globals::state;
 
