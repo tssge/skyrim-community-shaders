@@ -39,6 +39,7 @@
 #include "Features/LightLimitFix/ParticleLights.h"
 
 #include "TruePBR.h"
+#include "HDR.h"
 
 namespace globals
 {
@@ -121,6 +122,7 @@ namespace globals
 	Upscaling* upscaling = nullptr;
 	DX12SwapChain* dx12SwapChain = nullptr;
 	FidelityFX* fidelityFX = nullptr;
+	HDR* hdr = nullptr;
 
 	void OnInit()
 	{
@@ -133,6 +135,7 @@ namespace globals
 		upscaling = Upscaling::GetSingleton();
 		dx12SwapChain = DX12SwapChain::GetSingleton();
 		fidelityFX = FidelityFX::GetSingleton();
+		hdr = HDR::GetSingleton();
 
 		features::cloudShadows = CloudShadows::GetSingleton();
 		features::dynamicCubemaps = DynamicCubemaps::GetSingleton();
