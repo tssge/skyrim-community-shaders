@@ -1,9 +1,7 @@
 
 #include "Common/Color.hlsli"
-#include "Common/DisplayMapping.hlsli"
 #include "Common/PumboDICE.hlsli"
 #include "Common/Uncharted2Tonemapper.hlsli"
-#include "Common/frostbite.hlsli"
 
 Texture2D<float4> Framebuffer : register(t0);
 Texture2D<float4> UI : register(t1);
@@ -14,6 +12,22 @@ cbuffer PerFrame : register(b0)
 {
 	float4 HDRData;
 };
+
+static const float PQ_constant_N = (2610.0 / 4096.0 / 4.0);
+static const float PQ_constant_M = (2523.0 / 4096.0 * 128.0);
+
+// PQ (Perceptual Quantiser; ST.2084) encode/decode used for HDR TV and grading
+float3 LinearToPQ(float3 linearCol, const float maxPqValue)
+{
+	linearCol /= maxPqValue;
+
+	float3 colToPow = pow(linearCol, PQ_constant_N);
+	float3 numerator = PQ_constant_C1 + PQ_constant_C2 * colToPow;
+	float3 denominator = 1.0 + PQ_constant_C3 * colToPow;
+	float3 pq = pow(numerator / denominator, PQ_constant_M);
+
+	return pq;
+}
 
 [numthreads(8, 8, 1)] void main(uint3 dispatchID : SV_DispatchThreadID) {
 	float3 framebuffer = Framebuffer[dispatchID.xy];
@@ -55,7 +69,7 @@ cbuffer PerFrame : register(b0)
 
 	// Convert to BT.2020 and Encode in PQ
 	framebuffer = Color::BT709ToBT2020(framebuffer);
-	framebuffer = DisplayMapping::LinearToPQ(framebuffer, 10000.f);
+	framebuffer = LinearToPQ(framebuffer, 10000.f);
 
 	HDROutput[dispatchID.xy] = float4(framebuffer, 1.0);
 };
