@@ -46,7 +46,7 @@ public:
 	ID3D11ComputeShader* hdrOutputCS = nullptr;
 	ID3D11ComputeShader* GetHDROutputCS();
 
-
+	RE::BSGraphics::RenderTargetData frameData;
 	RE::BSGraphics::RenderTargetData framebufferData;
 
 	struct MenuManagerDrawInterfaceStartHook
@@ -59,11 +59,9 @@ public:
 
 			static auto renderer = RE::BSGraphics::Renderer::GetSingleton();
 
-			auto& data = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-
-			hdr->framebufferData = data;
-
-			data.RTV = hdr->uiTexture->rtv.get();
+			hdr->frameData = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+			hdr->framebufferData = hdr->frameData;
+			hdr->frameData.RTV = hdr->uiTexture->rtv.get();
 
 			static auto shadowState = RE::BSGraphics::RendererShadowState::GetSingleton();
 			GET_INSTANCE_MEMBER(stateUpdateFlags, shadowState)
@@ -113,14 +111,12 @@ public:
 			GET_INSTANCE_MEMBER(stateUpdateFlags, shadowState)
 
 			auto renderer = RE::BSGraphics::Renderer::GetSingleton();
-			auto& data = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-
-			data = hdr->framebufferData;
+			hdr->frameData = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 			stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);
 
 			func(a1, a3, er8_0);
 
-			data.RTV = hdr->uiTexture->rtv.get();
+			hdr->frameData.RTV = hdr->uiTexture->rtv.get();
 			stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);
 		}
 
@@ -141,6 +137,7 @@ public:
 			hdr->CheckSwapchain();
 			auto renderer = RE::BSGraphics::Renderer::GetSingleton();
 			auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+			hdr->framebufferData = swapChain;
 			swapChain.SRV = hdr->hdrTexture->srv.get();
 			swapChain.RTV = hdr->hdrTexture->rtv.get();
 		}
@@ -165,11 +162,11 @@ public:
 	static void InstallHooks()
 	{
 		// Interface seems to be somewhat broken rn
-		//stl::write_thunk_call<MenuManagerDrawInterfaceStartHook>(REL::RelocationID(79947, 82084).address() + REL::Relocate(0x7E, 0x83, 0x17F));
-		//stl::write_thunk_call<MenuManagerDrawInterfaceEndHook>(REL::RelocationID(79947, 82084).address() + REL::Relocate(0x277, 0x2EA, 0x17F));
-		//stl::write_thunk_call<RenderMenuImagespace>(REL::RelocationID(51855, 52727).address() + REL::Relocate(0x7A1, 0x7A4, 0x17F));
-		//stl::write_thunk_call<BSGraphics_Begin_Unk>(REL::RelocationID(75460, 52727).address() + REL::Relocate(0x1D3, 0x7A4, 0x17F));
-		//stl::write_thunk_call<BSGraphics_End_Unk>(REL::RelocationID(75461, 52727).address() + REL::Relocate(0x9, 0x7A4, 0x17F));
+		stl::write_thunk_call<MenuManagerDrawInterfaceStartHook>(REL::RelocationID(79947, 82084).address() + REL::Relocate(0x7E, 0x83, 0x17F));
+		stl::write_thunk_call<MenuManagerDrawInterfaceEndHook>(REL::RelocationID(79947, 82084).address() + REL::Relocate(0x277, 0x2EA, 0x17F));
+		stl::write_thunk_call<RenderMenuImagespace>(REL::RelocationID(51855, 52727).address() + REL::Relocate(0x7A1, 0x7A4, 0x17F));
+		stl::write_thunk_call<BSGraphics_Begin_Unk>(REL::RelocationID(75460, 52727).address() + REL::Relocate(0x1D3, 0x7A4, 0x17F));
+		stl::write_thunk_call<BSGraphics_End_Unk>(REL::RelocationID(75461, 52727).address() + REL::Relocate(0x9, 0x7A4, 0x17F));
 		logger::info("[HDR] Installed hooks");
 	}
 };
