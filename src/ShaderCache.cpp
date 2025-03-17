@@ -2585,7 +2585,7 @@ namespace SIE
 		cacheHitTasks = 0;
 		lastReset = high_resolution_clock::now();
 		lastCalculation = high_resolution_clock::now();
-		totalMs = static_cast<double>(duration_cast<std::chrono::milliseconds>(lastReset - lastReset).count());
+		totalMs = static_cast<double>(duration_cast<milliseconds>(lastReset - lastReset).count());
 	}
 
 	std::string CompilationSet::GetHumanTime(double a_totalms)
