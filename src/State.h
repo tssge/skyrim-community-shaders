@@ -160,7 +160,7 @@ public:
 		uint HideSky;
 		float MipBias;
 		float pad0;
-		float4 HDRData;
+		// float4 HDRData;
 	};
 
 	ConstantBuffer* sharedDataCB = nullptr;
