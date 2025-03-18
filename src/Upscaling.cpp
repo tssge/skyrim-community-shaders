@@ -457,7 +457,7 @@ void Upscaling::CreateUpscalingResources()
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 	if (globals::hdr->settings.enabled) {
-		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		texDesc.Format = HDR::DXGI_HDR_Format;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
@@ -513,7 +513,7 @@ void Upscaling::CreateFrameGenerationResources()
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
 
 	if (globals::hdr->settings.enabled) {
-		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		texDesc.Format = HDR::DXGI_HDR_Format;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
@@ -611,12 +611,8 @@ void Upscaling::CreateFrameGenerationResources()
 	}
 
 	{
-		IDXGIResource1* dxgiResource = nullptr;
-
-		if (dxgiResource && globals::hdr->settings.enabled) {
-			if (SUCCEEDED(HUDLessBufferShared->resource->QueryInterface(IID_PPV_ARGS(&dxgiResource)))) {
-				DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
-			}
+		if (globals::hdr->settings.enabled) {
+			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
 		}
 	}
 
@@ -675,28 +671,22 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	globals::state->RenderReShade();
-
-	if (!d3d12Interop || !settings.frameGenerationMode)
-		return;
-
 	auto renderer = globals::game::renderer;
 	auto context = globals::d3d::context;
-
 	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+
 	ID3D11Resource* swapChainResource;
 	swapChain.SRV->GetResource(&swapChainResource);
-	context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
 
 	auto hdr = HDR::GetSingleton();
 	if (hdr->settings.enabled) {
-		hdr->UpdateHDRData();
+		globals::state->BeginPerfEvent("HDR");
 		{
-			ID3D11ShaderResourceView* srvs[1]{ hdr->hdrTexture->srv.get() };
+			ID3D11ShaderResourceView* srvs[1]{ swapChain.SRV };
 			ID3D11UnorderedAccessView* uavs[1]{ hdr->outputTexture->uav.get() };
-			context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
 			ID3D11Buffer* cbs[1]{ hdr->hdrDataCB->CB() };
+
+			context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
 			context->CSSetShader(hdr->GetHDROutputCS(), nullptr, 0);
@@ -712,12 +702,23 @@ void Upscaling::PostDisplay()
 
 			cbs[0] = nullptr;
 			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-		}
 
-		context->CopyResource(swapChainResource, hdr->outputTexture->resource.get());
+			if (!HUDLessBufferShared && upscalingTexture) {
+				context->CopyResource(upscalingTexture->resource.get(), hdr->outputTexture->resource.get());
+			} else {
+				context->CopyResource(swapChainResource, hdr->outputTexture->resource.get());
+			}
+		}
+		globals::state->EndPerfEvent();
 	}
 
-	useHUDLess = true;
+	globals::state->RenderReShade();
+
+	if (d3d12Interop && settings.frameGenerationMode) {
+		context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
+
+		useHUDLess = true;
+	}
 }
 
 void Upscaling::TimerSleepQPC(int64_t targetQPC)
