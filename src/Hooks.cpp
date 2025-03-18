@@ -579,7 +579,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -591,7 +591,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -603,7 +603,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -615,7 +615,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -627,7 +627,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -639,7 +639,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
@@ -651,7 +651,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			a_properties->format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+			a_properties->format = HDR::BSGraphics_HDR_Format;
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
