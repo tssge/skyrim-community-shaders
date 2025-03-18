@@ -1,6 +1,7 @@
 #pragma once
-
-#include "Menu.h"
+#include "ffx_api_types.h"
+#include "FidelityFX/host/ffx_types.h"
+#include "reshade/reshade.hpp"
 
 class HDR
 {
@@ -46,4 +47,11 @@ public:
 
 	ID3D11ComputeShader* hdrOutputCS = nullptr;
 	ID3D11ComputeShader* GetHDROutputCS();
+
+	// Format constants to be used elsewhere
+	static constexpr auto BSGraphics_HDR_Format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+	static constexpr auto DXGI_HDR_Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	static constexpr auto FSR_HDR_Format = FFX_SURFACE_FORMAT_R16G16B16A16_FLOAT;
+	static constexpr auto FSR_FG_HDR_Format = FFX_API_SURFACE_FORMAT_R16G16B16A16_FLOAT;
+	static constexpr auto ReShade_HDR_Format = reshade::api::format::r16g16b16a16_float;
 };
