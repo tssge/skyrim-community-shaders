@@ -30,6 +30,7 @@ public:
 	void LoadSettings(json& o_json);
 	void RestoreDefaultSettings();
 	void SetupResources();
+	void DestroyResources() const;
 	void UpdateHDRData() const;
 	void ClearShaderCache();
 

@@ -68,23 +68,13 @@ void HDR::SetupResources()
 
 	D3D11_TEXTURE2D_DESC texDesc{};
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
+	D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
 
 	main.texture->GetDesc(&texDesc);
 	main.SRV->GetDesc(&srvDesc);
 	main.RTV->GetDesc(&rtvDesc);
 	main.UAV->GetDesc(&uavDesc);
-
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	srvDesc.Format = texDesc.Format;
-	rtvDesc.Format = texDesc.Format;
-	uavDesc.Format = texDesc.Format;
-
-	hdrTexture = new Texture2D(texDesc);
-	hdrTexture->CreateSRV(srvDesc);
-	hdrTexture->CreateRTV(rtvDesc);
-	hdrTexture->CreateUAV(uavDesc);
 
 	texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	srvDesc.Format = texDesc.Format;
@@ -96,7 +86,34 @@ void HDR::SetupResources()
 	outputTexture->CreateRTV(rtvDesc);
 	outputTexture->CreateUAV(uavDesc);
 
+	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS | D3D11_BIND_RENDER_TARGET;
+
+	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	srvDesc.Format = texDesc.Format;
+	rtvDesc.Format = texDesc.Format;
+	uavDesc.Format = texDesc.Format;
+
+	hdrTexture = new Texture2D(texDesc);
+	hdrTexture->CreateSRV(srvDesc);
+	hdrTexture->CreateRTV(rtvDesc);
+	hdrTexture->CreateUAV(uavDesc);
+
 	hdrDataCB = new ConstantBuffer(ConstantBufferDesc<HDRDataCB>());
+}
+
+void HDR::DestroyResources() const
+{
+	hdrTexture->srv = nullptr;
+	hdrTexture->uav = nullptr;
+	hdrTexture->rtv = nullptr;
+	hdrTexture->resource = nullptr;
+	delete hdrTexture;
+
+	outputTexture->srv = nullptr;
+	outputTexture->uav = nullptr;
+	outputTexture->rtv = nullptr;
+	outputTexture->resource = nullptr;
+	delete outputTexture;
 }
 
 void HDR::ClearShaderCache()
