@@ -373,6 +373,11 @@ void Upscaling::Upscale()
 	}
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
+
+	auto hdr = globals::hdr;
+	if (hdr->settings.enabled) {
+		context->CopyResource(hdr->hdrTexture->resource.get(), upscalingTexture->resource.get());
+	}
 }
 
 void Upscaling::SharpenTAA()
@@ -437,6 +442,11 @@ void Upscaling::SharpenTAA()
 	state->EndPerfEvent();
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
+
+	auto hdr = globals::hdr;
+	if (hdr->settings.enabled) {
+		context->CopyResource(hdr->hdrTexture->resource.get(), upscalingTexture->resource.get());
+	}
 
 	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
 }
@@ -671,18 +681,13 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	auto renderer = globals::game::renderer;
 	auto context = globals::d3d::context;
-	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-
-	ID3D11Resource* swapChainResource;
-	swapChain.SRV->GetResource(&swapChainResource);
 
 	auto hdr = HDR::GetSingleton();
 	if (hdr->settings.enabled) {
 		globals::state->BeginPerfEvent("HDR");
 		{
-			ID3D11ShaderResourceView* srvs[1]{ swapChain.SRV };
+			ID3D11ShaderResourceView* srvs[1]{ hdr->hdrTexture->srv.get() };
 			ID3D11UnorderedAccessView* uavs[1]{ hdr->outputTexture->uav.get() };
 			ID3D11Buffer* cbs[1]{ hdr->hdrDataCB->CB() };
 
@@ -703,11 +708,7 @@ void Upscaling::PostDisplay()
 			cbs[0] = nullptr;
 			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
-			if (!HUDLessBufferShared && upscalingTexture) {
-				context->CopyResource(upscalingTexture->resource.get(), hdr->outputTexture->resource.get());
-			} else {
-				context->CopyResource(swapChainResource, hdr->outputTexture->resource.get());
-			}
+			context->CopyResource(upscalingTexture->resource.get(), hdr->outputTexture->resource.get());
 		}
 		globals::state->EndPerfEvent();
 	}
@@ -715,6 +716,12 @@ void Upscaling::PostDisplay()
 	globals::state->RenderReShade();
 
 	if (d3d12Interop && settings.frameGenerationMode) {
+		auto renderer = globals::game::renderer;
+		auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+
+		ID3D11Resource* swapChainResource;
+		swapChain.SRV->GetResource(&swapChainResource);
+
 		context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
 
 		useHUDLess = true;

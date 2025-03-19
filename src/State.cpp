@@ -126,7 +126,7 @@ void State::Setup()
 	globals::deferred->SetupResources();
 	if (!upscalerLoaded)
 		globals::upscaling->CreateUpscalingResources();
-	globals::hdr->GetSingleton()->SetupResources();
+	globals::hdr->SetupResources();
 	SetupReShade();
 	if (initialized)
 		return;
