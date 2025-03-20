@@ -18,7 +18,11 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 void HDR::DrawSettings()
 {
 	ImGui::Text("Toggling this setting requires a restart to work correctly!");
-	ImGui::Checkbox("HDR Enabled", &settings.enabled);
+	ImGui::Checkbox("HDR Enabled", &enabledSaveLater);
+
+	if (settings.enabled != enabledSaveLater) {
+		ImGui::TextColored({ 1, 0, 0, 1 }, "Warning: This setting will only apply after saving and restarting!");
+	}
 
 	if (ImGui::Button("Reset HDR Settings", { -1, 0 })) {
 		settings.displayPeakBrightness = 400;
@@ -40,6 +44,7 @@ void HDR::DrawSettings()
 void HDR::SaveSettings(json& o_json)
 {
 	std::lock_guard<std::mutex> lock(settingsMutex);
+	settings.enabled = enabledSaveLater;
 	o_json = settings;
 }
 

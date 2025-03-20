@@ -16,11 +16,13 @@ public:
 
 	struct Settings
 	{
-		bool enabled = true;
-		uint displayPeakBrightness = 400;
-		uint gameBrightness = 200;
-		uint uiBrightness = 200;
+		bool enabled = false;
+		uint displayPeakBrightness = 1000;
+		uint gameBrightness = 400;
+		uint uiBrightness = 400;
 	};
+
+	bool enabledSaveLater = false;
 
 	Settings settings;
 	std::mutex settingsMutex;
