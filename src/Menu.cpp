@@ -11,12 +11,12 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
+#include "HDR.h"
 #include "ShaderCache.h"
 #include "State.h"
 #include "Streamline.h"
 #include "TruePBR.h"
 #include "Upscaling.h"
-#include "HDR.h"
 
 #include "Features/LightLimitFix/ParticleLights.h"
 
@@ -319,7 +319,7 @@ void Menu::DrawSettings()
 		ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal, 3.0f);
 		ImGui::Spacing();
 
-		float footer_height = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 3 + 3.0f; // text + separator
+		float footer_height = ImGui::GetFrameHeightWithSpacing() + ImGui::GetStyle().ItemSpacing.y * 3 + 3.0f;  // text + separator
 
 		ImGui::BeginChild("Menus Table", ImVec2(0, -footer_height));
 		if (ImGui::BeginTable("Menus Table", 2, ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Resizable)) {
@@ -487,7 +487,7 @@ void Menu::DrawSettings()
 			};
 
 			auto& featureList = Feature::GetFeatureList();
-			auto sortedFeatureList{ featureList }; // need a copy so the load order is not lost
+			auto sortedFeatureList{ featureList };  // need a copy so the load order is not lost
 			std::ranges::sort(sortedFeatureList, [](Feature* a, Feature* b) {
 				return a->GetName() < b->GetName();
 			});
@@ -776,8 +776,8 @@ void Menu::DrawAdvancedSettings()
 			globals::state->SetDefines(shaderDefines);
 		}
 		if (ImGui::IsItemDeactivatedAfterEdit() || (ImGui::IsItemActive() &&
-		                                            (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter)) ||
-		                                             ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeypadEnter))))) {
+													   (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter)) ||
+														   ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeypadEnter))))) {
 			globals::state->SetDefines(shaderDefines);
 			shaderCache->Clear();
 		}
@@ -803,7 +803,7 @@ void Menu::DrawAdvancedSettings()
 			if (testInterval == 0) {
 				inTestMode = false;
 				logger::info("Disabling test mode.");
-				globals::state->Load(State::ConfigMode::TEST); // restore last settings before entering test mode
+				globals::state->Load(State::ConfigMode::TEST);  // restore last settings before entering test mode
 			} else if (!inTestMode) {
 				logger::info("Saving current settings for test mode and starting test with interval {}.", testInterval);
 				globals::state->Save(State::ConfigMode::TEST);
@@ -1022,7 +1022,7 @@ void Menu::DrawFooter()
 
 void Menu::DrawOverlay()
 {
-	ProcessInputEventQueue(); //Synchronize Inputs to frame
+	ProcessInputEventQueue();  //Synchronize Inputs to frame
 
 	auto shaderCache = globals::shaderCache;
 	auto failed = shaderCache->GetFailedTasks();
@@ -1353,11 +1353,11 @@ inline const uint32_t Menu::DIKToVK(uint32_t DIK)
 	case DIK_END:
 		return VK_END;
 	case DIK_HOME:
-		return VK_HOME; // pos1
+		return VK_HOME;  // pos1
 	case DIK_PRIOR:
-		return VK_PRIOR; // page up
+		return VK_PRIOR;  // page up
 	case DIK_NEXT:
-		return VK_NEXT; // page down
+		return VK_NEXT;  // page down
 	case DIK_INSERT:
 		return VK_INSERT;
 	case DIK_NUMPAD0:
@@ -1385,13 +1385,13 @@ inline const uint32_t Menu::DIKToVK(uint32_t DIK)
 	case DIK_NUMPADENTER:
 		return IM_VK_KEYPAD_ENTER;
 	case DIK_RMENU:
-		return VK_RMENU; // right alt
+		return VK_RMENU;  // right alt
 	case DIK_RCONTROL:
-		return VK_RCONTROL; // right control
+		return VK_RCONTROL;  // right control
 	case DIK_LWIN:
-		return VK_LWIN; // left win
+		return VK_LWIN;  // left win
 	case DIK_RWIN:
-		return VK_RWIN; // right win
+		return VK_RWIN;  // right win
 	case DIK_APPS:
 		return VK_APPS;
 	default:
@@ -1486,7 +1486,7 @@ void Menu::OnFocusLost()
 void Menu::ProcessInputEvents(RE::InputEvent* const* a_events)
 {
 	for (auto it = *a_events; it; it = it->next) {
-		if (it->GetEventType() != RE::INPUT_EVENT_TYPE::kButton && it->GetEventType() != RE::INPUT_EVENT_TYPE::kChar) // we do not care about non button or char events
+		if (it->GetEventType() != RE::INPUT_EVENT_TYPE::kButton && it->GetEventType() != RE::INPUT_EVENT_TYPE::kChar)  // we do not care about non button or char events
 			continue;
 
 		auto event = it->GetEventType() == RE::INPUT_EVENT_TYPE::kButton ? KeyEvent(static_cast<RE::ButtonEvent*>(it)) : KeyEvent(static_cast<CharEvent*>(it));

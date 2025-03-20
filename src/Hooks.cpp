@@ -12,9 +12,9 @@
 
 #include "DX12SwapChain.h"
 #include "FidelityFX.h"
+#include "HDR.h"
 #include "Streamline.h"
 #include "Upscaling.h"
-#include "HDR.h"
 
 std::unordered_map<void*, std::pair<std::unique_ptr<uint8_t[]>, size_t>> ShaderBytecodeMap;
 
@@ -57,7 +57,7 @@ void DumpShader(const REX::BSShader* thisClass, const ShaderType* shader, const 
 		}
 	}
 
-	if (FILE* file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
+	if (FILE * file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
 		fwrite(dxbcData, 1, dxbcLen, file);
 		fclose(file);
 	}
@@ -494,11 +494,11 @@ struct BSInputDeviceManager_PollInputDevices
 					bool vrDevice = false;
 #ifdef ENABLE_SKYRIM_VR
 					vrDevice = (globals::game::isVR && ((device == RE::INPUT_DEVICES::INPUT_DEVICE::kVivePrimary) ||
-					                                    (device == RE::INPUT_DEVICES::INPUT_DEVICE::kViveSecondary) ||
-					                                    (device == RE::INPUT_DEVICES::INPUT_DEVICE::kOculusPrimary) ||
-					                                    (device == RE::INPUT_DEVICES::INPUT_DEVICE::kOculusSecondary) ||
-					                                    (device == RE::INPUT_DEVICES::INPUT_DEVICE::kWMRPrimary) ||
-					                                    (device == RE::INPUT_DEVICES::INPUT_DEVICE::kWMRSecondary)));
+														   (device == RE::INPUT_DEVICES::INPUT_DEVICE::kViveSecondary) ||
+														   (device == RE::INPUT_DEVICES::INPUT_DEVICE::kOculusPrimary) ||
+														   (device == RE::INPUT_DEVICES::INPUT_DEVICE::kOculusSecondary) ||
+														   (device == RE::INPUT_DEVICES::INPUT_DEVICE::kWMRPrimary) ||
+														   (device == RE::INPUT_DEVICES::INPUT_DEVICE::kWMRSecondary)));
 #endif
 					blockedDevice = !((device == RE::INPUT_DEVICES::INPUT_DEVICE::kGamepad) || vrDevice);
 				}

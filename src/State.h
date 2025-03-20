@@ -35,7 +35,7 @@ public:
 	uint32_t currentPixelDescriptor = 0;
 	spdlog::level::level_enum logLevel = spdlog::level::info;
 	std::string shaderDefinesString = "";
-	std::vector<std::pair<std::string, std::string>> shaderDefines{}; // data structure to parse string into; needed to avoid dangling pointers
+	std::vector<std::pair<std::string, std::string>> shaderDefines{};  // data structure to parse string into; needed to avoid dangling pointers
 	const std::string folderPath = "Data\\SKSE\\Plugins\\CommunityShaders";
 	const std::string testConfigPath = "Data\\SKSE\\Plugins\\CommunityShaders\\SettingsTest.json";
 	const std::string userConfigPath = "Data\\SKSE\\Plugins\\CommunityShaders\\SettingsUser.json";
@@ -173,7 +173,7 @@ public:
 	float2 screenSize = {};
 	D3D_FEATURE_LEVEL featureLevel;
 
-	TracyD3D11Ctx tracyCtx = nullptr; // Tracy context
+	TracyD3D11Ctx tracyCtx = nullptr;  // Tracy context
 
 	void ClearDisabledFeatures();
 	bool SetFeatureDisabled(const std::string& featureName, bool isDisabled);

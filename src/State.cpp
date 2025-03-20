@@ -6,9 +6,9 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
-#include "HDR.h"
 #include "Features/CloudShadows.h"
 #include "Features/TerrainBlending.h"
+#include "HDR.h"
 #include "Menu.h"
 #include "ShaderCache.h"
 #include "Streamline.h"
@@ -170,11 +170,11 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 		}
 		try {
 			i >> settings;
-			i.close(); // Close the file after reading
+			i.close();  // Close the file after reading
 			return true;
 		} catch (const nlohmann::json::parse_error& e) {
 			logger::warn("Error parsing json config file ({}) : {}\n", path, e.what());
-			i.close(); // Ensure the file is closed even on error
+			i.close();  // Ensure the file is closed even on error
 			return false;
 		}
 	};
@@ -193,7 +193,7 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 			configPath = GetConfigPath(configMode);
 			if (!tryLoadConfig(configPath)) {
 				logger::error("Error opening newly created config file ({})\n", configPath);
-				return; // Exit if the new config can't be opened
+				return;  // Exit if the new config can't be opened
 			}
 		}
 	}
@@ -355,7 +355,7 @@ void State::Save(ConfigMode a_configMode)
 	// Check if the file opened successfully
 	if (!o.is_open()) {
 		logger::warn("Failed to open config file for saving: {}", configPath);
-		return; // Exit early if file cannot be opened
+		return;  // Exit early if file cannot be opened
 	}
 
 	json settings;
@@ -537,104 +537,104 @@ void State::ModifyShaderLookup(const RE::BSShader& a_shader, uint& a_vertexDescr
 	if (a_shader.shaderType.get() != RE::BSShader::Type::Utility && a_shader.shaderType.get() != RE::BSShader::Type::ImageSpace) {
 		switch (a_shader.shaderType.get()) {
 		case RE::BSShader::Type::Lighting:
-		{
-			a_vertexDescriptor &= ~(static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AmbientSpecular) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DoAlphaTest) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::ShadowDir) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DefShadow) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::CharacterLight) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::RimLighting) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::SoftLighting) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BackLighting) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Specular) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AnisoLighting) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BaseObjectIsSnow) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Snow) |
-			                        static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::TruePbr));
-
-			a_pixelDescriptor &= ~(static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AmbientSpecular) |
-			                       static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::ShadowDir) |
-			                       static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DefShadow) |
-			                       static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::CharacterLight) |
-			                       static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BaseObjectIsSnow));
-			if (a_pixelDescriptor & static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask)) {
-				a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DoAlphaTest);
-				a_pixelDescriptor &= ~static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask);
-			}
-
-			static auto enableImprovedSnow = RE::GetINISetting("bEnableImprovedSnow:Display");
-			static bool vr = REL::Module::IsVR();
-
-			if (vr || !enableImprovedSnow->GetBool())
-				a_pixelDescriptor &= ~static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Snow);
-
-			if (deferred->deferredPass || a_forceDeferred)
-				a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Deferred);
-
 			{
-				uint32_t technique = 0x3F & (a_vertexDescriptor >> 24);
-				if (technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Glowmap) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Parallax) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Facegen) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::FacegenRGBTint) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::LODObjects) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::LODObjectHD) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::MultiIndexSparkle) ||
-				    technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Hair))
-					a_vertexDescriptor &= ~(0x3F << 24);
-			}
+				a_vertexDescriptor &= ~(static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AmbientSpecular) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DoAlphaTest) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::ShadowDir) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DefShadow) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::CharacterLight) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::RimLighting) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::SoftLighting) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BackLighting) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Specular) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AnisoLighting) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BaseObjectIsSnow) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Snow) |
+										static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::TruePbr));
 
-			{
-				uint32_t technique = 0x3F & (a_pixelDescriptor >> 24);
-				if (technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Glowmap))
-					a_pixelDescriptor &= ~(0x3F << 24);
+				a_pixelDescriptor &= ~(static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AmbientSpecular) |
+									   static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::ShadowDir) |
+									   static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DefShadow) |
+									   static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::CharacterLight) |
+									   static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::BaseObjectIsSnow));
+				if (a_pixelDescriptor & static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask)) {
+					a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::DoAlphaTest);
+					a_pixelDescriptor &= ~static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::AdditionalAlphaMask);
+				}
+
+				static auto enableImprovedSnow = RE::GetINISetting("bEnableImprovedSnow:Display");
+				static bool vr = REL::Module::IsVR();
+
+				if (vr || !enableImprovedSnow->GetBool())
+					a_pixelDescriptor &= ~static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Snow);
+
+				if (deferred->deferredPass || a_forceDeferred)
+					a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::LightingShaderFlags::Deferred);
+
+				{
+					uint32_t technique = 0x3F & (a_vertexDescriptor >> 24);
+					if (technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Glowmap) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Parallax) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Facegen) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::FacegenRGBTint) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::LODObjects) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::LODObjectHD) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::MultiIndexSparkle) ||
+						technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Hair))
+						a_vertexDescriptor &= ~(0x3F << 24);
+				}
+
+				{
+					uint32_t technique = 0x3F & (a_pixelDescriptor >> 24);
+					if (technique == static_cast<uint32_t>(SIE::ShaderCache::LightingShaderTechniques::Glowmap))
+						a_pixelDescriptor &= ~(0x3F << 24);
+				}
 			}
-		}
-		break;
+			break;
 		case RE::BSShader::Type::Water:
-		{
-			auto flags = ~(static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Reflections) |
-			               static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Cubemap) |
-			               static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Interior));
-			a_vertexDescriptor &= flags;
-			a_pixelDescriptor &= flags;
-		}
-		break;
-		case RE::BSShader::Type::Effect:
-		{
-			auto flags = ~(static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::GrayscaleToColor) |
-			               static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::GrayscaleToAlpha) |
-			               static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::IgnoreTexAlpha));
-			a_vertexDescriptor &= flags;
-			a_pixelDescriptor &= flags;
-
-			if (deferred->deferredPass || a_forceDeferred)
-				a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::Deferred);
-		}
-		break;
-		case RE::BSShader::Type::DistantTree:
-		{
-			if (deferred->deferredPass || a_forceDeferred)
-				a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::DistantTreeShaderFlags::Deferred);
-		}
-		break;
-		case RE::BSShader::Type::Sky:
-		{
-			if (deferred->deferredPass || a_forceDeferred)
-				a_pixelDescriptor |= 256;
-		}
-		break;
-		case RE::BSShader::Type::Grass:
-		{
-			auto technique = a_vertexDescriptor & 0xF;
-			auto flags = a_vertexDescriptor & ~0xF;
-			if (technique == static_cast<uint32_t>(SIE::ShaderCache::GrassShaderTechniques::TruePbr)) {
-				technique = 0;
+			{
+				auto flags = ~(static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Reflections) |
+							   static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Cubemap) |
+							   static_cast<uint32_t>(SIE::ShaderCache::WaterShaderFlags::Interior));
+				a_vertexDescriptor &= flags;
+				a_pixelDescriptor &= flags;
 			}
-			a_vertexDescriptor = flags | technique;
-		}
-		break;
+			break;
+		case RE::BSShader::Type::Effect:
+			{
+				auto flags = ~(static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::GrayscaleToColor) |
+							   static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::GrayscaleToAlpha) |
+							   static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::IgnoreTexAlpha));
+				a_vertexDescriptor &= flags;
+				a_pixelDescriptor &= flags;
+
+				if (deferred->deferredPass || a_forceDeferred)
+					a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::EffectShaderFlags::Deferred);
+			}
+			break;
+		case RE::BSShader::Type::DistantTree:
+			{
+				if (deferred->deferredPass || a_forceDeferred)
+					a_pixelDescriptor |= static_cast<uint32_t>(SIE::ShaderCache::DistantTreeShaderFlags::Deferred);
+			}
+			break;
+		case RE::BSShader::Type::Sky:
+			{
+				if (deferred->deferredPass || a_forceDeferred)
+					a_pixelDescriptor |= 256;
+			}
+			break;
+		case RE::BSShader::Type::Grass:
+			{
+				auto technique = a_vertexDescriptor & 0xF;
+				auto flags = a_vertexDescriptor & ~0xF;
+				if (technique == static_cast<uint32_t>(SIE::ShaderCache::GrassShaderTechniques::TruePbr)) {
+					technique = 0;
+				}
+				a_vertexDescriptor = flags | technique;
+			}
+			break;
 		}
 	}
 }
@@ -689,8 +689,8 @@ void State::UpdateSharedData(bool a_inWorld, bool a_prepass)
 		data.Timer = timer;
 
 		auto bTAA = !globals::game::isVR ?
-			            imageSpaceManager->GetRuntimeData().BSImagespaceShaderISTemporalAA->taaEnabled :
-			            imageSpaceManager->GetVRRuntimeData().BSImagespaceShaderISTemporalAA->taaEnabled;
+		                imageSpaceManager->GetRuntimeData().BSImagespaceShaderISTemporalAA->taaEnabled :
+		                imageSpaceManager->GetVRRuntimeData().BSImagespaceShaderISTemporalAA->taaEnabled;
 
 		data.FrameCount = frameCount * (bTAA || globals::state->upscalerLoaded);
 		data.FrameCountAlwaysActive = frameCount;
@@ -752,7 +752,7 @@ void State::ClearDisabledFeatures()
 
 bool State::SetFeatureDisabled(const std::string& featureName, bool isDisabled)
 {
-	bool wasPreviouslyDisabled = disabledFeatures.contains(featureName) ? disabledFeatures[featureName] : false; // Properly check if it exists
+	bool wasPreviouslyDisabled = disabledFeatures.contains(featureName) ? disabledFeatures[featureName] : false;  // Properly check if it exists
 	disabledFeatures[featureName] = isDisabled;
 
 	// Log the change
@@ -762,7 +762,7 @@ bool State::SetFeatureDisabled(const std::string& featureName, bool isDisabled)
 		logger::info("Feature '{}' state remains: {}", featureName, isDisabled ? "Disabled" : "Enabled");
 	}
 
-	return disabledFeatures[featureName]; // Return the current state instead of the input parameter
+	return disabledFeatures[featureName];  // Return the current state instead of the input parameter
 }
 
 bool State::IsFeatureDisabled(const std::string& featureName)
@@ -808,7 +808,7 @@ void State::SetupReShade()
 		reShadeRuntime->enumerate_uniform_variables(nullptr, [](reshade::api::effect_runtime* runtime, reshade::api::effect_uniform_variable variable) {
 			char source[32];
 			if (runtime->get_annotation_string_from_uniform_variable(variable, "source", source) &&
-			    std::strcmp(source, "bufready_depth") == 0)
+				std::strcmp(source, "bufready_depth") == 0)
 				runtime->set_uniform_value_bool(variable, true);
 		});
 	}

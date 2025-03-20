@@ -1,6 +1,6 @@
 #pragma once
-#include "ffx_api_types.h"
 #include "FidelityFX/host/ffx_types.h"
+#include "ffx_api_types.h"
 #include "reshade/reshade.hpp"
 
 class HDR

@@ -73,9 +73,9 @@ void DynamicCubemaps::DrawSettings()
 					static PixelData colorPixel{};
 
 					colorPixel = { static_cast<uint8_t>((settings.CubemapColor.x * 255.0f) + 0.5f),
-					               static_cast<uint8_t>((settings.CubemapColor.y * 255.0f) + 0.5f),
-					               static_cast<uint8_t>((settings.CubemapColor.z * 255.0f) + 0.5f),
-					               std::min(static_cast<uint8_t>(254u), static_cast<uint8_t>((settings.CubemapColor.w * 255.0f) + 0.5f)) };
+						static_cast<uint8_t>((settings.CubemapColor.y * 255.0f) + 0.5f),
+						static_cast<uint8_t>((settings.CubemapColor.z * 255.0f) + 0.5f),
+						std::min(static_cast<uint8_t>(254u), static_cast<uint8_t>((settings.CubemapColor.w * 255.0f) + 0.5f)) };
 
 					static PixelData emptyPixel{};
 

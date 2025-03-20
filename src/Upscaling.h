@@ -107,7 +107,7 @@ public:
 	};
 
 	bool validTaaPass = false;
-	std::mutex settingsMutex; // Mutex to protect settings access
+	std::mutex settingsMutex;  // Mutex to protect settings access
 
 	struct TAA_BeginTechnique
 	{

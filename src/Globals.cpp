@@ -30,8 +30,8 @@
 
 #include "Features/LightLimitFix/ParticleLights.h"
 
-#include "TruePBR.h"
 #include "HDR.h"
+#include "TruePBR.h"
 
 namespace globals
 {
