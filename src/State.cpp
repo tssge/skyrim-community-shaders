@@ -290,7 +290,7 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 		}
 
 		auto hdr = globals::hdr;
-		auto& hdrJson = settings[hdr->GetShortName()];
+		auto& hdrJson = settings[HDR::GetShortName()];
 		if (hdrJson.is_object()) {
 			logger::info("Loading HDR settings");
 			try {

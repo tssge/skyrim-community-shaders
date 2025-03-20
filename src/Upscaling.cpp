@@ -528,49 +528,21 @@ void Upscaling::ApplyHDR()
 
 	std::lock_guard<std::mutex> lock(hdr->settingsMutex); // Lock for the duration of this function
 
-	CheckResources();
-
 	auto state = globals::state;
 	auto context = globals::d3d::context;
+	auto renderer = globals::game::renderer;
+	auto& swapChainMain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kMAIN];
+	auto& swapChainBuffer = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 
-	ID3D11ShaderResourceView* inputTextureSRV;
-	context->PSGetShaderResources(0, 1, &inputTextureSRV);
-
-	if (!inputTextureSRV) {
-		return;
-	}
-
-	inputTextureSRV->Release();
-
-	ID3D11RenderTargetView* outputTextureRTV;
-	ID3D11DepthStencilView* dsv;
-	context->OMGetRenderTargets(1, &outputTextureRTV, &dsv);
-	context->OMSetRenderTargets(0, nullptr, nullptr);
-
-	if (!outputTextureRTV) {
-		return;
-	}
-
-	outputTextureRTV->Release();
-
-	if (dsv)
-		dsv->Release();
-
-	ID3D11Resource* inputTextureResource;
-	inputTextureSRV->GetResource(&inputTextureResource);
-
-	ID3D11Resource* outputTextureResource;
-	outputTextureRTV->GetResource(&outputTextureResource);
+	ID3D11Resource* swapChainResource;
+	swapChainBuffer.SRV->GetResource(&swapChainResource);
 
 	auto dispatchCount = Util::GetScreenDispatchCount(false);
-
-	std::lock_guard<std::mutex> lockHDR(hdr->settingsMutex);
-	context->CopyResource(inputTextureResource, upscalingTexture->resource.get());
 
 	state->BeginPerfEvent("HDR");
 	{
 		{
-			ID3D11ShaderResourceView* views[1] = { inputTextureSRV };
+			ID3D11ShaderResourceView* views[1] = { swapChainMain.SRV };
 			context->CSSetShaderResources(0, ARRAYSIZE(views), views);
 
 			ID3D11UnorderedAccessView* uavs[1] = { hdr->outputTexture->uav.get() };
@@ -598,7 +570,7 @@ void Upscaling::ApplyHDR()
 	}
 	state->EndPerfEvent();
 
-	context->CopyResource(outputTextureResource, hdr->outputTexture->resource.get());
+	context->CopyResource(swapChainResource, hdr->outputTexture->resource.get());
 
 	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
 }
@@ -834,7 +806,7 @@ void Upscaling::CopyBuffersToSharedResources()
 void Upscaling::PostDisplay()
 {
 	auto upscaleMethod = GetUpscaleMethod();
-	if (upscaleMethod == UpscaleMethod::kNONE) {
+	if (upscaleMethod == UpscaleMethod::kNONE && globals::hdr->settings.enabled) {
 		ApplyHDR();
 	}
 
