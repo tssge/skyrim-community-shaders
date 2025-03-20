@@ -40,7 +40,6 @@ void HDR::DrawSettings()
 void HDR::SaveSettings(json& o_json)
 {
 	std::lock_guard<std::mutex> lock(settingsMutex);
-
 	o_json = settings;
 }
 
