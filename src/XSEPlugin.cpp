@@ -2,13 +2,13 @@
 #include "Deferred.h"
 #include "FrameAnnotations.h"
 #include "Globals.h"
+#include "HDR.h"
 #include "Hooks.h"
 #include "Menu.h"
 #include "ShaderCache.h"
 #include "State.h"
 #include "TruePBR.h"
 #include "Upscaling.h"
-#include "HDR.h"
 
 #include "ENB/ENBSeriesAPI.h"
 
@@ -78,70 +78,70 @@ void MessageHandler(SKSE::MessagingInterface::Message* message)
 {
 	switch (message->type) {
 	case SKSE::MessagingInterface::kPostPostLoad:
-	{
-		if (errors.empty()) {
-			auto state = globals::state;
-			state->PostPostLoad(); // state should load first so basic information is populated
-			Deferred::Hooks::Install();
-			globals::truePBR->PostPostLoad();
-			Upscaling::InstallHooks();
-			Hooks::Install();
-			EngineFix::InstallOnPostPostLoadFixes();
+		{
+			if (errors.empty()) {
+				auto state = globals::state;
+				state->PostPostLoad();  // state should load first so basic information is populated
+				Deferred::Hooks::Install();
+				globals::truePBR->PostPostLoad();
+				Upscaling::InstallHooks();
+				Hooks::Install();
+				EngineFix::InstallOnPostPostLoadFixes();
 				FrameAnnotations::OnPostPostLoad();
 
-			auto shaderCache = globals::shaderCache;
+				auto shaderCache = globals::shaderCache;
 
-			shaderCache->ValidateDiskCache();
+				shaderCache->ValidateDiskCache();
 
-			if (shaderCache->UseFileWatcher())
-				shaderCache->StartFileWatcher();
+				if (shaderCache->UseFileWatcher())
+					shaderCache->StartFileWatcher();
 
-			for (auto* feature : Feature::GetFeatureList()) {
-				if (feature->loaded) {
-					feature->PostPostLoad();
+				for (auto* feature : Feature::GetFeatureList()) {
+					if (feature->loaded) {
+						feature->PostPostLoad();
+					}
 				}
 			}
-		}
 
-		break;
-	}
+			break;
+		}
 	case SKSE::MessagingInterface::kDataLoaded:
-	{
-		for (auto it = errors.begin(); it != errors.end(); ++it) {
-			auto& errorMessage = *it;
-			RE::DebugMessageBox(std::format("Community Shaders\n{}, will disable all hooks and features", errorMessage).c_str());
-		}
+		{
+			for (auto it = errors.begin(); it != errors.end(); ++it) {
+				auto& errorMessage = *it;
+				RE::DebugMessageBox(std::format("Community Shaders\n{}, will disable all hooks and features", errorMessage).c_str());
+			}
 
-		if (errors.empty()) {
-			globals::OnDataLoaded();
-			EngineFix::InstallOnDataLoadedFixes();
+			if (errors.empty()) {
+				globals::OnDataLoaded();
+				EngineFix::InstallOnDataLoadedFixes();
 				FrameAnnotations::OnDataLoaded();
 
-			auto shaderCache = globals::shaderCache;
-			shaderCache->menuLoaded = true;
-			while (shaderCache->IsCompiling() && !shaderCache->backgroundCompilation) {
-				std::this_thread::sleep_for(100ms);
-			}
+				auto shaderCache = globals::shaderCache;
+				shaderCache->menuLoaded = true;
+				while (shaderCache->IsCompiling() && !shaderCache->backgroundCompilation) {
+					std::this_thread::sleep_for(100ms);
+				}
 
-			if (shaderCache->IsDiskCache()) {
-				shaderCache->WriteDiskCacheInfo();
-			}
+				if (shaderCache->IsDiskCache()) {
+					shaderCache->WriteDiskCacheInfo();
+				}
 
-			if (!REL::Module::IsVR()) {
-				RE::GetINISetting("bEnableImprovedSnow:Display")->data.b = false;
-				RE::GetINISetting("bIBLFEnable:Display")->data.b = false;
-			}
+				if (!REL::Module::IsVR()) {
+					RE::GetINISetting("bEnableImprovedSnow:Display")->data.b = false;
+					RE::GetINISetting("bIBLFEnable:Display")->data.b = false;
+				}
 
-			globals::truePBR->DataLoaded();
-			for (auto* feature : Feature::GetFeatureList()) {
-				if (feature->loaded) {
-					feature->DataLoaded();
+				globals::truePBR->DataLoaded();
+				for (auto* feature : Feature::GetFeatureList()) {
+					if (feature->loaded) {
+						feature->DataLoaded();
+					}
 				}
 			}
-		}
 
-		break;
-	}
+			break;
+		}
 	}
 }
 

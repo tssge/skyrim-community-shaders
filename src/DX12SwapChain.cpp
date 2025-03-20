@@ -4,9 +4,9 @@
 #include <dxgi1_6.h>
 
 #include "FidelityFX.h"
+#include "HDR.h"
 #include "Streamline.h"
 #include "Upscaling.h"
-#include "HDR.h"
 
 void DX12SwapChain::CreateD3D12Device(IDXGIAdapter* a_adapter)
 {

@@ -1,9 +1,9 @@
 #include "Upscaling.h"
 
 #include "DX12SwapChain.h"
+#include "HDR.h"
 #include "Hooks.h"
 #include "State.h"
-#include "HDR.h"
 
 #include <reshade/reshade.hpp>
 
@@ -26,7 +26,7 @@ void Upscaling::DrawSettings()
 	auto imageSpaceManager = RE::ImageSpaceManager::GetSingleton();
 	auto streamline = globals::streamline;
 	GET_INSTANCE_MEMBER(BSImagespaceShaderISTemporalAA, imageSpaceManager);
-	auto& bTAA = BSImagespaceShaderISTemporalAA->taaEnabled; // Setting used by shaders
+	auto& bTAA = BSImagespaceShaderISTemporalAA->taaEnabled;  // Setting used by shaders
 
 	// Update upscale mode based on TAA setting
 	settings.upscaleMethod = bTAA ? (settings.upscaleMethod == static_cast<uint>(UpscaleMethod::kNONE) ? static_cast<uint>(UpscaleMethod::kTAA) : settings.upscaleMethod) : static_cast<uint>(UpscaleMethod::kNONE);
@@ -260,7 +260,7 @@ void Upscaling::UpdateJitter()
 
 void Upscaling::Upscale()
 {
-	std::lock_guard<std::mutex> lock(settingsMutex); // Lock for the duration of this function
+	std::lock_guard<std::mutex> lock(settingsMutex);  // Lock for the duration of this function
 
 	auto upscaleMethod = GetUpscaleMethod();
 
@@ -416,7 +416,7 @@ void Upscaling::Upscale()
 
 void Upscaling::SharpenTAA()
 {
-	std::lock_guard<std::mutex> lock(settingsMutex); // Lock for the duration of this function
+	std::lock_guard<std::mutex> lock(settingsMutex);  // Lock for the duration of this function
 
 	CheckResources();
 
@@ -516,7 +516,7 @@ void Upscaling::SharpenTAA()
 		context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
 	}
 
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 }
 
 void Upscaling::ApplyHDR()
@@ -526,7 +526,7 @@ void Upscaling::ApplyHDR()
 		return;
 	}
 
-	std::lock_guard<std::mutex> lock(hdr->settingsMutex); // Lock for the duration of this function
+	std::lock_guard<std::mutex> lock(hdr->settingsMutex);  // Lock for the duration of this function
 
 	auto state = globals::state;
 	auto context = globals::d3d::context;
@@ -572,7 +572,7 @@ void Upscaling::ApplyHDR()
 
 	context->CopyResource(swapChainResource, hdr->outputTexture->resource.get());
 
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 }
 
 void Upscaling::CreateUpscalingResources()

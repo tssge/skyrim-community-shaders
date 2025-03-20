@@ -231,9 +231,9 @@ void Deferred::ReflectionsPrepasses()
 	TracyD3D11Zone(globals::game::graphicsState->tracyCtx, "Early Prepass");
 
 	auto context = globals::d3d::context;
-	context->OMSetRenderTargets(0, nullptr, nullptr); // Unbind all bound render targets
+	context->OMSetRenderTargets(0, nullptr, nullptr);  // Unbind all bound render targets
 
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 
 	for (auto* feature : Feature::GetFeatureList()) {
 		if (feature->loaded) {
@@ -255,9 +255,9 @@ void Deferred::EarlyPrepasses()
 	TracyD3D11Zone(globals::game::graphicsState->tracyCtx, "Early Prepass");
 
 	auto context = globals::d3d::context;
-	context->OMSetRenderTargets(0, nullptr, nullptr); // Unbind all bound render targets
+	context->OMSetRenderTargets(0, nullptr, nullptr);  // Unbind all bound render targets
 
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 
 	for (auto* feature : Feature::GetFeatureList()) {
 		if (feature->loaded) {
@@ -277,9 +277,9 @@ void Deferred::PrepassPasses()
 		return;
 
 	auto context = globals::game::renderer->GetRuntimeData().context;
-	context->OMSetRenderTargets(0, nullptr, nullptr); // Unbind all bound render targets
+	context->OMSetRenderTargets(0, nullptr, nullptr);  // Unbind all bound render targets
 
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 
 	globals::truePBR->PrePass();
 	for (auto* feature : Feature::GetFeatureList()) {
@@ -315,11 +315,11 @@ void Deferred::StartDeferred()
 	};
 
 	for (uint i = 2; i < 8; i++) {
-		renderTargets[i] = targets[i];                                            // We must use unused targets to be indexable
-		setRenderTargetMode[i] = RE::BSGraphics::SetRenderTargetMode::SRTM_CLEAR; // Dirty from last frame, this calls ClearRenderTargetView once
+		renderTargets[i] = targets[i];                                             // We must use unused targets to be indexable
+		setRenderTargetMode[i] = RE::BSGraphics::SetRenderTargetMode::SRTM_CLEAR;  // Dirty from last frame, this calls ClearRenderTargetView once
 	}
 
-	stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 
 	deferredPass = true;
 
@@ -533,11 +533,11 @@ void Deferred::EndDeferred()
 	}
 
 	auto context = globals::d3d::context;
-	context->OMSetRenderTargets(0, nullptr, nullptr); // Unbind all bound render targets
+	context->OMSetRenderTargets(0, nullptr, nullptr);  // Unbind all bound render targets
 
-	DeferredPasses(); // Perform deferred passes and composite forward buffers
+	DeferredPasses();  // Perform deferred passes and composite forward buffers
 
-	stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
+	stateUpdateFlags.set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 
 	deferredPass = false;
 
@@ -752,9 +752,9 @@ void Deferred::Hooks::Main_RenderWorld_Start::thunk(RE::BSBatchRenderer* This, u
 	if (shaderCache->IsEnabled() && deferred->inWorld) {
 		// Here is where the first opaque objects start rendering
 		deferred->StartDeferred();
-		func(This, StartRange, EndRanges, RenderFlags, GeometryGroup); // RenderBatches                                                               // RenderBatches
+		func(This, StartRange, EndRanges, RenderFlags, GeometryGroup);  // RenderBatches                                                               // RenderBatches
 	} else {
-		func(This, StartRange, EndRanges, RenderFlags, GeometryGroup); // RenderBatches
+		func(This, StartRange, EndRanges, RenderFlags, GeometryGroup);  // RenderBatches
 	}
 };
 
