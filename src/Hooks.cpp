@@ -300,7 +300,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	pAdapter->GetDesc(&adapterDesc);
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
-	if (globals::hdr->settings.enabled) {
+	if (globals::hdr->settings.enableHDR) {
 		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	}
 
@@ -454,7 +454,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
-	if (*ppSwapChain && globals::hdr->settings.enabled) {
+	if (*ppSwapChain && globals::hdr->settings.enableHDR) {
 		IDXGISwapChain4* swapChain4 = nullptr;
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
 			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
@@ -579,7 +579,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -593,7 +593,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -607,7 +607,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -621,7 +621,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -635,7 +635,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -649,7 +649,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -663,7 +663,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::hdr->settings.enabled) {
+			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);

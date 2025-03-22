@@ -13,14 +13,15 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 	HDR::Settings,
 	displayPeakBrightness,
 	gameBrightness,
-	uiBrightness);
+	uiBrightness,
+	enableHDR);
 
 void HDR::DrawSettings()
 {
 	ImGui::Text("Toggling this setting requires a restart to work correctly!");
 	ImGui::Checkbox("HDR Enabled", &enabledSaveLater);
 
-	if (settings.enabled != enabledSaveLater) {
+	if (settings.enableHDR != enabledSaveLater) {
 		ImGui::TextColored({ 1, 0, 0, 1 }, "Warning: This setting will only apply after saving and restarting!");
 	}
 
@@ -45,7 +46,7 @@ void HDR::SaveSettings(json& o_json)
 {
 	std::lock_guard<std::mutex> lock(settingsMutex);
 	auto settingsCopy = settings;
-	settingsCopy.enabled = enabledSaveLater;
+	settingsCopy.enableHDR = enabledSaveLater;
 	o_json = settingsCopy;
 }
 
@@ -63,7 +64,7 @@ void HDR::RestoreDefaultSettings()
 float4 HDR::GetHDRData() const
 {
 	float4 data;
-	data.x = static_cast<float>(settings.enabled);
+	data.x = static_cast<float>(settings.enableHDR);
 	data.y = static_cast<float>(settings.displayPeakBrightness);
 	data.z = static_cast<float>(settings.gameBrightness);
 	data.w = static_cast<float>(settings.uiBrightness);
