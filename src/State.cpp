@@ -801,7 +801,7 @@ void State::SetupReShade()
 		reshade::api::resource reShadeSwapChainResource = reShadeDevice->get_resource_from_view(reshade::api::resource_view{ reinterpret_cast<uintptr_t>(swapChainRTV) });
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
-		if (globals::hdr->settings.enabled) {
+		if (globals::hdr->settings.enableHDR) {
 			reShadeSwapChainDesc.texture.format = HDR::ReShade_HDR_Format;
 		}
 

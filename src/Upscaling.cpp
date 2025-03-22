@@ -373,7 +373,7 @@ void Upscaling::Upscale()
 	}
 
 	auto hdr = HDR::GetSingleton();
-	if (hdr->settings.enabled) {
+	if (hdr->settings.enableHDR) {
 		std::lock_guard<std::mutex> lockHDR(hdr->settingsMutex);
 		context->CopyResource(inputTextureResource, upscalingTexture->resource.get());
 
@@ -476,7 +476,7 @@ void Upscaling::SharpenTAA()
 	state->EndPerfEvent();
 
 	auto hdr = HDR::GetSingleton();
-	if (hdr->settings.enabled) {
+	if (hdr->settings.enableHDR) {
 		std::lock_guard<std::mutex> lockHDR(hdr->settingsMutex);
 		context->CopyResource(inputTextureResource, upscalingTexture->resource.get());
 
@@ -534,7 +534,7 @@ void Upscaling::CreateUpscalingResources()
 
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	if (globals::hdr->settings.enabled) {
+	if (globals::hdr->settings.enableHDR) {
 		texDesc.Format = HDR::DXGI_HDR_Format;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -590,7 +590,7 @@ void Upscaling::CreateFrameGenerationResources()
 
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
 
-	if (globals::hdr->settings.enabled) {
+	if (globals::hdr->settings.enableHDR) {
 		texDesc.Format = HDR::DXGI_HDR_Format;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -689,7 +689,7 @@ void Upscaling::CreateFrameGenerationResources()
 	}
 
 	{
-		if (globals::hdr->settings.enabled) {
+		if (globals::hdr->settings.enableHDR) {
 			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
 		}
 	}
@@ -750,7 +750,7 @@ void Upscaling::CopyBuffersToSharedResources()
 void Upscaling::PostDisplay()
 {
 	auto upscaleMethod = GetUpscaleMethod();
-	if (upscaleMethod == UpscaleMethod::kNONE && globals::hdr->settings.enabled) {
+	if (upscaleMethod == UpscaleMethod::kNONE && globals::hdr->settings.enableHDR) {
 		globals::hdr->ApplyHDR();
 	}
 

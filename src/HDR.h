@@ -16,7 +16,7 @@ public:
 
 	struct Settings
 	{
-		bool enabled = false;
+		bool enableHDR = false;
 		uint displayPeakBrightness = 1000;
 		uint gameBrightness = 400;
 		uint uiBrightness = 400;
