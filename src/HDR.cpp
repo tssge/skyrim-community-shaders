@@ -101,6 +101,8 @@ void HDR::SetupResources()
 	outputTexture->CreateUAV(uavDesc);
 
 	hdrDataCB = new ConstantBuffer(ConstantBufferDesc<HDRDataCB>());
+
+	UpdateHDRData();
 }
 
 void HDR::ApplyHDR()
