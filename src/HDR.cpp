@@ -4,6 +4,7 @@
 
 #include "Buffer.h"
 #include "State.h"
+#include "Upscaling.h"
 #include "Util.h"
 
 #include <dxgi1_4.h>
@@ -113,8 +114,7 @@ void HDR::ApplyHDR()
 	auto state = globals::state;
 	auto context = globals::d3d::context;
 	auto renderer = globals::game::renderer;
-
-	auto& swapChainMain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kMAIN];
+	auto upscaling = globals::upscaling;
 	auto& swapChainBuffer = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 
 	ID3D11Resource* swapChainBufferResource;
@@ -125,12 +125,21 @@ void HDR::ApplyHDR()
 	state->BeginPerfEvent("HDR");
 	{
 		{
-			ID3D11ShaderResourceView* views[1] = { swapChainMain.SRV };
+			auto upscaleMethod = upscaling->GetUpscaleMethod();
+			if (upscaleMethod != Upscaling::UpscaleMethod::kNONE) {
+				context->CopyResource(hdrTexture->resource.get(), upscaling->upscalingTexture->resource.get());
+			} else {
+				auto& swapChainMain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kMAIN];
+				context->CopyResource(hdrTexture->resource.get(), swapChainMain.texture);
+			}
+
+			ID3D11ShaderResourceView* views[1] = { hdrTexture->srv.get() };
 			context->CSSetShaderResources(0, ARRAYSIZE(views), views);
 
 			ID3D11UnorderedAccessView* uavs[1] = { outputTexture->uav.get() };
 			context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 
+			UpdateHDRData();
 			ID3D11Buffer* cbs[1]{ hdrDataCB->CB() };
 			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
