@@ -372,46 +372,7 @@ void Upscaling::Upscale()
 		state->EndPerfEvent();
 	}
 
-	auto hdr = HDR::GetSingleton();
-	if (hdr->settings.enableHDR) {
-		std::lock_guard<std::mutex> lockHDR(hdr->settingsMutex);
-		context->CopyResource(inputTextureResource, upscalingTexture->resource.get());
-
-		state->BeginPerfEvent("HDR");
-		{
-			{
-				ID3D11ShaderResourceView* views[1] = { inputTextureSRV };
-				context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-				ID3D11UnorderedAccessView* uavs[1] = { hdr->outputTexture->uav.get() };
-				context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-				ID3D11Buffer* cbs[1]{ hdr->hdrDataCB->CB() };
-				context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-
-				context->CSSetShader(hdr->GetHDROutputCS(), nullptr, 0);
-
-				context->Dispatch(dispatchCount.x, dispatchCount.y, 1);
-			}
-
-			ID3D11ShaderResourceView* views[1] = { nullptr };
-			context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-			ID3D11UnorderedAccessView* uavs[1] = { nullptr };
-			context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-			ID3D11ComputeShader* shader = nullptr;
-			context->CSSetShader(shader, nullptr, 0);
-
-			ID3D11Buffer* cbs[1]{ nullptr };
-			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-		}
-		state->EndPerfEvent();
-
-		context->CopyResource(outputTextureResource, hdr->outputTexture->resource.get());
-	} else {
-		context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
-	}
+	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
 }
 
 void Upscaling::SharpenTAA()
@@ -475,48 +436,9 @@ void Upscaling::SharpenTAA()
 
 	state->EndPerfEvent();
 
-	auto hdr = HDR::GetSingleton();
-	if (hdr->settings.enableHDR) {
-		std::lock_guard<std::mutex> lockHDR(hdr->settingsMutex);
-		context->CopyResource(inputTextureResource, upscalingTexture->resource.get());
+	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
 
-		state->BeginPerfEvent("HDR");
-		{
-			{
-				ID3D11ShaderResourceView* views[1] = { inputTextureSRV };
-				context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-				ID3D11UnorderedAccessView* uavs[1] = { hdr->outputTexture->uav.get() };
-				context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-				ID3D11Buffer* cbs[1]{ hdr->hdrDataCB->CB() };
-				context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-
-				context->CSSetShader(hdr->GetHDROutputCS(), nullptr, 0);
-
-				context->Dispatch(dispatchCount.x, dispatchCount.y, 1);
-			}
-
-			ID3D11ShaderResourceView* views[1] = { nullptr };
-			context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-			ID3D11UnorderedAccessView* uavs[1] = { nullptr };
-			context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-			ID3D11ComputeShader* shader = nullptr;
-			context->CSSetShader(shader, nullptr, 0);
-
-			ID3D11Buffer* cbs[1]{ nullptr };
-			context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-		}
-		state->EndPerfEvent();
-
-		context->CopyResource(outputTextureResource, hdr->outputTexture->resource.get());
-	} else {
-		context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
-	}
-
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
 }
 
 void Upscaling::CreateUpscalingResources()
@@ -749,10 +671,11 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	auto upscaleMethod = GetUpscaleMethod();
-	if (upscaleMethod == UpscaleMethod::kNONE && globals::hdr->settings.enableHDR) {
+	if (globals::hdr->settings.enableHDR) {
 		globals::hdr->ApplyHDR();
 	}
+
+	globals::state->RenderReShade();
 
 	if (!d3d12Interop || !settings.frameGenerationMode) {
 		return;
@@ -764,8 +687,6 @@ void Upscaling::PostDisplay()
 
 	ID3D11Resource* swapChainResource;
 	swapChain.SRV->GetResource(&swapChainResource);
-
-	globals::state->RenderReShade();
 
 	context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
 
