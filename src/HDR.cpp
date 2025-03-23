@@ -54,6 +54,7 @@ void HDR::LoadSettings(json& o_json)
 {
 	std::lock_guard<std::mutex> lock(settingsMutex);
 	settings = o_json;
+	enabledSaveLater = settings.enableHDR;
 }
 
 void HDR::RestoreDefaultSettings()
