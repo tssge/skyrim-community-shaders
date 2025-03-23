@@ -60,5 +60,5 @@ public:
 	static constexpr auto DXGI_HDR_Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	static constexpr auto FSR_HDR_Format = FFX_SURFACE_FORMAT_R16G16B16A16_FLOAT;
 	static constexpr auto FSR_FG_HDR_Format = FFX_API_SURFACE_FORMAT_R16G16B16A16_FLOAT;
-	static constexpr auto ReShade_HDR_Format = reshade::api::format::r16g16b16a16_float;
+	static constexpr auto ReShade_HDR_Format = reshade::api::format::r10g10b10a2_unorm;
 };

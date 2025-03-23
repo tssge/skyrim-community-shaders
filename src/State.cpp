@@ -803,6 +803,7 @@ void State::SetupReShade()
 
 		if (globals::hdr->settings.enableHDR) {
 			reShadeSwapChainDesc.texture.format = HDR::ReShade_HDR_Format;
+			reShadeRuntime->set_color_space(reshade::api::color_space::hdr10_st2084);
 		}
 
 		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
