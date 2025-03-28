@@ -449,6 +449,8 @@ void Upscaling::SharpenTAA()
 	}
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
+
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
 }
 
 void Upscaling::CreateUpscalingResources()
@@ -681,8 +683,29 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	if (globals::hdr->settings.enableHDR) {
-		globals::hdr->ApplyHDR();
+	auto context = globals::d3d::context;
+	auto renderer = globals::game::renderer;
+	auto hdr = globals::hdr;
+
+	if (hdr->settings.enableHDR) {
+		auto upscaleMethod = GetUpscaleMethod();
+
+		// If we use no upscaling, we need to copy an input into the HDR texture, right now we pick kMAIN
+		if (upscaleMethod == UpscaleMethod::kNONE) {
+			auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kMAIN];
+
+			ID3D11Resource* swapChainResource;
+			swapChain.SRV->GetResource(&swapChainResource);
+
+			context->CopyResource(hdr->hdrTexture->resource.get(), swapChainResource);
+		}
+
+		hdr->ApplyHDR();
+
+		// If we use TAA, we run OMSetRenderTargets again as it isn't done anymore in the SharpenTAA pass
+		if (upscaleMethod == UpscaleMethod::kTAA) {
+			globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);
+		}
 	}
 
 	globals::state->RenderReShade();
@@ -691,8 +714,6 @@ void Upscaling::PostDisplay()
 		return;
 	}
 
-	auto context = globals::d3d::context;
-	auto renderer = globals::game::renderer;
 	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 
 	ID3D11Resource* swapChainResource;
