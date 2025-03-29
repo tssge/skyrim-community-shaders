@@ -45,10 +45,11 @@ void FidelityFX::SetupFrameGeneration()
 	createFg.maxRenderSize = createFg.displaySize;
 	if (globals::hdr->settings.enableHDR) {
 		createFg.flags = FFX_FRAMEGENERATION_ENABLE_ASYNC_WORKLOAD_SUPPORT | FFX_FRAMEGENERATION_ENABLE_HIGH_DYNAMIC_RANGE;
+		createFg.backBufferFormat = HDR::FSR_FG_HDR_Format;
 	} else {
 		createFg.flags = FFX_FRAMEGENERATION_ENABLE_ASYNC_WORKLOAD_SUPPORT;
+		createFg.backBufferFormat = ffxApiGetSurfaceFormatDX12(swapChain->swapChainDesc.Format);
 	}
-	createFg.backBufferFormat = ffxApiGetSurfaceFormatDX12(swapChain->swapChainDesc.Format);
 
 	ffx::CreateBackendDX12Desc createBackend{};
 	createBackend.device = swapChain->d3d12Device.get();

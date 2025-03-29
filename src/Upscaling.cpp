@@ -449,8 +449,6 @@ void Upscaling::SharpenTAA()
 	}
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
-
-	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);  // Run OMSetRenderTargets again
 }
 
 void Upscaling::CreateUpscalingResources()
@@ -701,11 +699,6 @@ void Upscaling::PostDisplay()
 		}
 
 		hdr->ApplyHDR();
-
-		// If we use TAA, we run OMSetRenderTargets again as it isn't done anymore in the SharpenTAA pass
-		if (upscaleMethod == UpscaleMethod::kTAA) {
-			globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET);
-		}
 	}
 
 	globals::state->RenderReShade();
