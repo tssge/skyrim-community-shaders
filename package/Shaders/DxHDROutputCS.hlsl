@@ -127,70 +127,51 @@ float4 CS_ACESFilmic_SRGB(float4 bufferIn)
 	return float4(srgb, bufferIn.a);
 }
 
-//--------------------------------------------------------------------------------------
-// HDR10, using Rec.2020 color primaries and ST.2084 curve
-
-float3 HDR10(float3 bufferIn)
+// Non-DXTK Tonemapping
+float4 CS_Reinhard_Jodie(float4 bufferIn)
 {
-	// ST.2084 spec defines max nits as 10,000 nits
-	float3 normalized = bufferIn.xyz * paperWhiteNits / 10000.f;
-
-	// Apply ST.2084 curve
-	return LinearToST2084(normalized);
+	float3 exposedColor = bufferIn.xyz * linearExposure;
+	float l = dot(exposedColor, float3(0.2126f, 0.7152f, 0.0722f));
+	float3 tv = exposedColor / (1.0f + exposedColor);
+	return float4(lerp(exposedColor / (1.0f + l), tv, tv), bufferIn.a);
 }
 
-float4 CS_HDR10(float4 bufferIn)
+float4 CS_Reinhard_Jodie_SRGB(float4 bufferIn)
 {
-	float3 rgb = HDR10(bufferIn.xyz);
-	return float4(rgb, bufferIn.a);
+	float3 exposedColor = bufferIn.xyz * linearExposure;
+	float l = dot(exposedColor, float3(0.2126f, 0.7152f, 0.0722f));
+	float3 tv = exposedColor / (1.0f + exposedColor);
+	float3 srgb = LinearToSRGBEst(lerp(exposedColor / (1.0f + l), tv, tv));
+	return float4(srgb, bufferIn.a);
 }
 
-float4 CS_HDR10_Saturate(float4 bufferIn)
+
+float3 Uncharted2_Tonemap_Partial(float3 bufferIn)
 {
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = saturate(rgb * linearExposure);
-	return float4(sdr, bufferIn.a);
+	const float A = 0.15f;
+	const float B = 0.50f;
+	const float C = 0.10f;
+	const float D = 0.20f;
+	const float E = 0.02f;
+	const float F = 0.30f;
+	return ((bufferIn * (A * bufferIn + C * B) + D * E) / (bufferIn * (A * bufferIn + B) + D * F)) - E / F;
 }
 
-float4 CS_HDR10_Reinhard(float4 bufferIn)
+float4 CS_Uncharted2Filmic(float4 bufferIn)
 {
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = ToneMapReinhard(rgb * linearExposure);
-	return float4(sdr, bufferIn.a);
+	float3 curr = Uncharted2_Tonemap_Partial(bufferIn.xyz * linearExposure);
+	const float3 W = 11.2f;
+	float3 white_scale = 1.0f / Uncharted2_Tonemap_Partial(W);
+	return float4(curr * white_scale, bufferIn.a);
 }
 
-float4 CS_HDR10_ACESFilmic(float4 bufferIn)
+float4 CS_Uncharted2Filmic_SRGB(float4 bufferIn)
 {
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = ToneMapACESFilmic(rgb * linearExposure);
-	return float4(sdr, bufferIn.a);
-}
-
-float4 CS_HDR10_SRGB(float4 bufferIn)
-{
-	float3 rgb = HDR10(bufferIn.xyz);
-	return float4(LinearToSRGBEst(rgb), bufferIn.a);
-}
-
-float4 CS_HDR10_Saturate_SRGB(float4 bufferIn)
-{
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = saturate(rgb * linearExposure);
-	return float4(LinearToSRGBEst(sdr), bufferIn.a);
-}
-
-float4 CS_HDR10_Reinhard_SRGB(float4 bufferIn)
-{
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = ToneMapReinhard(rgb * linearExposure);
-	return float4(LinearToSRGBEst(sdr), bufferIn.a);
-}
-
-float4 CS_HDR10_ACESFilmic_SRGB(float4 bufferIn)
-{
-	float3 rgb = HDR10(bufferIn.xyz);
-	float3 sdr = ToneMapACESFilmic(rgb * linearExposure);
-	return float4(LinearToSRGBEst(sdr), bufferIn.a);
+	float3 curr = Uncharted2_Tonemap_Partial(bufferIn.xyz * linearExposure);
+	const float3 W = 11.2f;
+	float3 white_scale = 1.0f / Uncharted2_Tonemap_Partial(W);
+	float3 srgb = LinearToSRGBEst(curr * white_scale);
+	return float4(srgb, bufferIn.a);
 }
 
 [numthreads(8, 8, 1)] void main(uint3 dispatchID
@@ -210,43 +191,31 @@ float4 CS_HDR10_ACESFilmic_SRGB(float4 bufferIn)
 		framebuffer = CS_Reinhard(framebuffer);
 		break;
 	case 3:
-		framebuffer = CS_ACESFilmic(framebuffer);
+		framebuffer = CS_Reinhard_Jodie(framebuffer);
 		break;
 	case 4:
-		framebuffer = CS_SRGB(framebuffer);
+		framebuffer = CS_ACESFilmic(framebuffer);
 		break;
 	case 5:
-		framebuffer = CS_Saturate_SRGB(framebuffer);
+		framebuffer = CS_Uncharted2Filmic(framebuffer);
 		break;
 	case 6:
-		framebuffer = CS_Reinhard_SRGB(framebuffer);
+		framebuffer = CS_SRGB(framebuffer);
 		break;
 	case 7:
-		framebuffer = CS_ACESFilmic_SRGB(framebuffer);
+		framebuffer = CS_Saturate_SRGB(framebuffer);
 		break;
 	case 8:
-		framebuffer = CS_HDR10(framebuffer);
+		framebuffer = CS_Reinhard_SRGB(framebuffer);
 		break;
 	case 9:
-		framebuffer = CS_HDR10_Saturate(framebuffer);
+		framebuffer = CS_Reinhard_Jodie_SRGB(framebuffer);
 		break;
 	case 10:
-		framebuffer = CS_HDR10_Reinhard(framebuffer);
+		framebuffer = CS_ACESFilmic_SRGB(framebuffer);
 		break;
 	case 11:
-		framebuffer = CS_HDR10_ACESFilmic(framebuffer);
-		break;
-	case 12:
-		framebuffer = CS_HDR10_SRGB(framebuffer);
-		break;
-	case 13:
-		framebuffer = CS_HDR10_Saturate_SRGB(framebuffer);
-		break;
-	case 14:
-		framebuffer = CS_HDR10_Reinhard_SRGB(framebuffer);
-		break;
-	case 15:
-		framebuffer = CS_HDR10_ACESFilmic_SRGB(framebuffer);
+		framebuffer = CS_Uncharted2Filmic_SRGB(framebuffer);
 		break;
 	}
 
