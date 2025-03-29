@@ -193,7 +193,8 @@ float4 CS_HDR10_ACESFilmic_SRGB(float4 bufferIn)
 	return float4(LinearToSRGBEst(sdr), bufferIn.a);
 }
 
-[numthreads(8, 8, 1)] void main(uint3 dispatchID : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint3 dispatchID
+								: SV_DispatchThreadID) {
 	float4 framebuffer = Framebuffer[dispatchID.xy];
 
 	switch ((int)tonemapSelector) {

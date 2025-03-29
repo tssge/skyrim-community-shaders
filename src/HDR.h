@@ -114,7 +114,7 @@ public:
 	static_assert((sizeof(HDRDataCB) % 16) == 0, "CB size not padded correctly");
 
 	XM_ALIGNED_STRUCT(16)
-		HDRDxDataCB
+	HDRDxDataCB
 	{
 		// linearExposure is .x
 		// paperWhiteNits is .y
