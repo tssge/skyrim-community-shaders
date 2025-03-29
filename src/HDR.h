@@ -104,8 +104,6 @@ public:
 	void DestroyResources() const;
 	void ClearShaderCache();
 
-	std::unique_ptr<DirectX::ToneMapPostProcess> m_toneMap;
-
 	struct alignas(16) HDRDataCB
 	{
 		float4 HDRData;

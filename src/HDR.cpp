@@ -25,10 +25,12 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 void HDR::DrawSettings()
 {
 	const char* operators[] = {
-		"None (Pass-through)",
-		"Saturate (Clamp [0,1])",
-		"Reinhard (x/(1+x))",
-		"ACES Filmic"
+		"None",
+		"Saturate",
+		"Reinhard",
+		"Reinhard-Jodie",
+		"ACES Filmic",
+		"Uncharted 2 Filmic"
 	};
 	const char* transferFunctions[] = {
 		"Linear",
@@ -62,7 +64,7 @@ void HDR::DrawSettings()
 	ImGui::Checkbox("Use DirectXTK Tonemapping", &settings.useDXTonemapping);
 	if (settings.useDXTonemapping) {
 		ImGui::Text("Recommended Defaults: ACES Filmic operator, sRGB transfer function, and 0.5f exposure.");
-		ImGui::SliderInt("Operator", reinterpret_cast<int*>(&settings.dxOperator), 0, 3, std::format("{}", operators[settings.dxOperator]).c_str());
+		ImGui::SliderInt("Operator", reinterpret_cast<int*>(&settings.dxOperator), 0, 5, std::format("{}", operators[settings.dxOperator]).c_str());
 
 		ImGui::SliderInt("Transfer Function", reinterpret_cast<int*>(&settings.dxTransferFunction), 0, 1, std::format("{}", transferFunctions[settings.dxTransferFunction]).c_str());
 		if (auto _tt = Util::HoverTooltipWrapper()) {
@@ -124,12 +126,6 @@ void HDR::RestoreDefaultSettings()
 
 void HDR::SetupResources()
 {
-	auto device = globals::d3d::device;
-
-	m_toneMap = std::make_unique<DirectX::ToneMapPostProcess>(device);
-	m_toneMap->SetOperator(DirectX::ToneMapPostProcess::None);
-	m_toneMap->SetTransferFunction(DirectX::ToneMapPostProcess::SRGB);
-
 	auto renderer = globals::game::renderer;
 	auto& main = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
 
@@ -272,7 +268,7 @@ void HDR::UpdateHDRData() const
 {
 	if (settings.useDXTonemapping) {
 		HDRDxDataCB data = {};
-		data.parameters = DirectX::XMVectorSet(settings.dxExposure, static_cast<float>(settings.dxPaperWhite), static_cast<float>(static_cast<int>(settings.dxTransferFunction) * 4 + static_cast<int>(settings.dxOperator)), 0.f);
+		data.parameters = DirectX::XMVectorSet(settings.dxExposure, static_cast<float>(settings.dxPaperWhite), static_cast<float>(static_cast<int>(settings.dxTransferFunction) * 6 + static_cast<int>(settings.dxOperator)), 0.f);
 		switch (settings.dxColorRotation) {
 		default:
 		case 0:
