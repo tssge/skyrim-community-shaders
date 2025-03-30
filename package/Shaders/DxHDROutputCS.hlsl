@@ -240,7 +240,6 @@ static float4 CS_HDR10_Uncharted2Filmic(float4 bufferIn)
 	return float4(sdr, bufferIn.a);
 }
 
-
 static const float PQ_constant_N = (2610.0 / 4096.0 / 4.0);
 static const float PQ_constant_M = (2523.0 / 4096.0 * 128.0);
 
