@@ -145,7 +145,6 @@ float4 CS_Reinhard_Jodie_SRGB(float4 bufferIn)
 	return float4(srgb, bufferIn.a);
 }
 
-
 float3 Uncharted2_Tonemap_Partial(float3 bufferIn)
 {
 	const float A = 0.15f;
