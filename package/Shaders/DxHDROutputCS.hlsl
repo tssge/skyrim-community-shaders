@@ -5,7 +5,6 @@
 // http://go.microsoft.com/fwlink/?LinkId=248929
 
 #include "Common/Color.hlsli"
-#include "Common/PumboDICE.hlsli"
 
 Texture2D<float4> Framebuffer : register(t0);
 RWTexture2D<float4> HDROutput : register(u0);
@@ -237,22 +236,6 @@ static float4 CS_HDR10_Uncharted2Filmic(float4 bufferIn)
 	float3 rgb = HDR10(bufferIn.xyz);
 	float3 sdr = ToneMapUncharted2Filmic(rgb * linearExposure);
 	return float4(sdr, bufferIn.a);
-}
-
-static const float PQ_constant_N = (2610.0 / 4096.0 / 4.0);
-static const float PQ_constant_M = (2523.0 / 4096.0 * 128.0);
-
-// PQ (Perceptual Quantiser; ST.2084) encode/decode used for HDR TV and grading
-float3 LinearToPQ(float3 linearCol, const float maxPqValue)
-{
-	linearCol /= maxPqValue;
-
-	float3 colToPow = pow(linearCol, PQ_constant_N);
-	float3 numerator = PQ_constant_C1 + PQ_constant_C2 * colToPow;
-	float3 denominator = 1.0 + PQ_constant_C3 * colToPow;
-	float3 pq = pow(numerator / denominator, PQ_constant_M);
-
-	return pq;
 }
 
 [numthreads(8, 8, 1)] void main(uint3 dispatchID
