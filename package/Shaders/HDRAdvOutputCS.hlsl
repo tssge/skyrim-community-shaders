@@ -16,12 +16,7 @@ cbuffer PerFrame : register(b0)
 	float paperWhiteNits : packoffset(c0.z);
 	float tonemapSelector : packoffset(c0.w);
 
-	float gamma : packoffset(c1.x);
-	float contrast : packoffset(c1.y);
-	float saturation : packoffset(c1.z);
-	float vibrance : packoffset(c1.w);
-
-	float4x3 colorRotation : packoffset(c2);
+	float4x3 colorRotation : packoffset(c1);
 }
 
 // sRGB
