@@ -77,7 +77,6 @@ public:
 		// Settings for the advanced tonemapper
 		bool useAdvancedTonemapping = false;
 		uint advOperator = 0;
-		uint advTransferFunction = 2;
 		uint advColorRotation = 0;
 		float advExposure = 1.0f;
 		uint advPaperWhite = 1000;
