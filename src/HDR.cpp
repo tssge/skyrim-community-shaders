@@ -258,7 +258,7 @@ void HDR::UpdateHDRData() const
 {
 	if (settings.useAdvancedTonemapping) {
 		HDRAdvDataCB data = {};
-		data.parameters = DirectX::XMVectorSet(settings.advExposure, static_cast<float>(settings.advPaperWhite), static_cast<float>(settings.advMaxNits), static_cast<int>(settings.advOperator));
+		data.parameters = DirectX::XMVectorSet(settings.advExposure, static_cast<float>(settings.advPaperWhite), static_cast<float>(settings.advMaxNits), static_cast<float>(settings.advOperator));
 		switch (settings.advColorRotation) {
 		default:
 		case 0:
