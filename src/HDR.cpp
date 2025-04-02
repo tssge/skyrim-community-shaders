@@ -18,7 +18,6 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 	enableHDR,
 	useAdvancedTonemapping,
 	advOperator,
-	advTransferFunction,
 	advExposure,
 	advMaxNits,
 	advPaperWhite,
@@ -33,11 +32,6 @@ void HDR::DrawSettings()
 		"Reinhard-Jodie",
 		"ACES Filmic",
 		"Uncharted 2 Filmic"
-	};
-	const char* transferFunctions[] = {
-		"Linear",
-		"sRGB",
-		"ST2084",
 	};
 	const char* rotationFunctions[] = {
 		"Rec.709/Rec.2020",
@@ -54,7 +48,6 @@ void HDR::DrawSettings()
 	if (ImGui::Button("Reset HDR Settings", { -1, 0 })) {
 		settings.useAdvancedTonemapping = false;
 		settings.advOperator = 0;
-		settings.advTransferFunction = 2;
 		settings.advColorRotation = 0;
 		settings.advExposure = 1.0f;
 		settings.advPaperWhite = 1000;
@@ -72,20 +65,7 @@ void HDR::DrawSettings()
 
 	ImGui::Checkbox("Use Advanced Tonemapping", &settings.useAdvancedTonemapping);
 	if (settings.useAdvancedTonemapping) {
-		ImGui::SliderInt("Operator", reinterpret_cast<int*>(&settings.advOperator), 0, 5, std::format("{}", operators[settings.advOperator]).c_str());
-
-		ImGui::SliderInt("Transfer Function", reinterpret_cast<int*>(&settings.advTransferFunction), 0, 2, std::format("{}", transferFunctions[settings.advTransferFunction]).c_str());
-		if (auto _tt = Util::HoverTooltipWrapper()) {
-			ImGui::Text(
-				"Linear:\n"
-				"Pass-Through.\n"
-				"\n"
-				"sRGB:\n"
-				"Rec.709 and approximate sRGB display curve."
-				"\n"
-				"ST2084:\n"
-				"Rec.2020 and ST.2084 display curve.");
-		}
+		ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.advOperator), 0, 5, std::format("{}", operators[settings.advOperator]).c_str());
 
 		ImGui::SliderInt("Color Rotation", reinterpret_cast<int*>(&settings.advColorRotation), 0, 1, std::format("{}", rotationFunctions[settings.advColorRotation]).c_str());
 		if (auto _tt = Util::HoverTooltipWrapper()) {
@@ -278,7 +258,7 @@ void HDR::UpdateHDRData() const
 {
 	if (settings.useAdvancedTonemapping) {
 		HDRAdvDataCB data = {};
-		data.parameters = DirectX::XMVectorSet(settings.advExposure, static_cast<float>(settings.advPaperWhite), static_cast<float>(settings.advMaxNits), static_cast<float>(static_cast<int>(settings.advTransferFunction) * 6 + static_cast<int>(settings.advOperator)));
+		data.parameters = DirectX::XMVectorSet(settings.advExposure, static_cast<float>(settings.advPaperWhite), static_cast<float>(settings.advMaxNits), static_cast<int>(settings.advOperator));
 		switch (settings.advColorRotation) {
 		default:
 		case 0:

@@ -19,21 +19,6 @@ cbuffer PerFrame : register(b0)
 	float4x3 colorRotation : packoffset(c1);
 }
 
-// sRGB
-// https://en.wikipedia.org/wiki/SRGB
-
-// Apply the (approximate) sRGB curve to linear values
-static float3 LinearToSRGBEst(float3 color)
-{
-	return pow(abs(color), 1 / 2.2f);
-}
-
-// (Approximate) sRGB to linear
-static float3 SRGBToLinearEst(float3 srgb)
-{
-	return pow(abs(srgb), 2.2f);
-}
-
 // HDR10 Media Profile
 // https://en.wikipedia.org/wiki/High-dynamic-range_video#HDR10
 
@@ -113,76 +98,6 @@ static float3 ToneMapUncharted2Filmic(float3 color)
 }
 
 //--------------------------------------------------------------------------------------
-// Pass-through
-static float3 CS_Copy(float3 bufferIn)
-{
-	return bufferIn;
-}
-
-// Saturate (clips above 1.0)
-static float3 CS_Saturate(float3 bufferIn)
-{
-	return saturate(bufferIn);
-}
-
-// Reinhard operator
-static float3 CS_Reinhard(float3 bufferIn)
-{
-	return ToneMapReinhard(bufferIn);
-}
-
-static float3 CS_Reinhard_Jodie(float3 bufferIn)
-{
-	return ToneMapReinhardJodie(bufferIn);
-}
-
-// ACES filmic operator
-static float3 CS_ACESFilmic(float3 bufferIn)
-{
-	return ToneMapACESFilmic(bufferIn);
-}
-
-static float3 CS_Uncharted2Filmic(float3 bufferIn)
-{
-	return ToneMapUncharted2Filmic(bufferIn);
-}
-
-//--------------------------------------------------------------------------------------
-// SRGB, using Rec.709 color primaries and a gamma 2.2 curve
-static float3 CS_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(bufferIn);
-}
-
-// Saturate (clips above 1.0)
-static float3 CS_Saturate_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(saturate(bufferIn));
-}
-
-// Reinhard operator
-static float3 CS_Reinhard_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(ToneMapReinhard(bufferIn));
-}
-
-static float3 CS_Reinhard_Jodie_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(ToneMapReinhardJodie(bufferIn));
-}
-
-// ACES filmic operator
-static float3 CS_ACESFilmic_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(ToneMapACESFilmic(bufferIn));
-}
-
-static float3 CS_Uncharted2Filmic_SRGB(float3 bufferIn)
-{
-	return LinearToSRGBEst(ToneMapUncharted2Filmic(bufferIn));
-}
-
-//--------------------------------------------------------------------------------------
 // HDR10, using Rec.2020 color primaries and ST.2084 curve
 static float3 CS_HDR10(float3 bufferIn)
 {
@@ -226,59 +141,22 @@ static float3 CS_HDR10_Uncharted2Filmic(float3 bufferIn)
 
 	float3 tonemapped;
 	switch ((int)tonemapSelector) {
-	default:
 	case 0:
-		tonemapped = CS_Copy(linearExposed);
-		break;
-	case 1:
-		tonemapped = CS_Saturate(linearExposed);
-		break;
-	case 2:
-		tonemapped = CS_Reinhard(linearExposed);
-		break;
-	case 3:
-		tonemapped = CS_Reinhard_Jodie(linearExposed);
-		break;
-	case 4:
-		tonemapped = CS_ACESFilmic(linearExposed);
-		break;
-	case 5:
-		tonemapped = CS_Uncharted2Filmic(linearExposed);
-		break;
-	case 6:
-		tonemapped = CS_SRGB(linearExposed);
-		break;
-	case 7:
-		tonemapped = CS_Saturate_SRGB(linearExposed);
-		break;
-	case 8:
-		tonemapped = CS_Reinhard_SRGB(linearExposed);
-		break;
-	case 9:
-		tonemapped = CS_Reinhard_Jodie_SRGB(linearExposed);
-		break;
-	case 10:
-		tonemapped = CS_ACESFilmic_SRGB(linearExposed);
-		break;
-	case 11:
-		tonemapped = CS_Uncharted2Filmic_SRGB(linearExposed);
-		break;
-	case 12:
 		tonemapped = CS_HDR10(linearExposed);
 		break;
-	case 13:
+	case 1:
 		tonemapped = CS_HDR10_Saturate(linearExposed);
 		break;
-	case 14:
+	case 2:
 		tonemapped = CS_HDR10_Reinhard(linearExposed);
 		break;
-	case 15:
+	case 3:
 		tonemapped = CS_HDR10_Reinhard_Jodie(linearExposed);
 		break;
-	case 16:
+	case 4:
 		tonemapped = CS_HDR10_ACESFilmic(linearExposed);
 		break;
-	case 17:
+	case 5:
 		tonemapped = CS_HDR10_Uncharted2Filmic(linearExposed);
 		break;
 	}
