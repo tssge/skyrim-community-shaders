@@ -20,17 +20,18 @@ public:
 	{
 		bool enableHDR = false;
 
-		// Settings for the advanced tonemapper
-		bool useAdvancedTonemapping = false;
-		uint advOperator = 0;
-		float advExposure = 1.0f;
-		uint advPaperWhite = 1000;
-		uint advMaxNits = 1000;
+		uint tonemapOperator = 0;
 
-		// Settings for (old) CS tonemapper
-		uint displayPeakBrightness = 1000;
-		uint gameBrightness = 400;
-		uint uiBrightness = 400;
+		float exposure = 1.0f;
+		float highlights = 1.0f;
+		float shadows = 1.0f;
+		float contrast = 1.0f;
+		float saturation = 1.0f;
+		float dechroma = 0.0f;
+		float hueCorrectionStrength = 0.0f;
+
+		uint paperWhite = 1000;
+		uint peakNits = 10000;
 	};
 
 	bool enabledSaveLater = false;
@@ -51,33 +52,20 @@ public:
 	void DestroyResources() const;
 	void ClearShaderCache();
 
-	struct alignas(16) HDRDataCB
+	XM_ALIGNED_STRUCT(16)
+	HDRDataCB
 	{
-		float4 HDRData;
+		DirectX::XMVECTOR parameters[3];
 	};
 
 	static_assert((sizeof(HDRDataCB) % 16) == 0, "CB size not padded correctly");
 
-	XM_ALIGNED_STRUCT(16)
-	HDRAdvDataCB
-	{
-		// linearExposure is .x
-		// paperWhiteNits is .y
-		// maxNits is .z
-		// tonemapSelection is .w
-		DirectX::XMVECTOR parameters;
-	};
-
-	static_assert((sizeof(HDRAdvDataCB) % 16) == 0, "CB size not padded correctly");
-
-	ConstantBuffer* hdrAdvDataCB = nullptr;
 	ConstantBuffer* hdrDataCB = nullptr;
 
 	Texture2D* hdrTexture = nullptr;
 	Texture2D* outputTexture = nullptr;
 
 	ID3D11ComputeShader* hdrOutputCS = nullptr;
-	ID3D11ComputeShader* hdrAdvOutputCS = nullptr;
 	ID3D11ComputeShader* GetHDROutputCS();
 
 	// Format constants to be used elsewhere
