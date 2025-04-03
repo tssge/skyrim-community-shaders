@@ -55,7 +55,21 @@ public:
 	XM_ALIGNED_STRUCT(16)
 	HDRDataCB
 	{
-		DirectX::XMVECTOR parameters[3];
+		// parameters0.x = tonemapOperator
+		// parameters0.y = paperWhite
+		// parameters0.z = peakNits
+		// parameters0.w = exposure
+		DirectX::XMVECTOR parameters0;
+		// parameters1.x = highlights
+		// parameters1.y = shadows
+		// parameters1.z = contrast
+		// parameters1.w = saturation
+		DirectX::XMVECTOR parameters1;
+		// parameters2.x = dechroma
+		// parameters2.y = hueCorrectionStrength
+		// parameters2.z = 0.f // Currently unused
+		// parameters2.w = 0.f // Currently unused
+		DirectX::XMVECTOR parameters2;
 	};
 
 	static_assert((sizeof(HDRDataCB) % 16) == 0, "CB size not padded correctly");

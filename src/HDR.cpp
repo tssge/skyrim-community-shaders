@@ -30,7 +30,9 @@ void HDR::DrawSettings()
 		"Frostbite",
 		"Reinhard-Jodie",
 		"ACES",
-		"Uncharted 2"
+		"Uncharted 2",
+		"Unused 1",
+		"Unused 2"
 	};
 
 	ImGui::Text("Toggling this setting requires a restart to work correctly!");
@@ -60,7 +62,7 @@ void HDR::DrawSettings()
 		GetHDROutputCS();
 	}
 
-	ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.tonemapOperator), 0, 5, std::format("{}", operators[settings.tonemapOperator]).c_str());
+	ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.tonemapOperator), 0, 7, std::format("{}", operators[settings.tonemapOperator]).c_str());
 
 	ImGui::SliderInt("Paper White (nits)", reinterpret_cast<int*>(&settings.paperWhite), 1, 500);
 	if (auto _tt = Util::HoverTooltipWrapper()) {
@@ -72,13 +74,13 @@ void HDR::DrawSettings()
 		ImGui::Text("Peak Brightness defines the maximum brightness level.");
 	}
 
-	ImGui::SliderFloat("Exposure", &settings.exposure, 0.001, 2);
-	ImGui::SliderFloat("Highlights", &settings.highlights, 0.001, 2);
-	ImGui::SliderFloat("Shadows", &settings.shadows, 0.001, 2);
-	ImGui::SliderFloat("Contrast", &settings.contrast, 0.001, 2);
-	ImGui::SliderFloat("Saturation", &settings.saturation, 0.001, 2);
-	ImGui::SliderFloat("Dechroma", &settings.dechroma, 0.001, 2);
-	ImGui::SliderFloat("Hue Correction Strength", &settings.hueCorrectionStrength, 0.001, 2);
+	ImGui::SliderFloat("Exposure", &settings.exposure, 0.f, 2.f);
+	ImGui::SliderFloat("Highlights", &settings.highlights, 0.f, 2.f);
+	ImGui::SliderFloat("Shadows", &settings.shadows, 0.f, 2.f);
+	ImGui::SliderFloat("Contrast", &settings.contrast, 0.f, 2.f);
+	ImGui::SliderFloat("Saturation", &settings.saturation, 0.f, 2.f);
+	ImGui::SliderFloat("Dechroma", &settings.dechroma, 0.f, 2.f);
+	ImGui::SliderFloat("Hue Correction Strength", &settings.hueCorrectionStrength, 0.f, 2.f);
 
 	UpdateHDRData();
 }
@@ -152,7 +154,7 @@ void HDR::ApplyHDR()
 		ID3D11UnorderedAccessView* uavs[1] = { outputTexture->uav.get() };
 		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 
-		ID3D11Buffer* cbs[1]{ cbs[0] = hdrDataCB->CB() };
+		ID3D11Buffer* cbs[1] = { hdrDataCB->CB() };
 
 		context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
@@ -209,22 +211,9 @@ void HDR::UpdateHDRData() const
 {
 	HDRDataCB data;
 
-	float packedSettings[12] = {
-		static_cast<float>(settings.tonemapOperator),
-		static_cast<float>(settings.paperWhite),
-		static_cast<float>(settings.peakNits),
-		settings.exposure,
-		settings.highlights,
-		settings.shadows,
-		settings.contrast,
-		settings.saturation,
-		settings.dechroma,
-		settings.hueCorrectionStrength,
-		0.f,
-		0.f,
-	};
-
-	memcpy(data.parameters, packedSettings, sizeof(packedSettings));
+	data.parameters0 = DirectX::XMVectorSet(static_cast<float>(settings.tonemapOperator), static_cast<float>(settings.paperWhite), static_cast<float>(settings.peakNits), settings.exposure);
+	data.parameters1 = DirectX::XMVectorSet(settings.highlights, settings.shadows, settings.contrast, settings.saturation);
+	data.parameters2 = DirectX::XMVectorSet(settings.dechroma, settings.hueCorrectionStrength, 0.f, 0.f);
 
 	hdrDataCB->Update(data);
 }
