@@ -20,5 +20,5 @@ static const float W = 11.2;  // Linear White
 
 float3 applyUncharted2Tonemap(float3 untonemapped, float linear_white = W)
 {
-	return ApplyCurve(untonemapped, A, B, C, D, E, F) / ApplyCurve(linear_white, A, B, C, D, E, F);
+	return ApplyCurve(untonemapped * 2.f, A, B, C, D, E, F) / ApplyCurve(linear_white, A, B, C, D, E, F);
 }
