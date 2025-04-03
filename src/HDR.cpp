@@ -6,31 +6,31 @@
 #include "State.h"
 #include "Upscaling.h"
 #include "Util.h"
-
-#include <dxgi1_4.h>
 #include <imgui.h>
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 	HDR::Settings,
-	displayPeakBrightness,
-	gameBrightness,
-	uiBrightness,
 	enableHDR,
-	useAdvancedTonemapping,
-	advOperator,
-	advExposure,
-	advMaxNits,
-	advPaperWhite);
+	tonemapOperator,
+	exposure,
+	highlights,
+	shadows,
+	contrast,
+	saturation,
+	dechroma,
+	hueCorrectionStrength,
+	paperWhite,
+	peakNits);
 
 void HDR::DrawSettings()
 {
 	const char* operators[] = {
 		"None",
 		"Saturate",
-		"Reinhard",
+		"Frostbite",
 		"Reinhard-Jodie",
-		"ACES Filmic",
-		"Uncharted 2 Filmic"
+		"ACES",
+		"Uncharted 2"
 	};
 
 	ImGui::Text("Toggling this setting requires a restart to work correctly!");
@@ -41,15 +41,18 @@ void HDR::DrawSettings()
 	}
 
 	if (ImGui::Button("Reset HDR Settings", { -1, 0 })) {
-		settings.useAdvancedTonemapping = false;
-		settings.advOperator = 0;
-		settings.advExposure = 1.0f;
-		settings.advPaperWhite = 1000;
-		settings.advMaxNits = 10000;
+		settings.tonemapOperator = 0;
 
-		settings.displayPeakBrightness = 1000;
-		settings.gameBrightness = 400;
-		settings.uiBrightness = 400;
+		settings.exposure = 1.0f;
+		settings.highlights = 1.0f;
+		settings.shadows = 1.0f;
+		settings.contrast = 1.0f;
+		settings.saturation = 1.0f;
+		settings.dechroma = 0.0f;
+		settings.hueCorrectionStrength = 0.0f;
+
+		settings.paperWhite = 400;
+		settings.peakNits = 10000;
 	}
 
 	if (ImGui::Button("Reload HDR shaders", { -1, 0 })) {
@@ -57,33 +60,25 @@ void HDR::DrawSettings()
 		GetHDROutputCS();
 	}
 
-	ImGui::Checkbox("Use Advanced Tonemapping", &settings.useAdvancedTonemapping);
-	if (settings.useAdvancedTonemapping) {
-		ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.advOperator), 0, 5, std::format("{}", operators[settings.advOperator]).c_str());
+	ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.tonemapOperator), 0, 5, std::format("{}", operators[settings.tonemapOperator]).c_str());
 
-		ImGui::SliderFloat("Linear Exposure", &settings.advExposure, 0.001, 2);
-		if (auto _tt = Util::HoverTooltipWrapper()) {
-			ImGui::Text("Linear exposure adjusts the brightness after converting to HDR10 color from linear color.");
-		}
-
-		ImGui::SliderInt("Paper White (nits)", reinterpret_cast<int*>(&settings.advPaperWhite), 1, 10000);
-		if (auto _tt = Util::HoverTooltipWrapper()) {
-			ImGui::Text("Paper White sets the game's reference white brightness.");
-		}
-
-		ImGui::SliderInt("Peak Brightness (nits)", reinterpret_cast<int*>(&settings.advMaxNits), 1, 10000);
-		if (auto _tt = Util::HoverTooltipWrapper()) {
-			ImGui::Text("Peak Brightness defines the maximum brightness level.");
-		}
-	} else {
-		ImGui::SliderInt("Display Peak Brightness (nits)", reinterpret_cast<int*>(&settings.displayPeakBrightness), 200, 10000);
-		ImGui::SliderInt("Game Brightness (nits)", reinterpret_cast<int*>(&settings.gameBrightness), 100, 1000);
-
-		ImGui::BeginDisabled();
-		ImGui::Text("Setting UI brightness is currently not supported.");
-		ImGui::SliderInt("UI Brightness (nits)", reinterpret_cast<int*>(&settings.uiBrightness), 100, 1000);
-		ImGui::EndDisabled();
+	ImGui::SliderInt("Paper White (nits)", reinterpret_cast<int*>(&settings.paperWhite), 1, 500);
+	if (auto _tt = Util::HoverTooltipWrapper()) {
+		ImGui::Text("Paper White sets the game's reference white brightness.");
 	}
+
+	ImGui::SliderInt("Peak Brightness (nits)", reinterpret_cast<int*>(&settings.peakNits), 1, 10000);
+	if (auto _tt = Util::HoverTooltipWrapper()) {
+		ImGui::Text("Peak Brightness defines the maximum brightness level.");
+	}
+
+	ImGui::SliderFloat("Exposure", &settings.exposure, 0.001, 2);
+	ImGui::SliderFloat("Highlights", &settings.highlights, 0.001, 2);
+	ImGui::SliderFloat("Shadows", &settings.shadows, 0.001, 2);
+	ImGui::SliderFloat("Contrast", &settings.contrast, 0.001, 2);
+	ImGui::SliderFloat("Saturation", &settings.saturation, 0.001, 2);
+	ImGui::SliderFloat("Dechroma", &settings.dechroma, 0.001, 2);
+	ImGui::SliderFloat("Hue Correction Strength", &settings.hueCorrectionStrength, 0.001, 2);
 
 	UpdateHDRData();
 }
@@ -138,7 +133,6 @@ void HDR::SetupResources()
 	outputTexture->CreateUAV(uavDesc);
 
 	hdrDataCB = new ConstantBuffer(ConstantBufferDesc<HDRDataCB>());
-	hdrAdvDataCB = new ConstantBuffer(ConstantBufferDesc<HDRAdvDataCB>());
 
 	UpdateHDRData();
 }
@@ -158,7 +152,7 @@ void HDR::ApplyHDR()
 		ID3D11UnorderedAccessView* uavs[1] = { outputTexture->uav.get() };
 		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 
-		ID3D11Buffer* cbs[1]{ settings.useAdvancedTonemapping ? hdrAdvDataCB->CB() : cbs[0] = hdrDataCB->CB() };
+		ID3D11Buffer* cbs[1]{ cbs[0] = hdrDataCB->CB() };
 
 		context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
@@ -200,24 +194,10 @@ void HDR::ClearShaderCache()
 		hdrOutputCS->Release();
 		hdrOutputCS = nullptr;
 	}
-
-	if (hdrAdvOutputCS) {
-		hdrAdvOutputCS->Release();
-		hdrAdvOutputCS = nullptr;
-	}
 }
 
 ID3D11ComputeShader* HDR::GetHDROutputCS()
 {
-	if (settings.useAdvancedTonemapping) {
-		if (!hdrAdvOutputCS) {
-			logger::debug("Compiling HDRAdvOutputCS.hlsl");
-			hdrAdvOutputCS = static_cast<ID3D11ComputeShader*>(Util::CompileShader(L"Data\\Shaders\\HDRAdvOutputCS.hlsl", {}, "cs_5_0"));
-		}
-
-		return hdrAdvOutputCS;
-	}
-
 	if (!hdrOutputCS) {
 		logger::debug("Compiling HDROutputCS.hlsl");
 		hdrOutputCS = static_cast<ID3D11ComputeShader*>(Util::CompileShader(L"Data\\Shaders\\HDROutputCS.hlsl", {}, "cs_5_0"));
@@ -227,20 +207,24 @@ ID3D11ComputeShader* HDR::GetHDROutputCS()
 
 void HDR::UpdateHDRData() const
 {
-	if (settings.useAdvancedTonemapping) {
-		HDRAdvDataCB data;
-		data.parameters = DirectX::XMVectorSet(settings.advExposure, static_cast<float>(settings.advPaperWhite), static_cast<float>(settings.advMaxNits), static_cast<float>(settings.advOperator));
+	HDRDataCB data;
 
-		hdrAdvDataCB->Update(data);
-	} else {
-		float4 parameters;
-		parameters.x = static_cast<float>(settings.enableHDR);
-		parameters.y = static_cast<float>(settings.displayPeakBrightness);
-		parameters.z = static_cast<float>(settings.gameBrightness);
-		parameters.w = static_cast<float>(settings.uiBrightness);
+	float packedSettings[12] = {
+		static_cast<float>(settings.tonemapOperator),
+		static_cast<float>(settings.paperWhite),
+		static_cast<float>(settings.peakNits),
+		settings.exposure,
+		settings.highlights,
+		settings.shadows,
+		settings.contrast,
+		settings.saturation,
+		settings.dechroma,
+		settings.hueCorrectionStrength,
+		0.f,
+		0.f,
+	};
 
-		HDRDataCB data = { parameters };
+	memcpy(data.parameters, packedSettings, sizeof(packedSettings));
 
-		hdrDataCB->Update(data);
-	}
+	hdrDataCB->Update(data);
 }
