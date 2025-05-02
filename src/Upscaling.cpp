@@ -374,16 +374,7 @@ void Upscaling::Upscale()
 
 	auto hdr = globals::hdr;
 	if (hdr->settings.enableHDR) {
-		state->BeginPerfEvent("HDR");
-
 		context->CopyResource(hdr->hdrTexture->resource.get(), upscalingTexture->resource.get());
-
-		hdr->ApplyHDR();
-
-		context->CopyResource(outputTextureResource, hdr->outputTexture->resource.get());
-
-		state->EndPerfEvent();
-		return;
 	}
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
@@ -452,39 +443,34 @@ void Upscaling::SharpenTAA()
 
 	auto hdr = globals::hdr;
 	if (hdr->settings.enableHDR) {
-		state->BeginPerfEvent("HDR");
-
 		context->CopyResource(hdr->hdrTexture->resource.get(), upscalingTexture->resource.get());
-
-		hdr->ApplyHDR();
-
-		context->CopyResource(outputTextureResource, hdr->outputTexture->resource.get());
-
-		state->EndPerfEvent();
-		return;
 	}
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
 }
 
-void Upscaling::ApplyHDRtoNone()
+void Upscaling::ApplyHDR()
 {
+	auto hdr = globals::hdr;
+	auto state = globals::state;
+	auto context = globals::d3d::context;
 	auto renderer = globals::game::renderer;
-	auto& main = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
-	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 
-	ID3D11Resource* inputTextureResource;
-	main.SRV->GetResource(&inputTextureResource);
+	state->BeginPerfEvent("HDR");
+
+	if (GetUpscaleMethod() == UpscaleMethod::kNONE) {
+		auto& main = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
+
+		ID3D11Resource* inputTextureResource;
+		main.SRV->GetResource(&inputTextureResource);
+
+		context->CopyResource(hdr->hdrTexture->resource.get(), inputTextureResource);
+	}
+
+	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
 
 	ID3D11Resource* outputTextureResource;
 	swapChain.SRV->GetResource(&outputTextureResource);
-
-	auto state = globals::state;
-	state->BeginPerfEvent("HDR");
-
-	auto hdr = globals::hdr;
-	auto context = globals::d3d::context;
-	context->CopyResource(hdr->hdrTexture->resource.get(), inputTextureResource);
 
 	hdr->ApplyHDR();
 
@@ -723,8 +709,8 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	if (globals::hdr->settings.enableHDR && GetUpscaleMethod() == UpscaleMethod::kNONE) {
-		ApplyHDRtoNone();
+	if (globals::hdr->settings.enableHDR) {
+		ApplyHDR();
 	}
 
 	globals::state->RenderReShade();
