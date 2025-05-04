@@ -31,8 +31,8 @@ void HDR::DrawSettings()
 		"Reinhard-Jodie",
 		"ACES",
 		"Uncharted 2",
-		"Unused 1",
-		"Unused 2"
+		"DICE Plus",
+		"RenoDRT"
 	};
 
 	ImGui::Text("Toggling this setting requires a restart to work correctly!");
@@ -143,7 +143,19 @@ void HDR::ApplyHDR()
 {
 	std::lock_guard<std::mutex> lock(settingsMutex);
 
+	if (!settings.enableHDR)
+		return;
+
 	auto context = globals::d3d::context;
+	auto state = globals::state;
+	auto renderer = globals::game::renderer;
+
+	state->BeginPerfEvent("HDR");
+
+	ID3D11Resource* inputTextureResource;
+	auto& inputRT = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
+	inputRT.SRV->GetResource(&inputTextureResource);
+	context->CopyResource(hdrTexture->resource.get(), inputTextureResource);
 
 	{
 		auto dispatchCount = Util::GetScreenDispatchCount(false);
@@ -175,6 +187,13 @@ void HDR::ApplyHDR()
 		ID3D11ComputeShader* shader = nullptr;
 		context->CSSetShader(shader, nullptr, 0);
 	}
+
+	ID3D11Resource* outputTextureResource;
+	auto& outputRT = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+	outputRT.SRV->GetResource(&outputTextureResource);
+	context->CopyResource(outputTextureResource, outputTexture->resource.get());
+
+	state->EndPerfEvent();
 }
 
 void HDR::DestroyResources() const
