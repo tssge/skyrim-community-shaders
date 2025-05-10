@@ -964,6 +964,10 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 
 #	if defined(TERRAIN_VARIATION)
 #		include "TerrainVariation/TerrainVariation.hlsli"
+#   endif
+
+#	if defined(SSPLS)
+#		include "ScreenSpacePointLightShadows/SSPLS.hlsli"
 #	endif
 
 #	if defined(EXTENDED_TRANSLUCENCY) && !(defined(LOD) || defined(SKIN) || defined(HAIR) || defined(EYE) || defined(TREE_ANIM) || defined(LODOBJECTSHD) || defined(LODOBJECTS) || defined(DEPTH_WRITE_DECALS))
@@ -2584,6 +2588,13 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 				lightShadow *= shadowComponent;
 			}
 		}
+
+#			if defined(SSPLS)
+		if (lightIndex < 4 && inWorld) {
+			float SSPLSShadow = ScreenSpacePointLightShadows::GetShadow(LinearSampler, screenUV, lightIndex);
+			lightShadow *= SSPLSShadow;
+		}
+#			endif
 
 		float3 normalizedLightDirection = normalize(lightDirection);
 		float lightAngle = dot(worldNormal.xyz, normalizedLightDirection.xyz);

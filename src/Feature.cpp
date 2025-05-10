@@ -16,6 +16,7 @@
 #include "Features/LightLimitFix.h"
 #include "Features/PerformanceOverlay.h"
 #include "Features/ScreenSpaceGI.h"
+#include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
 #include "Features/SkySync.h"
 #include "Features/Skylighting.h"
@@ -198,6 +199,7 @@ void Feature::WriteDiskCacheInfo(CSimpleIniA& a_ini)
 const std::vector<Feature*>& Feature::GetFeatureList()
 {
 	static std::vector<Feature*> features = {
+<<<<<<< HEAD
 		&globals::features::grassLighting,
 		&globals::features::grassCollision,
 		&globals::features::screenSpaceShadows,
@@ -224,6 +226,32 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		&globals::features::terrainVariation,
 		&globals::features::ibl,
 		&globals::features::extendedTranslucency
+=======
+		globals::features::grassLighting,
+		globals::features::grassCollision,
+		globals::features::screenSpaceShadows,
+		globals::features::extendedMaterials,
+		globals::features::wetnessEffects,
+		globals::features::lightLimitFix,
+		globals::features::dynamicCubemaps,
+		globals::features::cloudShadows,
+		globals::features::waterEffects,
+		globals::features::subsurfaceScattering,
+		globals::features::terrainShadows,
+		globals::features::screenSpaceGI,
+		globals::features::screenSpacePointLightShadows,
+		globals::features::skylighting,
+		globals::features::skySync,
+		globals::features::terrainBlending,
+		globals::features::terrainHelper,
+		globals::features::volumetricLighting,
+		globals::features::lodBlending,
+		globals::features::inverseSquareLighting,
+		globals::features::hairSpecular,
+		globals::features::interiorSunShadows,
+		globals::features::terrainVariation,
+		globals::features::ibl
+>>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 	};
 
 	if (REL::Module::IsVR()) {
