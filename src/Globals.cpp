@@ -25,6 +25,7 @@
 #include "Features/LightLimitFix.h"
 #include "Features/PerformanceOverlay.h"
 #include "Features/ScreenSpaceGI.h"
+#include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
 #include "Features/SkySync.h"
 #include "Features/Skylighting.h"
@@ -55,6 +56,7 @@ namespace globals
 
 	namespace features
 	{
+<<<<<<< HEAD
 		CloudShadows cloudShadows{};
 		DynamicCubemaps dynamicCubemaps{};
 		ExtendedMaterials extendedMaterials{};
@@ -82,6 +84,33 @@ namespace globals
 		PerformanceOverlay performanceOverlay{};
 		WetnessEffects wetnessEffects{};
 		ExtendedTranslucency extendedTranslucency{};
+=======
+		CloudShadows* cloudShadows = nullptr;
+		DynamicCubemaps* dynamicCubemaps = nullptr;
+		ExtendedMaterials* extendedMaterials = nullptr;
+		GrassCollision* grassCollision = nullptr;
+		GrassLighting* grassLighting = nullptr;
+		IBL* ibl = nullptr;
+		LightLimitFix* lightLimitFix = nullptr;
+		LODBlending* lodBlending = nullptr;
+		HairSpecular* hairSpecular = nullptr;
+		InteriorSunShadows* interiorSunShadows = nullptr;
+		InverseSquareLighting* inverseSquareLighting = nullptr;
+		ScreenSpaceGI* screenSpaceGI = nullptr;
+		ScreenSpacePointLightShadows* screenSpacePointLightShadows = nullptr;
+		ScreenSpaceShadows* screenSpaceShadows = nullptr;
+		Skylighting* skylighting = nullptr;
+		TerrainVariation* terrainVariation = nullptr;
+		SkySync* skySync = nullptr;
+		SubsurfaceScattering* subsurfaceScattering = nullptr;
+		TerrainBlending* terrainBlending = nullptr;
+		TerrainHelper* terrainHelper = nullptr;
+		TerrainShadows* terrainShadows = nullptr;
+		VolumetricLighting* volumetricLighting = nullptr;
+		VR* vr = nullptr;
+		WaterEffects* waterEffects = nullptr;
+		WetnessEffects* wetnessEffects = nullptr;
+>>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 
 		namespace llf
 		{
@@ -168,6 +197,7 @@ namespace globals
 		features::interiorSunShadows = InteriorSunShadows::GetSingleton();
 		features::inverseSquareLighting = InverseSquareLighting::GetSingleton();
 		features::screenSpaceGI = ScreenSpaceGI::GetSingleton();
+		features::screenSpacePointLightShadows = ScreenSpacePointLightShadows::GetSingleton();
 		features::screenSpaceShadows = ScreenSpaceShadows::GetSingleton();
 		features::skylighting = Skylighting::GetSingleton();
 		features::terrainVariation = TerrainVariation::GetSingleton();

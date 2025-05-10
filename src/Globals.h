@@ -13,6 +13,7 @@ struct LODBlending;
 struct InteriorSun;
 struct InverseSquareLighting;
 struct ScreenSpaceGI;
+struct ScreenSpacePointLightShadows;
 struct ScreenSpaceShadows;
 struct Skylighting;
 struct TerrainVariation;
@@ -56,6 +57,7 @@ namespace globals
 
 	namespace features
 	{
+<<<<<<< HEAD
 		extern CloudShadows cloudShadows;
 		extern DynamicCubemaps dynamicCubemaps;
 		extern ExtendedMaterials extendedMaterials;
@@ -83,6 +85,33 @@ namespace globals
 		extern PerformanceOverlay performanceOverlay;
 		extern WetnessEffects wetnessEffects;
 		extern ExtendedTranslucency extendedTranslucency;
+=======
+		extern CloudShadows* cloudShadows;
+		extern DynamicCubemaps* dynamicCubemaps;
+		extern ExtendedMaterials* extendedMaterials;
+		extern GrassCollision* grassCollision;
+		extern GrassLighting* grassLighting;
+		extern HairSpecular* hairSpecular;
+		extern IBL* ibl;
+		extern LightLimitFix* lightLimitFix;
+		extern LODBlending* lodBlending;
+		extern InteriorSunShadows* interiorSunShadows;
+		extern InverseSquareLighting* inverseSquareLighting;
+		extern ScreenSpaceGI* screenSpaceGI;
+		extern ScreenSpacePointLightShadows* screenSpacePointLightShadows;
+		extern ScreenSpaceShadows* screenSpaceShadows;
+		extern Skylighting* skylighting;
+		extern TerrainVariation* terrainVariation;
+		extern SkySync* skySync;
+		extern SubsurfaceScattering* subsurfaceScattering;
+		extern TerrainBlending* terrainBlending;
+		extern TerrainHelper* terrainHelper;
+		extern TerrainShadows* terrainShadows;
+		extern VolumetricLighting* volumetricLighting;
+		extern VR* vr;
+		extern WaterEffects* waterEffects;
+		extern WetnessEffects* wetnessEffects;
+>>>>>>> 93c3c432 (Screen Space Point Light Shadows)
 
 		namespace llf
 		{
