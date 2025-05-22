@@ -446,15 +446,15 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 
 	            // Log color primaries
                 logger::info("Display Primaries:");
-                logger::info("Red   Primary: ({:.4f}, {:.4f})", desc.RedPrimary[0], desc.RedPrimary[1]);
-                logger::info("Green Primary: ({:.4f}, {:.4f})", desc.GreenPrimary[0], desc.GreenPrimary[1]);
-                logger::info("Blue  Primary: ({:.4f}, {:.4f})", desc.BluePrimary[0], desc.BluePrimary[1]);
-                logger::info("White Point:   ({:.4f}, {:.4f})", desc.WhitePoint[0], desc.WhitePoint[1]);
+                logger::info("Red   Primary: ({:.4f}, {:.4f})", displayDesc.RedPrimary[0], displayDesc.RedPrimary[1]);
+                logger::info("Green Primary: ({:.4f}, {:.4f})", displayDesc.GreenPrimary[0], displayDesc.GreenPrimary[1]);
+                logger::info("Blue  Primary: ({:.4f}, {:.4f})", displayDesc.BluePrimary[0], displayDesc.BluePrimary[1]);
+                logger::info("White Point:   ({:.4f}, {:.4f})", displayDesc.WhitePoint[0], displayDesc.WhitePoint[1]);
 
                 // Log luminance values
                 logger::info("Luminance Range:");
-                logger::info("Min Luminance: {:.2f} nits", desc.MinLuminance);
-                logger::info("Max Luminance: {:.2f} nits", desc.MaxLuminance);
+                logger::info("Min Luminance: {:.2f} nits", displayDesc.MinLuminance);
+                logger::info("Max Luminance: {:.2f} nits", displayDesc.MaxLuminance);
 
                 // Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
                 metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
