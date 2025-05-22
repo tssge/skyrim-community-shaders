@@ -435,53 +435,53 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 					return S_OK;
 
 				logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
-	            IDXGIOutput* output = nullptr;
-	            IDXGIOutput6* output6 = nullptr;
-	            DXGI_OUTPUT_DESC1 displayDesc = {};
-	            DXGI_HDR_METADATA_HDR10 metadata = {};
+				IDXGIOutput* output = nullptr;
+				IDXGIOutput6* output6 = nullptr;
+				DXGI_OUTPUT_DESC1 displayDesc = {};
+				DXGI_HDR_METADATA_HDR10 metadata = {};
 
-	            globals::dx12SwapChain->swapChain->GetContainingOutput(&output);
-	            output->QueryInterface(IID_PPV_ARGS(&output6));
-	            output6->GetDesc1(&displayDesc);
+				globals::dx12SwapChain->swapChain->GetContainingOutput(&output);
+				output->QueryInterface(IID_PPV_ARGS(&output6));
+				output6->GetDesc1(&displayDesc);
 
-	            // Log color primaries
-                logger::info("Display Primaries:");
-                logger::info("Red   Primary: ({:.4f}, {:.4f})", displayDesc.RedPrimary[0], displayDesc.RedPrimary[1]);
-                logger::info("Green Primary: ({:.4f}, {:.4f})", displayDesc.GreenPrimary[0], displayDesc.GreenPrimary[1]);
-                logger::info("Blue  Primary: ({:.4f}, {:.4f})", displayDesc.BluePrimary[0], displayDesc.BluePrimary[1]);
-                logger::info("White Point:   ({:.4f}, {:.4f})", displayDesc.WhitePoint[0], displayDesc.WhitePoint[1]);
+				// Log color primaries
+				logger::info("Display Primaries:");
+				logger::info("Red   Primary: ({:.4f}, {:.4f})", displayDesc.RedPrimary[0], displayDesc.RedPrimary[1]);
+				logger::info("Green Primary: ({:.4f}, {:.4f})", displayDesc.GreenPrimary[0], displayDesc.GreenPrimary[1]);
+				logger::info("Blue  Primary: ({:.4f}, {:.4f})", displayDesc.BluePrimary[0], displayDesc.BluePrimary[1]);
+				logger::info("White Point:   ({:.4f}, {:.4f})", displayDesc.WhitePoint[0], displayDesc.WhitePoint[1]);
 
-                // Log luminance values
-                logger::info("Luminance Range:");
-                logger::info("Min Luminance: {:.2f} nits", displayDesc.MinLuminance);
-                logger::info("Max Luminance: {:.2f} nits", displayDesc.MaxLuminance);
+				// Log luminance values
+				logger::info("Luminance Range:");
+				logger::info("Min Luminance: {:.2f} nits", displayDesc.MinLuminance);
+				logger::info("Max Luminance: {:.2f} nits", displayDesc.MaxLuminance);
 
-                // Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
-                metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
-                metadata.RedPrimary[1] = static_cast<UINT16>(displayDesc.RedPrimary[1] * 50000);
+				// Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
+				metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
+				metadata.RedPrimary[1] = static_cast<UINT16>(displayDesc.RedPrimary[1] * 50000);
 
-                metadata.GreenPrimary[0] = static_cast<UINT16>(displayDesc.GreenPrimary[0] * 50000);
-                metadata.GreenPrimary[1] = static_cast<UINT16>(displayDesc.GreenPrimary[1] * 50000);
+				metadata.GreenPrimary[0] = static_cast<UINT16>(displayDesc.GreenPrimary[0] * 50000);
+				metadata.GreenPrimary[1] = static_cast<UINT16>(displayDesc.GreenPrimary[1] * 50000);
 
-                metadata.BluePrimary[0] = static_cast<UINT16>(displayDesc.BluePrimary[0] * 50000);
-                metadata.BluePrimary[1] = static_cast<UINT16>(displayDesc.BluePrimary[1] * 50000);
+				metadata.BluePrimary[0] = static_cast<UINT16>(displayDesc.BluePrimary[0] * 50000);
+				metadata.BluePrimary[1] = static_cast<UINT16>(displayDesc.BluePrimary[1] * 50000);
 
-                metadata.WhitePoint[0] = static_cast<UINT16>(displayDesc.WhitePoint[0] * 50000);
-                metadata.WhitePoint[1] = static_cast<UINT16>(displayDesc.WhitePoint[1] * 50000);
+				metadata.WhitePoint[0] = static_cast<UINT16>(displayDesc.WhitePoint[0] * 50000);
+				metadata.WhitePoint[1] = static_cast<UINT16>(displayDesc.WhitePoint[1] * 50000);
 
-                // Convert luminance values (metadata needs values in tenths of a nit)
-                metadata.MaxMasteringLuminance = static_cast<UINT>(displayDesc.MaxLuminance * 10000);
-                metadata.MinMasteringLuminance = static_cast<UINT>(displayDesc.MinLuminance * 10000);
+				// Convert luminance values (metadata needs values in tenths of a nit)
+				metadata.MaxMasteringLuminance = static_cast<UINT>(displayDesc.MaxLuminance * 10000);
+				metadata.MinMasteringLuminance = static_cast<UINT>(displayDesc.MinLuminance * 10000);
 
-                // Set content light levels (these are in actual nits)
-                metadata.MaxContentLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance);
-                metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance / 2); // Common practice to use half
+				// Set content light levels (these are in actual nits)
+				metadata.MaxContentLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance);
+				metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance / 2);  // Common practice to use half
 
-	            globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-	            globals::dx12SwapChain->swapChain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(metadata), &metadata);
+				globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+				globals::dx12SwapChain->swapChain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(metadata), &metadata);
 
-	            output6->Release();
-	            output->Release();
+				output6->Release();
+				output->Release();
 
 				return S_OK;
 			} else {
