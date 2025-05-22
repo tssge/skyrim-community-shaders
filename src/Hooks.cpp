@@ -461,8 +461,13 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
 		IDXGISwapChain4* swapChain4 = nullptr;
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
-			// Set HDR colorspace
-			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+
+			if(!shouldProxy) {
+				// Set DX11 HDR colorspace only when DX12 proxy is not in use
+				//
+				// Otherwise, if both swapchains have PQ set, double PQ transformation will happen
+				swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+			}
 
 			// Configure the default tonemapper
 			DXGI_HDR_METADATA_HDR10 metadata = {};
