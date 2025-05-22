@@ -390,7 +390,7 @@ void ScreenSpaceGI::SetupResources()
 
 		uavDesc.Texture2D.MipSlice = 0;
 		texDesc.MipLevels = srvDesc.Texture2D.MipLevels = 1;
-		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
+		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		{
 			texIlY[0] = eastl::make_unique<Texture2D>(texDesc);
 			texIlY[0]->CreateSRV(srvDesc);
@@ -438,7 +438,7 @@ void ScreenSpaceGI::SetupResources()
 			texAccumFrames[1]->CreateUAV(uavDesc);
 		}
 
-		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
 		{
 			texPrevGeo = eastl::make_unique<Texture2D>(texDesc);
 			texPrevGeo->CreateSRV(srvDesc);

@@ -97,7 +97,7 @@ void Deferred::SetupResources()
 		// Albedo
 		SetupRenderTarget(ALBEDO, texDesc, srvDesc, rtvDesc, uavDesc, globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		// Specular
-		SetupRenderTarget(SPECULAR, texDesc, srvDesc, rtvDesc, uavDesc, DXGI_FORMAT_R11G11B10_FLOAT, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
+		SetupRenderTarget(SPECULAR, texDesc, srvDesc, rtvDesc, uavDesc, globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R11G11B10_FLOAT), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		// Reflectance
 		SetupRenderTarget(REFLECTANCE, texDesc, srvDesc, rtvDesc, uavDesc, globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE);
 		// Normal + Roughness
