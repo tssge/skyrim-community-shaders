@@ -598,7 +598,115 @@ void Menu::DrawGeneralSettings()
 				ImGui::Text("Skips a shader being replaced if it hasn't been compiled yet. Also makes compilation blazingly fast!");
 			}
 
+			bool useHdrRendering = globals::state->IsHdrRendering();
+			ImGui::TableNextColumn();
+			if (ImGui::Checkbox("Enable HDR", &useHdrRendering)) {
+				globals::state->SetHdrRendering(useHdrRendering);
+			}
+			if (auto _tt = Util::HoverTooltipWrapper()) {
+				ImGui::Text("Vittu meni ikuisuus koodata -tssge");
+			}
+
 			ImGui::EndTable();
+		}
+
+		ImGui::Spacing();
+
+		// Get buffer description
+		DXGI_SWAP_CHAIN_DESC swapChainDesc;
+		globals::d3d::swapChain->GetDesc(&swapChainDesc);
+
+		ImGui::Text("Buffer format: %s",
+			swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R8G8B8A8_UNORM     ? "RGBA8_UNORM" :
+			swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM  ? "RGB10A2_UNORM" :
+			swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R16G16B16A16_FLOAT ? "RGBA16_FLOAT" :
+																				"Other");
+		ImGui::Text("Buffer size: %dx%d",
+			swapChainDesc.BufferDesc.Width,
+			swapChainDesc.BufferDesc.Height);
+		ImGui::Text("Buffer count: %d", swapChainDesc.BufferCount);
+		ImGui::Text("Refresh rate: %d/%d Hz",
+			swapChainDesc.BufferDesc.RefreshRate.Numerator,
+			swapChainDesc.BufferDesc.RefreshRate.Denominator);
+
+		// Check VRR
+		BOOL allowTearing = FALSE;
+		if (IDXGIFactory5* factory = nullptr; SUCCEEDED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) {
+			factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
+			factory->Release();
+		}
+		ImGui::Text("VRR Support: %s", allowTearing ? "Yes" : "No");
+
+		// Get HDR metadata and display capabilities
+		if (IDXGISwapChain4* swapChain4 = nullptr;
+			SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
+			ImGui::Spacing();
+
+			// Get display capabilities
+			IDXGIOutput* output = nullptr;
+			if (SUCCEEDED(globals::d3d::swapChain->GetContainingOutput(&output))) {
+				IDXGIOutput6* output6 = nullptr;
+				if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(&output6)))) {
+					DXGI_OUTPUT_DESC1 desc1;
+					if (SUCCEEDED(output6->GetDesc1(&desc1))) {
+						ImGui::Spacing();
+						ImGui::Text("Display Capabilities:");
+						ImGui::Text("HDR Support: %s", desc1.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 ? "Yes" : "No");
+						ImGui::Text("Display Max Luminance: %.2f nits", desc1.MaxLuminance);
+						ImGui::Text("Display Min Luminance: %.2f nits", desc1.MinLuminance);
+						ImGui::Text("Max Full Frame Luminance: %.2f nits", desc1.MaxFullFrameLuminance);
+
+						const char* bpcStr = "Unknown";
+						switch (desc1.BitsPerColor) {
+						case 8:
+							bpcStr = "8-bit";
+							break;
+						case 10:
+							bpcStr = "10-bit";
+							break;
+						case 12:
+							bpcStr = "12-bit";
+							break;
+						case 16:
+							bpcStr = "16-bit";
+							break;
+						}
+						ImGui::Text("Bits Per Channel: %s", bpcStr);
+					}
+					output6->Release();
+				}
+				output->Release();
+			}
+
+			swapChain4->Release();
+		}
+
+		// D3D12 Proxy Section
+		ImGui::Spacing();
+		ImGui::Text("D3D12 Proxy Swapchain Info:");
+
+		if (DX12SwapChain* dx12 = DX12SwapChain::GetSingleton()) {
+			if (dx12->swapChain) {
+				DXGI_SWAP_CHAIN_DESC1 desc12 = dx12->swapChainDesc;  // Using the stored desc
+
+				ImGui::Text("Buffer format: %s",
+					desc12.Format == DXGI_FORMAT_R8G8B8A8_UNORM     ? "RGBA8_UNORM" :
+					desc12.Format == DXGI_FORMAT_R10G10B10A2_UNORM  ? "RGB10A2_UNORM" :
+					desc12.Format == DXGI_FORMAT_R16G16B16A16_FLOAT ? "RGBA16_FLOAT" :
+																	  "Other");
+				ImGui::Text("Buffer size: %dx%d", desc12.Width, desc12.Height);
+				ImGui::Text("Buffer count: %d", desc12.BufferCount);
+
+				// Add refresh rate info if available
+				if (dx12->refreshRate > 0) {
+					ImGui::Text("Refresh Rate: %.2f Hz", dx12->refreshRate);
+				}
+
+			} else {
+				ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "DX12 swapchain not initialized");
+			}
+		} else {
+			ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "DX12 proxy not available");
 		}
 	}
 

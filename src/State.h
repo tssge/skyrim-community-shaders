@@ -42,6 +42,7 @@ public:
 	const std::string defaultConfigPath = "Data\\SKSE\\Plugins\\CommunityShaders\\SettingsDefault.json";
 
 	bool upscalerLoaded = false;
+	bool isHdrRendering = true;
 
 	float timer = 0;
 
@@ -96,6 +97,11 @@ public:
      * @return Whether in developer mode.
      */
 	bool IsDeveloperMode();
+
+	// HDR stuff
+	DXGI_FORMAT UpgradeDxgiFormat(DXGI_FORMAT original) const;
+	bool IsHdrRendering() const;
+	void SetHdrRendering(bool value);
 
 	void ModifyRenderTarget(RE::RENDER_TARGETS::RENDER_TARGET a_targetIndex, RE::BSGraphics::RenderTargetProperties* a_properties);
 

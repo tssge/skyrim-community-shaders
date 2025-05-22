@@ -322,7 +322,6 @@ namespace SIE
 		void SetAsync(bool value);
 		bool IsDump() const;
 		void SetDump(bool value);
-
 		bool IsDiskCache() const;
 		void SetDiskCache(bool value);
 		void DeleteDiskCache();
@@ -660,6 +659,7 @@ namespace SIE
 		bool isEnabled = true;
 		bool isDiskCache = true;
 		bool isAsync = true;
+		bool isHdrRendering = true;
 		bool isDump = false;
 		bool hideError = false;
 		bool useFileWatcher = false;

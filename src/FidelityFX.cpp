@@ -178,6 +178,12 @@ void FidelityFX::CreateFSRResources()
 	contextDescription.flags = FFX_FSR3_ENABLE_UPSCALING_ONLY | FFX_FSR3_ENABLE_AUTO_EXPOSURE;
 	contextDescription.backBufferFormat = FFX_SURFACE_FORMAT_R8G8B8A8_UNORM;
 
+	if (globals::state->IsHdrRendering()) {
+		logger::info("[FidelityFX] Enabling HDR rendering");
+		contextDescription.flags |= FFX_FSR3_ENABLE_HIGH_DYNAMIC_RANGE;
+		contextDescription.backBufferFormat = FFX_SURFACE_FORMAT_R10G10B10A2_UNORM;
+	}
+
 	contextDescription.backendInterfaceUpscaling = fsrInterface;
 
 	if (ffxFsr3ContextCreate(&fsrContext, &contextDescription) != FFX_OK)

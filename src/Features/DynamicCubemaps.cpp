@@ -52,7 +52,7 @@ void DynamicCubemaps::DrawSettings()
 					auto context = globals::d3d::context;
 
 					D3D11_TEXTURE2D_DESC texDesc{};
-					texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+					texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
 					texDesc.Height = 1;
 					texDesc.Width = 1;
 					texDesc.ArraySize = 6;

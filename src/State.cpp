@@ -245,6 +245,9 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 
 			if (general["Enable Async"].is_boolean())
 				shaderCache->SetAsync(general["Enable Async"]);
+
+			if (general["Enable Hdr Rendering"].is_boolean())
+				globals::state->SetHdrRendering(general["Enable Hdr Rendering"]);
 		}
 
 		if (settings["Replace Original Shaders"].is_object()) {
@@ -368,6 +371,7 @@ void State::Save(ConfigMode a_configMode)
 	general["Enable Shaders"] = shaderCache->IsEnabled();
 	general["Enable Disk Cache"] = shaderCache->IsDiskCache();
 	general["Enable Async"] = shaderCache->IsAsync();
+	general["Enable Hdr Rendering"] = globals::state->IsHdrRendering();
 
 	settings["General"] = general;
 
@@ -777,8 +781,15 @@ void State::SetupReShade()
 		reshade::api::resource reShadeSwapChainResource = reShadeDevice->get_resource_from_view(reshade::api::resource_view{ reinterpret_cast<uintptr_t>(swapChainRTV) });
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
-		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
-		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 1), 0, 1, 0, 1), &reshadeSwapChainRTVsRGB);
+		if (globals::state->IsHdrRendering()) {
+			reShadeSwapChainDesc.texture.format = reshade::api::format::r10g10b10a2_unorm;
+			reShadeRuntime->set_color_space(reshade::api::color_space::hdr10_st2084);
+		}
+
+		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target,
+			reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
+		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target,
+			reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 1), 0, 1, 0, 1), &reshadeSwapChainRTVsRGB);
 
 		auto& depth = globals::game::renderer->GetDepthStencilData().depthStencils[RE::RENDER_TARGETS_DEPTHSTENCIL::kPOST_ZPREPASS_COPY];
 
@@ -804,4 +815,24 @@ void State::RenderReShade()
 void State::PresentReShade()
 {
 	reshade::update_and_present_effect_runtime(reShadeRuntime);
+}
+
+// HDR stuff
+bool State::IsHdrRendering() const
+{
+	return isHdrRendering;
+}
+
+void State::SetHdrRendering(bool value)
+{
+	isHdrRendering = value;
+}
+
+DXGI_FORMAT State::UpgradeDxgiFormat(DXGI_FORMAT original) const
+{
+	if (!isHdrRendering)
+		return original;
+
+	// Only one format for now, add conditial upgrades if needed
+	return DXGI_FORMAT_R16G16B16A16_FLOAT;
 }

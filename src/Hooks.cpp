@@ -360,6 +360,13 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		if (streamline->featureDLSSG) {
 			logger::info("[Frame Generation] Using D3D12 proxy via Streamline");
 
+			if (globals::state->IsHdrRendering()) {
+				logger::info("[Streamline] Enabling 10bit swapchain");
+				pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+				logger::info("[Streamline] Enabling BT.2020 ST2084 (PQ) HDR colorspace");
+				pSwapChainDesc->BufferDesc.ColorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+			}
+
 			auto ret = streamline->slD3D11CreateDeviceAndSwapChain(pAdapter,
 				DriverType,
 				Software,
@@ -434,6 +441,13 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		}
 	}
 
+	if (globals::state->IsHdrRendering()) {
+		logger::info("[Hooks] Enabling 10bit swapchain");
+		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		logger::info("[Hooks] Enabling HDR colorspace");
+		pSwapChainDesc->BufferDesc.ColorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+	}
+
 	auto ret = ptrD3D11CreateDeviceAndSwapChain(pAdapter,
 		DriverType,
 		Software,
@@ -447,7 +461,63 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		pFeatureLevel,
 		ppImmediateContext);
 
+	if (globals::state->IsHdrRendering()) {
+    	logger::info("[Hooks] Setting HDR metadata");
+    	IDXGISwapChain4* swapChain4 = nullptr;
+    	IDXGIOutput* output = nullptr;
+    	IDXGIOutput6* output6 = nullptr;
+    	DXGI_OUTPUT_DESC1 displayDesc = {};
+    	DXGI_HDR_METADATA_HDR10 metadata = {};
+
+        if (SUCCEEDED((*ppSwapChain)->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
+            swapChain4->GetContainingOutput(&output);
+    	    output->QueryInterface(IID_PPV_ARGS(&output6));
+    	    output6->GetDesc1(&displayDesc);
+
+    	    // Log color primaries
+    	    logger::info("Display Color Primaries:");
+    	    logger::info("Red   Primary: ({:.4f}, {:.4f})", displayDesc.RedPrimary[0], displayDesc.RedPrimary[1]);
+    	    logger::info("Green Primary: ({:.4f}, {:.4f})", displayDesc.GreenPrimary[0], displayDesc.GreenPrimary[1]);
+    	    logger::info("Blue  Primary: ({:.4f}, {:.4f})", displayDesc.BluePrimary[0], displayDesc.BluePrimary[1]);
+    	    logger::info("White Point:   ({:.4f}, {:.4f})", displayDesc.WhitePoint[0], displayDesc.WhitePoint[1]);
+
+    	    // Log luminance values
+    	    logger::info("Display Luminance Range:");
+    	    logger::info("Min Luminance: {:.2f} nits", displayDesc.MinLuminance);
+    	    logger::info("Max Luminance: {:.2f} nits", displayDesc.MaxLuminance);
+    		logger::info("MaxFullFrameLuminance: {:.2f} nits", displayDesc.MaxFullFrameLuminance);
+
+    	    // Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
+    	    metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
+    	    metadata.RedPrimary[1] = static_cast<UINT16>(displayDesc.RedPrimary[1] * 50000);
+
+    	    metadata.GreenPrimary[0] = static_cast<UINT16>(displayDesc.GreenPrimary[0] * 50000);
+    	    metadata.GreenPrimary[1] = static_cast<UINT16>(displayDesc.GreenPrimary[1] * 50000);
+
+    	    metadata.BluePrimary[0] = static_cast<UINT16>(displayDesc.BluePrimary[0] * 50000);
+    	    metadata.BluePrimary[1] = static_cast<UINT16>(displayDesc.BluePrimary[1] * 50000);
+
+    	    metadata.WhitePoint[0] = static_cast<UINT16>(displayDesc.WhitePoint[0] * 50000);
+    	    metadata.WhitePoint[1] = static_cast<UINT16>(displayDesc.WhitePoint[1] * 50000);
+
+    	    metadata.MaxMasteringLuminance = 1000; // Pulled out of my ass, 10 times the SDR, whole nits
+    	    metadata.MinMasteringLuminance = 1000; // 0.1 nits = 1000 * 0.0001, black is black, 1/10000th of a nit
+
+    	    // Set content light levels (these are in actual nits)
+    	    metadata.MaxContentLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance);
+    	    metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(displayDesc.MaxFullFrameLuminance);
+
+    	    swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+    	    swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(metadata), &metadata);
+
+    		output6->Release();
+    		output->Release();
+    		swapChain4->Release();
+    	}
+	}
+
 	if (streamline->initialized) {
+		logger::info("[Hooks] Setting Streamline D3D device");
 		streamline->slSetD3DDevice(*ppDevice);
 		streamline->PostDevice();
 	}
@@ -563,9 +633,96 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy2
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRBlurSwap
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRDownsample
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation0
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation1
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::state->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -958,6 +1115,12 @@ namespace Hooks
 
 		logger::info("Hooking BSShaderRenderTargets::Create::CreateRenderTarget(s)");
 		stl::write_thunk_call<CreateRenderTarget_Main>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x3F0, 0x3F3, 0x548));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x62F, 0x62E));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy2>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x642, 0x641));
+		stl::write_thunk_call<CreateRenderTarget_LDRBlurSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x529, 0x528));
+		stl::write_thunk_call<CreateRenderTarget_LDRDownsample>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xB2E, 0xB2E));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation0>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE68, 0xE6A));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation1>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE7E, 0xE80));
 		stl::write_thunk_call<CreateRenderTarget_Normals>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x458, 0x45B, 0x5B0));
 		stl::write_thunk_call<CreateRenderTarget_NormalsSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x46B, 0x46E, 0x5C3));
 		stl::write_thunk_call<CreateRenderTarget_Snow>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x406, 0x409, 0x55e));
