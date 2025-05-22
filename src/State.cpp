@@ -834,5 +834,5 @@ DXGI_FORMAT State::UpgradeDxgiFormat(DXGI_FORMAT original) const
 		return original;
 
 	// Only one format for now, add conditial upgrades if needed
-	return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	return DXGI_FORMAT_R10G10B10A2_UNORM;
 }

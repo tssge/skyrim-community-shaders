@@ -364,7 +364,7 @@ void ScreenSpaceGI::SetupResources()
 
 		auto mainTex = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
 		mainTex.texture->GetDesc(&texDesc);
-		srvDesc.Format = uavDesc.Format = texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R11G11B10_FLOAT);
+		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
 		texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 		texDesc.MipLevels = srvDesc.Texture2D.MipLevels = 5;
 		texDesc.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
@@ -390,7 +390,7 @@ void ScreenSpaceGI::SetupResources()
 
 		uavDesc.Texture2D.MipSlice = 0;
 		texDesc.MipLevels = srvDesc.Texture2D.MipLevels = 1;
-		srvDesc.Format = uavDesc.Format = texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R11G11B10_FLOAT);
+		srvDesc.Format = uavDesc.Format = texDesc.Format = DXGI_FORMAT_R11G11B10_FLOAT;
 		{
 			texIlY[0] = eastl::make_unique<Texture2D>(texDesc);
 			texIlY[0]->CreateSRV(srvDesc);
