@@ -1,6 +1,8 @@
 #pragma once
 
 #include <dxgi1_4.h>
+#include <dxgi1_6.h>    // For advanced DXGI features
+#include <d3d11.h>      // For D3D11 types
 
 using namespace std::chrono;
 #define BUFFER_VIEWER_NODE(a_value, a_scale)                                                                 \

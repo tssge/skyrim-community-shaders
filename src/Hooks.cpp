@@ -300,6 +300,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
 	if (globals::state->IsHdrRendering()) {
+		logger::info("[D3D11] Enabling 16bit swapchain");
 		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	}
 
@@ -457,13 +458,11 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	}
 
 	if (*ppSwapChain && globals::state->IsHdrRendering()) {
+		logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
 		IDXGISwapChain4* swapChain4 = nullptr;
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
-			// Traditionally color space would be set to HDR10 equivalent, however as we do no tonemapping in-engine,
-			// we use scRGB as the format and thus Rec. 709 primaries
-			//
-			// Tonemapping is performed either by the compositor or other system components into PQ
-			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709);
+			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+			swapChain4->SetHDRMetadataAndColorspace();
 			swapChain4->Release();
 		}
 	}
