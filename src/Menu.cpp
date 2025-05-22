@@ -611,38 +611,11 @@ void Menu::DrawGeneralSettings()
 		}
 
 		ImGui::Spacing();
-        // Output information about directx HDR support with imgui eg. current colorspace of swapchains, buffer sizes and so on
-
-        // Get colorspace information
-        DXGI_COLOR_SPACE_TYPE colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
-        if (IDXGISwapChain3* swapChain3 = nullptr;
-            SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain3), (void**)&swapChain3))) {
-            colorSpace = swapChain3->GetColorSpace1();
-            swapChain3->Release();
-        }
 
         // Get buffer description
         DXGI_SWAP_CHAIN_DESC swapChainDesc;
         globals::d3d::swapChain->GetDesc(&swapChainDesc);
 
-        const char* GetDetailedColorSpaceStr(DXGI_COLOR_SPACE_TYPE colorSpace) {
-            switch (colorSpace) {
-                case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
-                    return "sRGB (Rec.709, Gamma 2.2)";
-                case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
-                    return "HDR10 (Rec.2020, PQ curve)";
-                case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
-                    return "Linear RGB/scRGB (Rec.709, Linear)";
-                case DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020:
-                    return "HDR10 Studio (Rec.2020, PQ curve, Studio Range)";
-                case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709:
-                    return "Studio sRGB (Rec.709, Gamma 2.2, Studio Range)";
-                default:
-                    return "Unknown";
-            }
-        }
-
-        ImGui::Text("D3D11 Swapchain colorspace: %s", GetDetailedColorSpaceStr(colorSpace));
         ImGui::Text("Buffer format: %s",
             swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R8G8B8A8_UNORM ? "RGBA8_UNORM" :
             swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM ? "RGB10A2_UNORM" :
@@ -668,32 +641,6 @@ void Menu::DrawGeneralSettings()
             SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
 
             ImGui::Spacing();
-            ImGui::Text("HDR Metadata:");
-            DXGI_HDR_METADATA_HDR10 hdrMetadata;
-            if (SUCCEEDED(swapChain4->GetHDRMetaData1(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
-                ImGui::Text("MaxMasteringLuminance: %.2f nits", hdrMetadata.MaxMasteringLuminance / 10000.0f);
-                ImGui::Text("MinMasteringLuminance: %.2f nits", hdrMetadata.MinMasteringLuminance / 10000.0f);
-                ImGui::Text("MaxContentLightLevel: %d nits", hdrMetadata.MaxContentLightLevel);
-                ImGui::Text("MaxFrameAverageLightLevel: %d nits", hdrMetadata.MaxFrameAverageLightLevel);
-
-                if (ImGui::TreeNode("Color Primaries")) {
-                    ImGui::Text("Red Primary: (%.3f, %.3f)",
-                        hdrMetadata.RedPrimary[0] / 50000.0f,
-                        hdrMetadata.RedPrimary[1] / 50000.0f);
-                    ImGui::Text("Green Primary: (%.3f, %.3f)",
-                        hdrMetadata.GreenPrimary[0] / 50000.0f,
-                        hdrMetadata.GreenPrimary[1] / 50000.0f);
-                    ImGui::Text("Blue Primary: (%.3f, %.3f)",
-                        hdrMetadata.BluePrimary[0] / 50000.0f,
-                        hdrMetadata.BluePrimary[1] / 50000.0f);
-                    ImGui::Text("White Point: (%.3f, %.3f)",
-                        hdrMetadata.WhitePoint[0] / 50000.0f,
-                        hdrMetadata.WhitePoint[1] / 50000.0f);
-                    ImGui::TreePop();
-                }
-            } else {
-                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HDR metadata not available");
-            }
 
             // Get display capabilities
             IDXGIOutput* output = nullptr;
@@ -734,52 +681,12 @@ void Menu::DrawGeneralSettings()
             if (dx12->swapChain) {
                 DXGI_SWAP_CHAIN_DESC1 desc12 = dx12->swapChainDesc; // Using the stored desc
 
-                // Get colorspace using swapChain member directly
-                if (IDXGISwapChain3* swapChain3 = nullptr;
-                    SUCCEEDED(dx12->swapChain->QueryInterface(__uuidof(IDXGISwapChain3), (void**)&swapChain3))) {
-                    DXGI_COLOR_SPACE_TYPE colorSpace12 = swapChain3->GetColorSpace1();
-                    ImGui::Text("Colorspace: %s", GetDetailedColorSpaceStr(colorSpace12));
-                    swapChain3->Release();
-                }
-
                 ImGui::Text("Buffer format: %s",
                     desc12.Format == DXGI_FORMAT_R8G8B8A8_UNORM ? "RGBA8_UNORM" :
                     desc12.Format == DXGI_FORMAT_R10G10B10A2_UNORM ? "RGB10A2_UNORM" :
                     desc12.Format == DXGI_FORMAT_R16G16B16A16_FLOAT ? "RGBA16_FLOAT" : "Other");
                 ImGui::Text("Buffer size: %dx%d", desc12.Width, desc12.Height);
                 ImGui::Text("Buffer count: %d", desc12.BufferCount);
-
-                // Get HDR metadata if available
-                if (IDXGISwapChain4* swapChain4 = nullptr;
-                    SUCCEEDED(dx12->swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
-
-                    DXGI_HDR_METADATA_HDR10 hdrMetadata;
-                    if (SUCCEEDED(swapChain4->GetHDRMetaData1(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
-                        ImGui::Spacing();
-                        ImGui::Text("HDR Metadata:");
-                        ImGui::Text("MaxMasteringLuminance: %.2f nits", hdrMetadata.MaxMasteringLuminance / 10000.0f);
-                        ImGui::Text("MinMasteringLuminance: %.2f nits", hdrMetadata.MinMasteringLuminance / 10000.0f);
-                        ImGui::Text("MaxContentLightLevel: %d nits", hdrMetadata.MaxContentLightLevel);
-                        ImGui::Text("MaxFrameAverageLightLevel: %d nits", hdrMetadata.MaxFrameAverageLightLevel);
-
-                        if (ImGui::TreeNode("Color Primaries##DX12")) {
-                            ImGui::Text("Red Primary: (%.3f, %.3f)",
-                                hdrMetadata.RedPrimary[0] / 50000.0f,
-                                hdrMetadata.RedPrimary[1] / 50000.0f);
-                            ImGui::Text("Green Primary: (%.3f, %.3f)",
-                                hdrMetadata.GreenPrimary[0] / 50000.0f,
-                                hdrMetadata.GreenPrimary[1] / 50000.0f);
-                            ImGui::Text("Blue Primary: (%.3f, %.3f)",
-                                hdrMetadata.BluePrimary[0] / 50000.0f,
-                                hdrMetadata.BluePrimary[1] / 50000.0f);
-                            ImGui::Text("White Point: (%.3f, %.3f)",
-                                hdrMetadata.WhitePoint[0] / 50000.0f,
-                                hdrMetadata.WhitePoint[1] / 50000.0f);
-                            ImGui::TreePop();
-                        }
-                    }
-                    swapChain4->Release();
-                }
 
                 // Add refresh rate info if available
                 if (dx12->refreshRate > 0) {

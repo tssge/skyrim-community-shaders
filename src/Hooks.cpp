@@ -467,16 +467,16 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
             // Configure the default tonemapper
             DXGI_HDR_METADATA_HDR10 metadata = {};
 
-            // Display primaries in CIE xy coordinates
-            // Using standard BT.2020 primaries
-            metadata.RedPrimary[0] = 0.708 * 50000;   // x coordinate
-            metadata.RedPrimary[1] = 0.292 * 50000;   // y coordinate
-            metadata.GreenPrimary[0] = 0.170 * 50000; // x coordinate
-            metadata.GreenPrimary[1] = 0.797 * 50000; // y coordinate
-            metadata.BluePrimary[0] = 0.131 * 50000;  // x coordinate
-            metadata.BluePrimary[1] = 0.046 * 50000;  // y coordinate
-            metadata.WhitePoint[0] = 0.3127 * 50000;  // x coordinate
-            metadata.WhitePoint[1] = 0.3290 * 50000;  // y coordinate
+            // BT.2020 primaries from ITU-R specification
+            metadata.RedPrimary[0] = static_cast<UINT16>(0.708 * 50000);
+            metadata.RedPrimary[1] = static_cast<UINT16>(0.292 * 50000);
+            metadata.GreenPrimary[0] = static_cast<UINT16>(0.170 * 50000);
+            metadata.GreenPrimary[1] = static_cast<UINT16>(0.797 * 50000);
+            metadata.BluePrimary[0] = static_cast<UINT16>(0.131 * 50000);
+            metadata.BluePrimary[1] = static_cast<UINT16>(0.046 * 50000);
+            metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+            metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+
 
             // Set luminance values
             metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits peak luminance
