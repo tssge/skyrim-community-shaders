@@ -457,73 +457,60 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
-	if (*ppSwapChain && globals::state->IsHdrRendering()) {
-		logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
-		IDXGISwapChain4* swapChain4 = nullptr;
-		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
-			if (!shouldProxy) {
-				// Set DX11 HDR colorspace only when DX12 proxy is not in use
-				//
-				// Otherwise, if both swapchains have PQ set, double PQ transformation will happen
-				swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-			}
+	if (!globals::state->IsHdrRendering())
+		return ret;
 
-			// Configure the default tonemapper
-			DXGI_HDR_METADATA_HDR10 metadata = {};
+	if (!globals::dx12SwapChain->swapChain)
+		return ret;
 
-			// BT.2020 primaries from ITU-R specification
-			metadata.RedPrimary[0] = static_cast<UINT16>(0.708 * 50000);
-			metadata.RedPrimary[1] = static_cast<UINT16>(0.292 * 50000);
-			metadata.GreenPrimary[0] = static_cast<UINT16>(0.170 * 50000);
-			metadata.GreenPrimary[1] = static_cast<UINT16>(0.797 * 50000);
-			metadata.BluePrimary[0] = static_cast<UINT16>(0.131 * 50000);
-			metadata.BluePrimary[1] = static_cast<UINT16>(0.046 * 50000);
-			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
-			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+	logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
+	IDXGIOutput* output = nullptr;
+	IDXGIOutput6* output6 = nullptr;
+	DXGI_OUTPUT_DESC1 displayDesc = {};
+	DXGI_HDR_METADATA_HDR10 metadata = {};
 
-			// Set luminance values
-			metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits peak luminance
-			metadata.MinMasteringLuminance = 100;           // 0.01 nits minimum luminance
+	globals::dx12SwapChain->swapChain->GetContainingOutput(&output);
+	output->QueryInterface(IID_PPV_ARGS(&output6));
+	output6->GetDesc1(&displayDesc);
 
-			// Content light level information
-			metadata.MaxContentLightLevel = 1000;      // Maximum content light level in nits
-			metadata.MaxFrameAverageLightLevel = 400;  // Maximum frame-average light level in nits
+	// Log color primaries
+    logger::info("Display Primaries:");
+    logger::info("Red   Primary: ({:.4f}, {:.4f})", desc.RedPrimary[0], desc.RedPrimary[1]);
+    logger::info("Green Primary: ({:.4f}, {:.4f})", desc.GreenPrimary[0], desc.GreenPrimary[1]);
+    logger::info("Blue  Primary: ({:.4f}, {:.4f})", desc.BluePrimary[0], desc.BluePrimary[1]);
+    logger::info("White Point:   ({:.4f}, {:.4f})", desc.WhitePoint[0], desc.WhitePoint[1]);
 
-			swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
-				sizeof(metadata),
-				&metadata);
+    // Log luminance values
+    logger::info("Luminance Range:");
+    logger::info("Min Luminance: {:.2f} nits", desc.MinLuminance);
+    logger::info("Max Luminance: {:.2f} nits", desc.MaxLuminance);
 
-			// Get the output and check its actual HDR capabilities
-			IDXGIOutput* output = nullptr;
-			if (SUCCEEDED(swapChain4->GetContainingOutput(&output))) {
-				IDXGIOutput6* output6 = nullptr;
-				if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(&output6)))) {
-					DXGI_OUTPUT_DESC1 desc1;
-					if (SUCCEEDED(output6->GetDesc1(&desc1))) {
-						// Log the actual display capabilities
-						logger::info("[HDR] Display MaxLuminance: {}",
-							desc1.MaxLuminance);
-						logger::info("[HDR] Display MinLuminance: {}",
-							desc1.MinLuminance);
+    // Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
+    metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
+    metadata.RedPrimary[1] = static_cast<UINT16>(displayDesc.RedPrimary[1] * 50000);
 
-						// Optionally adjust metadata based on actual display capabilities
-						if (desc1.MaxLuminance < (metadata.MaxMasteringLuminance / 10000.0f)) {
-							metadata.MaxMasteringLuminance =
-								static_cast<UINT>(desc1.MaxLuminance * 10000);
-							// Update metadata with display-specific values
-							swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
-								sizeof(metadata),
-								&metadata);
-						}
-					}
-					output6->Release();
-				}
-				output->Release();
-			}
+    metadata.GreenPrimary[0] = static_cast<UINT16>(displayDesc.GreenPrimary[0] * 50000);
+    metadata.GreenPrimary[1] = static_cast<UINT16>(displayDesc.GreenPrimary[1] * 50000);
 
-			swapChain4->Release();
-		}
-	}
+    metadata.BluePrimary[0] = static_cast<UINT16>(displayDesc.BluePrimary[0] * 50000);
+    metadata.BluePrimary[1] = static_cast<UINT16>(displayDesc.BluePrimary[1] * 50000);
+
+    metadata.WhitePoint[0] = static_cast<UINT16>(displayDesc.WhitePoint[0] * 50000);
+    metadata.WhitePoint[1] = static_cast<UINT16>(displayDesc.WhitePoint[1] * 50000);
+
+    // Convert luminance values (metadata needs values in tenths of a nit)
+    metadata.MaxMasteringLuminance = static_cast<UINT>(displayDesc.MaxLuminance * 10000);
+    metadata.MinMasteringLuminance = static_cast<UINT>(displayDesc.MinLuminance * 10000);
+
+    // Set content light levels (these are in actual nits)
+    metadata.MaxContentLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance);
+    metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance / 2); // Common practice to use half
+
+	globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+	globals::dx12SwapChain->swapChain->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(metadata), &metadata);
+
+	output6->Release();
+	output->Release();
 
 	return ret;
 }
