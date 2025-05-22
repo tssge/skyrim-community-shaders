@@ -603,7 +603,6 @@ void Upscaling::CreateFrameGenerationResources()
 	{
 		if (globals::state->IsHdrRendering() && globals::dx12SwapChain->swapChain) {
 			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
-			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetadataAndColorspace());
 		}
 	}
 

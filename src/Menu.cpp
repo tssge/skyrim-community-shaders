@@ -616,8 +616,8 @@ void Menu::DrawGeneralSettings()
         // Get colorspace information
         DXGI_COLOR_SPACE_TYPE colorSpace = DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709;
         if (IDXGISwapChain3* swapChain3 = nullptr;
-			SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain3), (void**)&swapChain3))) {
-            colorSpace = swapChain3->GetColorSpace();
+            SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain3), (void**)&swapChain3))) {
+            colorSpace = swapChain3->GetColorSpace1();
             swapChain3->Release();
         }
 
@@ -625,22 +625,24 @@ void Menu::DrawGeneralSettings()
         DXGI_SWAP_CHAIN_DESC swapChainDesc;
         globals::d3d::swapChain->GetDesc(&swapChainDesc);
 
-        const char* colorSpaceStr;
-        switch (colorSpace) {
-            case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
-                colorSpaceStr = "sRGB";
-                break;
-		    case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
-                colorSpaceStr = "HDR10 (Rec.2020)";
-                break;
-            case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
-                colorSpaceStr = "Linear RGB (scRGB)";
-                break;
-            default:
-                colorSpaceStr = "Unknown";
-		}
+        const char* GetDetailedColorSpaceStr(DXGI_COLOR_SPACE_TYPE colorSpace) {
+            switch (colorSpace) {
+                case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
+                    return "sRGB (Rec.709, Gamma 2.2)";
+                case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
+                    return "HDR10 (Rec.2020, PQ curve)";
+                case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
+                    return "Linear RGB/scRGB (Rec.709, Linear)";
+                case DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020:
+                    return "HDR10 Studio (Rec.2020, PQ curve, Studio Range)";
+                case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709:
+                    return "Studio sRGB (Rec.709, Gamma 2.2, Studio Range)";
+                default:
+                    return "Unknown";
+            }
+        }
 
-        ImGui::Text("D3D11 Swapchain colorspace: %s", colorSpaceStr);
+        ImGui::Text("D3D11 Swapchain colorspace: %s", GetDetailedColorSpaceStr(colorSpace));
         ImGui::Text("Buffer format: %s",
             swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R8G8B8A8_UNORM ? "RGBA8_UNORM" :
             swapChainDesc.BufferDesc.Format == DXGI_FORMAT_R10G10B10A2_UNORM ? "RGB10A2_UNORM" :
@@ -653,52 +655,93 @@ void Menu::DrawGeneralSettings()
             swapChainDesc.BufferDesc.RefreshRate.Numerator,
             swapChainDesc.BufferDesc.RefreshRate.Denominator);
 
-		// Check VRR
+        // Check VRR
         BOOL allowTearing = FALSE;
         if (IDXGIFactory5* factory = nullptr; SUCCEEDED(CreateDXGIFactory2(0, IID_PPV_ARGS(&factory)))) {
             factory->CheckFeatureSupport(DXGI_FEATURE_PRESENT_ALLOW_TEARING, &allowTearing, sizeof(allowTearing));
             factory->Release();
         }
+        ImGui::Text("VRR Support: %s", allowTearing ? "Yes" : "No");
 
-        // Get HDR metadata if available
+        // Get HDR metadata and display capabilities
         if (IDXGISwapChain4* swapChain4 = nullptr;
-			SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
+            SUCCEEDED(globals::d3d::swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
 
+            ImGui::Spacing();
+            ImGui::Text("HDR Metadata:");
             DXGI_HDR_METADATA_HDR10 hdrMetadata;
-            if (SUCCEEDED(swapChain4->GetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
+            if (SUCCEEDED(swapChain4->GetHDRMetaData1(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
                 ImGui::Text("MaxMasteringLuminance: %.2f nits", hdrMetadata.MaxMasteringLuminance / 10000.0f);
                 ImGui::Text("MinMasteringLuminance: %.2f nits", hdrMetadata.MinMasteringLuminance / 10000.0f);
+                ImGui::Text("MaxContentLightLevel: %d nits", hdrMetadata.MaxContentLightLevel);
+                ImGui::Text("MaxFrameAverageLightLevel: %d nits", hdrMetadata.MaxFrameAverageLightLevel);
+
+                if (ImGui::TreeNode("Color Primaries")) {
+                    ImGui::Text("Red Primary: (%.3f, %.3f)",
+                        hdrMetadata.RedPrimary[0] / 50000.0f,
+                        hdrMetadata.RedPrimary[1] / 50000.0f);
+                    ImGui::Text("Green Primary: (%.3f, %.3f)",
+                        hdrMetadata.GreenPrimary[0] / 50000.0f,
+                        hdrMetadata.GreenPrimary[1] / 50000.0f);
+                    ImGui::Text("Blue Primary: (%.3f, %.3f)",
+                        hdrMetadata.BluePrimary[0] / 50000.0f,
+                        hdrMetadata.BluePrimary[1] / 50000.0f);
+                    ImGui::Text("White Point: (%.3f, %.3f)",
+                        hdrMetadata.WhitePoint[0] / 50000.0f,
+                        hdrMetadata.WhitePoint[1] / 50000.0f);
+                    ImGui::TreePop();
+                }
+            } else {
+                ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "HDR metadata not available");
             }
+
+            // Get display capabilities
+            IDXGIOutput* output = nullptr;
+            if (SUCCEEDED(globals::d3d::swapChain->GetContainingOutput(&output))) {
+                IDXGIOutput6* output6 = nullptr;
+                if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(&output6)))) {
+                    DXGI_OUTPUT_DESC1 desc1;
+                    if (SUCCEEDED(output6->GetDesc1(&desc1))) {
+                        ImGui::Spacing();
+                        ImGui::Text("Display Capabilities:");
+                        ImGui::Text("HDR Support: %s", desc1.ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 ? "Yes" : "No");
+                        ImGui::Text("Display Max Luminance: %.2f nits", desc1.MaxLuminance);
+                        ImGui::Text("Display Min Luminance: %.2f nits", desc1.MinLuminance);
+                        ImGui::Text("Max Full Frame Luminance: %.2f nits", desc1.MaxFullFrameLuminance);
+
+                        const char* bpcStr = "Unknown";
+                        switch (desc1.BitsPerColor) {
+                            case 8: bpcStr = "8-bit"; break;
+                            case 10: bpcStr = "10-bit"; break;
+                            case 12: bpcStr = "12-bit"; break;
+                            case 16: bpcStr = "16-bit"; break;
+                        }
+                        ImGui::Text("Bits Per Channel: %s", bpcStr);
+                    }
+                    output6->Release();
+                }
+                output->Release();
+            }
+
             swapChain4->Release();
         }
 
-		// D3D12 Proxy Section
+        // D3D12 Proxy Section
         ImGui::Spacing();
         ImGui::Text("D3D12 Proxy Swapchain Info:");
 
-        if (globals::dx12SwapChain) {
-            IDXGISwapChain4* dx12NativeSwapChain = globals::dx12SwapChain->GetNativeSwapChain();
-            if (dx12NativeSwapChain) {
-                DXGI_SWAP_CHAIN_DESC1 desc12;
-                dx12NativeSwapChain->GetDesc1(&desc12);
-    
-                DXGI_COLOR_SPACE_TYPE colorSpace12 = dx12NativeSwapChain->GetColorSpace();
-                const char* colorSpaceStr12;
-                switch (colorSpace12) {
-                    case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
-                        colorSpaceStr12 = "sRGB";
-                        break;
-                    case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
-                        colorSpaceStr12 = "HDR10 (Rec.2020)";
-                        break;
-                    case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
-                        colorSpaceStr12 = "Linear RGB (scRGB)";
-                        break;
-                    default:
-                        colorSpaceStr12 = "Unknown";
+        if (DX12SwapChain* dx12 = DX12SwapChain::GetSingleton()) {
+            if (dx12->swapChain) {
+                DXGI_SWAP_CHAIN_DESC1 desc12 = dx12->swapChainDesc; // Using the stored desc
+
+                // Get colorspace using swapChain member directly
+                if (IDXGISwapChain3* swapChain3 = nullptr;
+                    SUCCEEDED(dx12->swapChain->QueryInterface(__uuidof(IDXGISwapChain3), (void**)&swapChain3))) {
+                    DXGI_COLOR_SPACE_TYPE colorSpace12 = swapChain3->GetColorSpace1();
+                    ImGui::Text("Colorspace: %s", GetDetailedColorSpaceStr(colorSpace12));
+                    swapChain3->Release();
                 }
 
-                ImGui::Text("Colorspace: %s", colorSpaceStr12);
                 ImGui::Text("Buffer format: %s",
                     desc12.Format == DXGI_FORMAT_R8G8B8A8_UNORM ? "RGBA8_UNORM" :
                     desc12.Format == DXGI_FORMAT_R10G10B10A2_UNORM ? "RGB10A2_UNORM" :
@@ -707,18 +750,48 @@ void Menu::DrawGeneralSettings()
                 ImGui::Text("Buffer count: %d", desc12.BufferCount);
 
                 // Get HDR metadata if available
-                DXGI_HDR_METADATA_HDR10 hdrMetadata;
-                if (SUCCEEDED(dx12NativeSwapChain->GetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
-                    ImGui::Text("MaxMasteringLuminance: %.2f nits", hdrMetadata.MaxMasteringLuminance / 10000.0f);
-                    ImGui::Text("MinMasteringLuminance: %.2f nits", hdrMetadata.MinMasteringLuminance / 10000.0f);
+                if (IDXGISwapChain4* swapChain4 = nullptr;
+                    SUCCEEDED(dx12->swapChain->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
+
+                    DXGI_HDR_METADATA_HDR10 hdrMetadata;
+                    if (SUCCEEDED(swapChain4->GetHDRMetaData1(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(hdrMetadata), &hdrMetadata))) {
+                        ImGui::Spacing();
+                        ImGui::Text("HDR Metadata:");
+                        ImGui::Text("MaxMasteringLuminance: %.2f nits", hdrMetadata.MaxMasteringLuminance / 10000.0f);
+                        ImGui::Text("MinMasteringLuminance: %.2f nits", hdrMetadata.MinMasteringLuminance / 10000.0f);
+                        ImGui::Text("MaxContentLightLevel: %d nits", hdrMetadata.MaxContentLightLevel);
+                        ImGui::Text("MaxFrameAverageLightLevel: %d nits", hdrMetadata.MaxFrameAverageLightLevel);
+
+                        if (ImGui::TreeNode("Color Primaries##DX12")) {
+                            ImGui::Text("Red Primary: (%.3f, %.3f)",
+                                hdrMetadata.RedPrimary[0] / 50000.0f,
+                                hdrMetadata.RedPrimary[1] / 50000.0f);
+                            ImGui::Text("Green Primary: (%.3f, %.3f)",
+                                hdrMetadata.GreenPrimary[0] / 50000.0f,
+                                hdrMetadata.GreenPrimary[1] / 50000.0f);
+                            ImGui::Text("Blue Primary: (%.3f, %.3f)",
+                                hdrMetadata.BluePrimary[0] / 50000.0f,
+                                hdrMetadata.BluePrimary[1] / 50000.0f);
+                            ImGui::Text("White Point: (%.3f, %.3f)",
+                                hdrMetadata.WhitePoint[0] / 50000.0f,
+                                hdrMetadata.WhitePoint[1] / 50000.0f);
+                            ImGui::TreePop();
+                        }
+                    }
+                    swapChain4->Release();
                 }
+
+                // Add refresh rate info if available
+                if (dx12->refreshRate > 0) {
+                    ImGui::Text("Refresh Rate: %.2f Hz", dx12->refreshRate);
+                }
+
             } else {
-                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "Native swapchain unavailable");
+                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "DX12 swapchain not initialized");
             }
         } else {
-            ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "DX12 proxy swapchain not initialized");
+            ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "DX12 proxy not available");
         }
-
 	}
 
 	if (ImGui::CollapsingHeader("Keybindings", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)) {

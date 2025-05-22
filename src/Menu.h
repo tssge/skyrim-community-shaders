@@ -173,6 +173,25 @@ private:
 	void DrawDisableAtBootSettings();
 	void DrawFooter();
 
+    // Utility function for HDR/Display info
+    static const char* GetDetailedColorSpaceStr(DXGI_COLOR_SPACE_TYPE colorSpace) {
+        switch (colorSpace) {
+            case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
+                return "sRGB (Rec.709, Gamma 2.2)";
+            case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
+                return "HDR10 (Rec.2020, PQ curve)";
+            case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
+                return "Linear RGB/scRGB (Rec.709, Linear)";
+            case DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020:
+                return "HDR10 Studio (Rec.2020, PQ curve, Studio Range)";
+            case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709:
+                return "Studio sRGB (Rec.709, Gamma 2.2, Studio Range)";
+            default:
+                return "Unknown";
+        }
+    }
+
+
 	class CharEvent : public RE::InputEvent
 	{
 	public:
