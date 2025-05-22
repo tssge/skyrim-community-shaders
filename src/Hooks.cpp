@@ -457,71 +457,69 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
-    if (*ppSwapChain && globals::state->IsHdrRendering()) {
-        logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
-        IDXGISwapChain4* swapChain4 = nullptr;
-        if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
-            // Set HDR colorspace
-            swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+	if (*ppSwapChain && globals::state->IsHdrRendering()) {
+		logger::info("[Hooks] Setting swapchain colorspace and HDR metadata");
+		IDXGISwapChain4* swapChain4 = nullptr;
+		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
+			// Set HDR colorspace
+			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
 
-            // Configure the default tonemapper
-            DXGI_HDR_METADATA_HDR10 metadata = {};
+			// Configure the default tonemapper
+			DXGI_HDR_METADATA_HDR10 metadata = {};
 
-            // BT.2020 primaries from ITU-R specification
-            metadata.RedPrimary[0] = static_cast<UINT16>(0.708 * 50000);
-            metadata.RedPrimary[1] = static_cast<UINT16>(0.292 * 50000);
-            metadata.GreenPrimary[0] = static_cast<UINT16>(0.170 * 50000);
-            metadata.GreenPrimary[1] = static_cast<UINT16>(0.797 * 50000);
-            metadata.BluePrimary[0] = static_cast<UINT16>(0.131 * 50000);
-            metadata.BluePrimary[1] = static_cast<UINT16>(0.046 * 50000);
-            metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
-            metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+			// BT.2020 primaries from ITU-R specification
+			metadata.RedPrimary[0] = static_cast<UINT16>(0.708 * 50000);
+			metadata.RedPrimary[1] = static_cast<UINT16>(0.292 * 50000);
+			metadata.GreenPrimary[0] = static_cast<UINT16>(0.170 * 50000);
+			metadata.GreenPrimary[1] = static_cast<UINT16>(0.797 * 50000);
+			metadata.BluePrimary[0] = static_cast<UINT16>(0.131 * 50000);
+			metadata.BluePrimary[1] = static_cast<UINT16>(0.046 * 50000);
+			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
 
+			// Set luminance values
+			metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits peak luminance
+			metadata.MinMasteringLuminance = 100;           // 0.01 nits minimum luminance
 
-            // Set luminance values
-            metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits peak luminance
-            metadata.MinMasteringLuminance = 100;           // 0.01 nits minimum luminance
+			// Content light level information
+			metadata.MaxContentLightLevel = 1000;      // Maximum content light level in nits
+			metadata.MaxFrameAverageLightLevel = 400;  // Maximum frame-average light level in nits
 
-            // Content light level information
-            metadata.MaxContentLightLevel = 1000;           // Maximum content light level in nits
-            metadata.MaxFrameAverageLightLevel = 400;       // Maximum frame-average light level in nits
+			swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
+				sizeof(metadata),
+				&metadata);
 
-            swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
-                                      sizeof(metadata),
-                                      &metadata);
+			// Get the output and check its actual HDR capabilities
+			IDXGIOutput* output = nullptr;
+			if (SUCCEEDED(swapChain4->GetContainingOutput(&output))) {
+				IDXGIOutput6* output6 = nullptr;
+				if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(&output6)))) {
+					DXGI_OUTPUT_DESC1 desc1;
+					if (SUCCEEDED(output6->GetDesc1(&desc1))) {
+						// Log the actual display capabilities
+						logger::info("[HDR] Display MaxLuminance: {}",
+							desc1.MaxLuminance);
+						logger::info("[HDR] Display MinLuminance: {}",
+							desc1.MinLuminance);
 
-            // Get the output and check its actual HDR capabilities
-            IDXGIOutput* output = nullptr;
-            if (SUCCEEDED(swapChain4->GetContainingOutput(&output))) {
-                IDXGIOutput6* output6 = nullptr;
-                if (SUCCEEDED(output->QueryInterface(IID_PPV_ARGS(&output6)))) {
-                    DXGI_OUTPUT_DESC1 desc1;
-                    if (SUCCEEDED(output6->GetDesc1(&desc1))) {
-                        // Log the actual display capabilities
-                        logger::info("[HDR] Display MaxLuminance: {}",
-                            desc1.MaxLuminance);
-                        logger::info("[HDR] Display MinLuminance: {}",
-                            desc1.MinLuminance);
+						// Optionally adjust metadata based on actual display capabilities
+						if (desc1.MaxLuminance < (metadata.MaxMasteringLuminance / 10000.0f)) {
+							metadata.MaxMasteringLuminance =
+								static_cast<UINT>(desc1.MaxLuminance * 10000);
+							// Update metadata with display-specific values
+							swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
+								sizeof(metadata),
+								&metadata);
+						}
+					}
+					output6->Release();
+				}
+				output->Release();
+			}
 
-                        // Optionally adjust metadata based on actual display capabilities
-                        if (desc1.MaxLuminance < (metadata.MaxMasteringLuminance / 10000.0f)) {
-                            metadata.MaxMasteringLuminance =
-                                static_cast<UINT>(desc1.MaxLuminance * 10000);
-                            // Update metadata with display-specific values
-                            swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10,
-                                                      sizeof(metadata),
-                                                      &metadata);
-                        }
-                    }
-                    output6->Release();
-                }
-                output->Release();
-            }
-
-            swapChain4->Release();
-        }
-    }
-
+			swapChain4->Release();
+		}
+	}
 
 	return ret;
 }
