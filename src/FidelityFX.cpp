@@ -181,7 +181,7 @@ void FidelityFX::CreateFSRResources()
 	if (globals::state->IsHdrRendering()) {
 		logger::info("[FidelityFX] Enabling HDR rendering");
 		contextDescription.flags |= FFX_FSR3_ENABLE_HIGH_DYNAMIC_RANGE;
-		contextDescription.backBufferFormat = FFX_API_SURFACE_FORMAT_R10G10B10A2_UNORM;
+		contextDescription.backBufferFormat = FFX_SURFACE_FORMAT_R10G10B10A2_UNORM;
 	}
 
 	contextDescription.backendInterfaceUpscaling = fsrInterface;
