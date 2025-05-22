@@ -782,8 +782,8 @@ void State::SetupReShade()
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
 		if (globals::state->IsHdrRendering()) {
-			reShadeSwapChainDesc.texture.format = reshade::api::format::r16g16b16a16_float;
-			reShadeRuntime->set_color_space(reshade::api::color_space::extended_srgb_linear);
+			reShadeSwapChainDesc.texture.format = reshade::api::format::r10g10b10a2_unorm;
+			reShadeRuntime->set_color_space(reshade::api::color_space::hdr10_st2084);
 		}
 
 		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target,

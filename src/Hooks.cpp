@@ -300,8 +300,8 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
 	if (globals::state->IsHdrRendering()) {
-		logger::info("[D3D11] Enabling 16bit swapchain");
-		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		logger::info("[D3D11] Enabling 10bit swapchain");
+		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	}
 
 	if (!REL::Module::IsVR()) {
