@@ -833,8 +833,6 @@ DXGI_FORMAT State::UpgradeDxgiFormat(DXGI_FORMAT original) const
 	if (!isHdrRendering)
 		return original;
 
-	switch (original) {
-	default:
-		return DXGI_FORMAT_R16G16B16A16_FLOAT;
-	}
+	// Only one format for now, add conditial upgrades if needed
+	return DXGI_FORMAT_R16G16B16A16_FLOAT;
 }
