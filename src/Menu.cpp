@@ -598,6 +598,15 @@ void Menu::DrawGeneralSettings()
 				ImGui::Text("Skips a shader being replaced if it hasn't been compiled yet. Also makes compilation blazingly fast!");
 			}
 
+			bool useHdrRendering = shaderCache->IsHdrRendering();
+			ImGui::TableNextColumn();
+			if (ImGui::Checkbox("Enable HDR", &useHdrRendering)) {
+				shaderCache->SetHdrRendering(useHdrRendering);
+			}
+			if (auto _tt = Util::HoverTooltipWrapper()) {
+				ImGui::Text('"Vittu meni ikuisuus koodata" -tssge');
+			}
+
 			ImGui::EndTable();
 		}
 	}

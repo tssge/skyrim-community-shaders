@@ -368,6 +368,7 @@ void State::Save(ConfigMode a_configMode)
 	general["Enable Shaders"] = shaderCache->IsEnabled();
 	general["Enable Disk Cache"] = shaderCache->IsDiskCache();
 	general["Enable Async"] = shaderCache->IsAsync();
+	general["Enable Hdr Rendering"] = shaderCache->IsHdrRendering();
 
 	settings["General"] = general;
 
@@ -777,8 +778,15 @@ void State::SetupReShade()
 		reshade::api::resource reShadeSwapChainResource = reShadeDevice->get_resource_from_view(reshade::api::resource_view{ reinterpret_cast<uintptr_t>(swapChainRTV) });
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
-		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
-		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 1), 0, 1, 0, 1), &reshadeSwapChainRTVsRGB);
+		if (globals::shaderCache->IsHdrRendering()) {
+			reShadeSwapChainDesc.texture.format = reshade::api::format::r16g16b16a16_float;
+			reShadeRuntime->set_color_space(reshade::api::color_space::extended_srgb_linear);
+		}
+
+		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target,
+			reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
+		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target,
+			reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 1), 0, 1, 0, 1), &reshadeSwapChainRTVsRGB);
 
 		auto& depth = globals::game::renderer->GetDepthStencilData().depthStencils[RE::RENDER_TARGETS_DEPTHSTENCIL::kPOST_ZPREPASS_COPY];
 

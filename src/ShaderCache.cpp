@@ -2100,9 +2100,19 @@ namespace SIE
 		return isAsync;
 	}
 
+	bool ShaderCache::IsHdrRendering() const
+	{
+		return isHdrRendering;
+	}
+
 	void ShaderCache::SetAsync(bool value)
 	{
 		isAsync = value;
+	}
+
+	void ShaderCache::SetHdrRendering(bool value)
+	{
+		isHdrRendering = value;
 	}
 
 	bool ShaderCache::IsDump() const
@@ -2123,6 +2133,17 @@ namespace SIE
 	void ShaderCache::SetDiskCache(bool value)
 	{
 		isDiskCache = value;
+	}
+
+	DXGI_FORMAT ShaderCache::UpgradeDxgiFormat(DXGI_FORMAT original) const
+	{
+		if (!isHdrRendering)
+			return original;
+
+		switch (original) {
+			default:
+				return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		}
 	}
 
 	void ShaderCache::DeleteDiskCache()

@@ -299,6 +299,10 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	pAdapter->GetDesc(&adapterDesc);
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
+	if (globals::shaderCache->IsHdrRendering()) {
+		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	}
+
 	if (!REL::Module::IsVR()) {
 		pSwapChainDesc->SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
@@ -452,6 +456,18 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
+	if (*ppSwapChain && globals::shaderCache->IsHdrRendering()) {
+		IDXGISwapChain4* swapChain4 = nullptr;
+		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
+			// Traditionally color space would be set to HDR10 equivalent, however as we do no tonemapping in-engine,
+			// we use scRGB as the format and thus Rec. 709 primaries
+			//
+			// Tonemapping is performed either by the compositor or other system components into PQ
+			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709);
+			swapChain4->Release();
+		}
+	}
+
 	return ret;
 }
 
@@ -563,9 +579,96 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
 		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy2
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRBlurSwap
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRDownsample
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation0
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation1
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			if (globals::shaderCache->IsHdrRendering()) {
+				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -958,6 +1061,12 @@ namespace Hooks
 
 		logger::info("Hooking BSShaderRenderTargets::Create::CreateRenderTarget(s)");
 		stl::write_thunk_call<CreateRenderTarget_Main>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x3F0, 0x3F3, 0x548));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x62F, 0x62E));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy2>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x642, 0x641));
+		stl::write_thunk_call<CreateRenderTarget_LDRBlurSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x529, 0x528));
+		stl::write_thunk_call<CreateRenderTarget_LDRDownsample>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xB2E, 0xB2E));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation0>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE68, 0xE6A));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation1>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE7E, 0xE80));
 		stl::write_thunk_call<CreateRenderTarget_Normals>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x458, 0x45B, 0x5B0));
 		stl::write_thunk_call<CreateRenderTarget_NormalsSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x46B, 0x46E, 0x5C3));
 		stl::write_thunk_call<CreateRenderTarget_Snow>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x406, 0x409, 0x55e));
