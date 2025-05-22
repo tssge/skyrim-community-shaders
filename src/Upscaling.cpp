@@ -462,7 +462,7 @@ void Upscaling::CreateUpscalingResources()
 	upscalingTexture->CreateSRV(srvDesc);
 	upscalingTexture->CreateUAV(uavDesc);
 
-	texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
+	texDesc.Format = DXGI_FORMAT_R8_UNORM;
 	srvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
 
