@@ -257,7 +257,7 @@ void Streamline::Upscale(Texture2D* a_upscaleTexture, Texture2D* a_alphaMask, sl
 		dlssOptions.mode = sl::DLSSMode::eMaxQuality;
 		dlssOptions.outputWidth = (uint)state->screenSize.x;
 		dlssOptions.outputHeight = (uint)state->screenSize.y;
-		if (globals::shaderCache->IsHdrRendering()) {
+		if (globals::state->IsHdrRendering()) {
 			dlssOptions.colorBuffersHDR = sl::Boolean::eTrue;
 		} else {
 			dlssOptions.colorBuffersHDR = sl::Boolean::eFalse;

@@ -245,6 +245,9 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 
 			if (general["Enable Async"].is_boolean())
 				shaderCache->SetAsync(general["Enable Async"]);
+
+			if (general["Enable Hdr Rendering"].is_boolean())
+				globals::state->SetHdrRendering(general["Enable Hdr Rendering"]);
 		}
 
 		if (settings["Replace Original Shaders"].is_object()) {
@@ -368,7 +371,7 @@ void State::Save(ConfigMode a_configMode)
 	general["Enable Shaders"] = shaderCache->IsEnabled();
 	general["Enable Disk Cache"] = shaderCache->IsDiskCache();
 	general["Enable Async"] = shaderCache->IsAsync();
-	general["Enable Hdr Rendering"] = shaderCache->IsHdrRendering();
+	general["Enable Hdr Rendering"] = globals::state->IsHdrRendering();
 
 	settings["General"] = general;
 
@@ -778,7 +781,7 @@ void State::SetupReShade()
 		reshade::api::resource reShadeSwapChainResource = reShadeDevice->get_resource_from_view(reshade::api::resource_view{ reinterpret_cast<uintptr_t>(swapChainRTV) });
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
-		if (globals::shaderCache->IsHdrRendering()) {
+		if (globals::state->IsHdrRendering()) {
 			reShadeSwapChainDesc.texture.format = reshade::api::format::r16g16b16a16_float;
 			reShadeRuntime->set_color_space(reshade::api::color_space::extended_srgb_linear);
 		}
@@ -812,4 +815,26 @@ void State::RenderReShade()
 void State::PresentReShade()
 {
 	reshade::update_and_present_effect_runtime(reShadeRuntime);
+}
+
+// HDR stuff
+bool State::IsHdrRendering() const
+{
+	return isHdrRendering;
+}
+
+void State::SetHdrRendering(bool value)
+{
+	isHdrRendering = value;
+}
+
+DXGI_FORMAT State::UpgradeDxgiFormat(DXGI_FORMAT original) const
+{
+	if (!isHdrRendering)
+		return original;
+
+	switch (original) {
+	default:
+		return DXGI_FORMAT_R16G16B16A16_FLOAT;
+	}
 }

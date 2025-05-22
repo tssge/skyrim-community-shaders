@@ -299,7 +299,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	pAdapter->GetDesc(&adapterDesc);
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
-	if (globals::shaderCache->IsHdrRendering()) {
+	if (globals::state->IsHdrRendering()) {
 		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	}
 
@@ -456,7 +456,7 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
-	if (*ppSwapChain && globals::shaderCache->IsHdrRendering()) {
+	if (*ppSwapChain && globals::state->IsHdrRendering()) {
 		IDXGISwapChain4* swapChain4 = nullptr;
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
 			// Traditionally color space would be set to HDR10 equivalent, however as we do no tonemapping in-engine,
@@ -579,7 +579,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -592,7 +592,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -606,7 +606,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -620,7 +620,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -634,7 +634,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -648,7 +648,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
@@ -662,7 +662,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			if (globals::shaderCache->IsHdrRendering()) {
+			if (globals::state->IsHdrRendering()) {
 				a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);

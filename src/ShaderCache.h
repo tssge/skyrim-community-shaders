@@ -319,15 +319,11 @@ namespace SIE
 		bool IsEnabled() const;
 		void SetEnabled(bool value);
 		bool IsAsync() const;
-		bool IsHdrRendering() const;
 		void SetAsync(bool value);
-		void SetHdrRendering(bool value);
 		bool IsDump() const;
 		void SetDump(bool value);
-
 		bool IsDiskCache() const;
 		void SetDiskCache(bool value);
-		DXGI_FORMAT UpgradeDxgiFormat(DXGI_FORMAT original) const;
 		void DeleteDiskCache();
 		void ValidateDiskCache();
 		void WriteDiskCacheInfo();
