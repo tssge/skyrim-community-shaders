@@ -64,12 +64,12 @@ void HDR::DrawSettings()
 
 	ImGui::SliderInt("Tonemap Operator", reinterpret_cast<int*>(&settings.tonemapOperator), 0, 7, std::format("{}", operators[settings.tonemapOperator]).c_str());
 
-	ImGui::SliderInt("Paper White (nits)", reinterpret_cast<int*>(&settings.paperWhite), 1, 500);
+	ImGui::SliderInt("Paper White (nits)", reinterpret_cast<int*>(&settings.paperWhite), 1, 25000);
 	if (auto _tt = Util::HoverTooltipWrapper()) {
 		ImGui::Text("Paper White sets the game's reference white brightness.");
 	}
 
-	ImGui::SliderInt("Peak Brightness (nits)", reinterpret_cast<int*>(&settings.peakNits), 1, 10000);
+	ImGui::SliderInt("Peak Brightness (nits)", reinterpret_cast<int*>(&settings.peakNits), 1, 25000);
 	if (auto _tt = Util::HoverTooltipWrapper()) {
 		ImGui::Text("Peak Brightness defines the maximum brightness level.");
 	}
