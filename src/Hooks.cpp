@@ -458,56 +458,11 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		ppImmediateContext);
 
 	if (globals::state->IsHdrRendering()) {
-		logger::info("[Hooks] Setting HDR metadata");
 		IDXGISwapChain4* swapChain4 = nullptr;
-		IDXGIOutput* output = nullptr;
-		IDXGIOutput6* output6 = nullptr;
-		DXGI_OUTPUT_DESC1 displayDesc = {};
-		DXGI_HDR_METADATA_HDR10 metadata = {};
 
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(__uuidof(IDXGISwapChain4), (void**)&swapChain4))) {
-			swapChain4->GetContainingOutput(&output);
-			output->QueryInterface(IID_PPV_ARGS(&output6));
-			output6->GetDesc1(&displayDesc);
-
-			// Log color primaries
-			logger::info("Display Color Primaries:");
-			logger::info("Red   Primary: ({:.4f}, {:.4f})", displayDesc.RedPrimary[0], displayDesc.RedPrimary[1]);
-			logger::info("Green Primary: ({:.4f}, {:.4f})", displayDesc.GreenPrimary[0], displayDesc.GreenPrimary[1]);
-			logger::info("Blue  Primary: ({:.4f}, {:.4f})", displayDesc.BluePrimary[0], displayDesc.BluePrimary[1]);
-			logger::info("White Point:   ({:.4f}, {:.4f})", displayDesc.WhitePoint[0], displayDesc.WhitePoint[1]);
-
-			// Log luminance values
-			logger::info("Display Luminance Range:");
-			logger::info("Min Luminance: {:.2f} nits", displayDesc.MinLuminance);
-			logger::info("Max Luminance: {:.2f} nits", displayDesc.MaxLuminance);
-			logger::info("MaxFullFrameLuminance: {:.2f} nits", displayDesc.MaxFullFrameLuminance);
-
-			// Convert display primaries (display values are 0-1, metadata needs them scaled by 50000)
-			metadata.RedPrimary[0] = static_cast<UINT16>(displayDesc.RedPrimary[0] * 50000);
-			metadata.RedPrimary[1] = static_cast<UINT16>(displayDesc.RedPrimary[1] * 50000);
-
-			metadata.GreenPrimary[0] = static_cast<UINT16>(displayDesc.GreenPrimary[0] * 50000);
-			metadata.GreenPrimary[1] = static_cast<UINT16>(displayDesc.GreenPrimary[1] * 50000);
-
-			metadata.BluePrimary[0] = static_cast<UINT16>(displayDesc.BluePrimary[0] * 50000);
-			metadata.BluePrimary[1] = static_cast<UINT16>(displayDesc.BluePrimary[1] * 50000);
-
-			metadata.WhitePoint[0] = static_cast<UINT16>(displayDesc.WhitePoint[0] * 50000);
-			metadata.WhitePoint[1] = static_cast<UINT16>(displayDesc.WhitePoint[1] * 50000);
-
-			metadata.MaxMasteringLuminance = 1000;  // Pulled out of my ass, 10 times the SDR, whole nits
-			metadata.MinMasteringLuminance = 1000;  // 0.1 nits = 1000 * 0.0001, black is black, 1/10000th of a nit
-
-			// Set content light levels (these are in actual nits)
-			metadata.MaxContentLightLevel = static_cast<UINT16>(displayDesc.MaxLuminance);
-			metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(displayDesc.MaxFullFrameLuminance);
-
+			logger::info("[Hooks] Setting HDR colorspace");
 			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-			swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(metadata), &metadata);
-
-			output6->Release();
-			output->Release();
 			swapChain4->Release();
 		}
 	}
