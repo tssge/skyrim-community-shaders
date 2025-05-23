@@ -442,8 +442,6 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	if (globals::state->IsHdrRendering()) {
 		logger::info("[Hooks] Enabling 10bit swapchain");
 		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
-		logger::info("[Hooks] Enabling HDR colorspace");
-		pSwapChainDesc->BufferDesc.ColorSpace = DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
 	}
 
 	auto ret = ptrD3D11CreateDeviceAndSwapChain(pAdapter,
