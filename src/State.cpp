@@ -134,7 +134,6 @@ void State::Setup()
 	globals::deferred->SetupResources();
 	if (!upscalerLoaded)
 		globals::upscaling->CreateUpscalingResources();
-	globals::hdr->SetupResources();
 	SetupReShade();
 	if (initialized)
 		return;
@@ -799,8 +798,8 @@ void State::SetupReShade()
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
 		if (globals::hdr->settings.enableHDR) {
-			reShadeSwapChainDesc.texture.format = reshade::api::format::r10g10b10a2_unorm;
-			reShadeRuntime->set_color_space(reshade::api::color_space::hdr10_st2084);
+			reShadeSwapChainDesc.texture.format = reshade::api::format::r16g16b16a16_float;
+			reShadeRuntime->set_color_space(reshade::api::color_space::extended_srgb_linear);
 		}
 
 		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);

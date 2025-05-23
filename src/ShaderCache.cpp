@@ -1849,7 +1849,6 @@ namespace SIE
 		}
 		compilationSet.Clear();
 		globals::deferred->ClearShaderCache();
-		globals::hdr->ClearShaderCache();
 		for (auto* feature : Feature::GetFeatureList()) {
 			if (feature->loaded) {
 				feature->ClearShaderCache();
