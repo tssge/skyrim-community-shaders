@@ -455,7 +455,7 @@ void Upscaling::CreateUpscalingResources()
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 	if (globals::hdr->settings.enableHDR) {
-		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
@@ -511,7 +511,7 @@ void Upscaling::CreateFrameGenerationResources()
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
 
 	if (globals::hdr->settings.enableHDR) {
-		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
@@ -669,7 +669,6 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	globals::hdr->ApplyHDR();
 	globals::state->RenderReShade();
 
 	if (!d3d12Interop || !settings.frameGenerationMode) {
