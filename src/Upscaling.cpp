@@ -454,7 +454,7 @@ void Upscaling::CreateUpscalingResources()
 
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
 
@@ -506,7 +506,7 @@ void Upscaling::CreateFrameGenerationResources()
 
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
 
-	texDesc.Format = globals::state->UpgradeDxgiFormat(DXGI_FORMAT_R8G8B8A8_UNORM);
+	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	srvDesc.Format = texDesc.Format;
 	rtvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
