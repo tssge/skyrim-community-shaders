@@ -118,7 +118,7 @@ void HDR::SetupResources()
 	main.SRV->GetDesc(&srvDesc);
 	main.UAV->GetDesc(&uavDesc);
 
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	srvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
 

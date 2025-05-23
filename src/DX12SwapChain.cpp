@@ -42,6 +42,10 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 	swapChainDesc.SwapEffect = a_swapChainDesc.SwapEffect;
 	swapChainDesc.Flags = a_swapChainDesc.Flags;
 
+	if (globals::hdr->settings.enableHDR) {
+		swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+	}
+
 	ffx::CreateContextDescFrameGenerationSwapChainForHwndDX12 ffxSwapChainDesc{};
 
 	ffxSwapChainDesc.desc = &swapChainDesc;

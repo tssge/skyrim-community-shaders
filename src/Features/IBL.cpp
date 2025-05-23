@@ -119,7 +119,7 @@ void IBL::SetupResources()
 			.Height = 1,
 			.MipLevels = 1,
 			.ArraySize = 1,
-			.Format = DXGI_FORMAT_R16G16B16A16_FLOAT,
+			.Format = DXGI_FORMAT_R10G10B10A2_UNORM,
 			.SampleDesc = { 1, 0 },
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS,
