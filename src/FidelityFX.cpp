@@ -244,7 +244,6 @@ void FidelityFX::Upscale(Texture2D* a_color, Texture2D* a_alphaMask, float2 a_ji
 		dispatchParameters.flags = 0;
 		dispatchParameters.preExposure = 1.0f;
 
-
 		if (ffxFsr3ContextDispatchUpscale(&fsrContext, &dispatchParameters) != FFX_OK)
 			logger::critical("[FidelityFX] Failed to dispatch upscaling!");
 	}
