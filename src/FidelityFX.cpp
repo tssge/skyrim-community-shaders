@@ -121,16 +121,6 @@ void FidelityFX::Present(bool a_useFrameGeneration)
 
 		dispatchParameters.commandList = commandList;
 
-		if (globals::hdr->settings.enableHDR) {
-			// Use PQ (Perceptual Quantizer) transfer function for HDR10
-			dispatchParameters.backbufferTransferFunction = FFX_API_BACKBUFFER_TRANSFER_FUNCTION_PQ;
-
-			// Static HDR luminance values
-			// Min: 0.01 nits, Max: 1000 nits (typical HDR10 display range)
-			dispatchParameters.minMaxLuminance[0] = 0.001f;  // 0.01 nits / 10000
-			dispatchParameters.minMaxLuminance[1] = 0.1f;    // 1000 nits / 10000
-		}
-
 		dispatchParameters.motionVectorScale.x = static_cast<float>(swapChain->swapChainDesc.Width);
 		dispatchParameters.motionVectorScale.y = static_cast<float>(swapChain->swapChainDesc.Height);
 		dispatchParameters.renderSize.width = swapChain->swapChainDesc.Width;
@@ -251,21 +241,9 @@ void FidelityFX::Upscale(Texture2D* a_color, Texture2D* a_alphaMask, float2 a_ji
 		dispatchParameters.viewSpaceToMetersFactor = 0.01428222656f;
 		dispatchParameters.reset = false;
 
-		if (globals::hdr->settings.enableHDR) {
-			// Adjust pre-exposure for HDR
-			dispatchParameters.preExposure = globals::hdr->settings.paperWhite / 100.0f;
-			dispatchParameters.flags |= FFX_FSR3_ENABLE_HIGH_DYNAMIC_RANGE;
+		dispatchParameters.flags = 0;
+		dispatchParameters.preExposure = 1.0f;
 
-			// Optional: HDR-specific exposure parameters
-			dispatchParameters.minExposure = 0.0001f;
-			dispatchParameters.maxExposure = 100.0f;
-
-			// Ensure auto-exposure works correctly with HDR
-			dispatchParameters.enableAutoExposure = true;
-		} else {
-			dispatchParameters.flags = 0;
-			dispatchParameters.preExposure = 1.0f;
-		}
 
 		if (ffxFsr3ContextDispatchUpscale(&fsrContext, &dispatchParameters) != FFX_OK)
 			logger::critical("[FidelityFX] Failed to dispatch upscaling!");
