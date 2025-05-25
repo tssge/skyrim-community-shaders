@@ -76,8 +76,6 @@ void HDR::DrawSettings()
 	ImGui::SliderFloat("Saturation", &settings.saturation, 0.f, 2.f);
 	ImGui::SliderFloat("Dechroma", &settings.dechroma, 0.f, 2.f);
 	ImGui::SliderFloat("Hue Correction Strength", &settings.hueCorrectionStrength, 0.f, 2.f);
-
-	UpdateHDRData();
 }
 
 void HDR::SaveSettings(json& o_json)
