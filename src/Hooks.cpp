@@ -751,7 +751,7 @@ namespace Hooks
 			RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
 			if (globals::hdr->settings.enableHDR) {
-				a_properties->format = HDR::BSGraphics_HDR_Format;
+				a_properties->format = HDR::BSGraphics_HDR_R10_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
@@ -765,7 +765,7 @@ namespace Hooks
 			RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
 			if (globals::hdr->settings.enableHDR) {
-				a_properties->format = HDR::BSGraphics_HDR_Format;
+				a_properties->format = HDR::BSGraphics_HDR_R10_Format;
 			}
 			globals::state->ModifyRenderTarget(a_target, a_properties);
 			func(This, a_target, a_properties);
