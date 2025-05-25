@@ -99,48 +99,26 @@ PS_OUTPUT main(PS_INPUT input)
 	}
 
 	float2 avgValue = AvgTex.Sample(AvgSampler, input.TexCoord.xy).xy;
+	inputColor *= avgValue.y / avgValue.x;
+	inputColor = max(0, inputColor);
 
-	// Vanilla tonemapping and post-processing
-	float3 gameSdrColor = 0.0;
-	float3 ppColor = 0.0;
-	{
-		inputColor *= avgValue.y / avgValue.x;
-		inputColor = max(0, inputColor);
+	float3 blendedColor = inputColor;
+	// Add bloom contribution without tone mapping
+	blendedColor += bloomColor * Param.x;
 
-		float3 blendedColor;
-		[branch] if (Param.z > 0.5)
-		{
-			blendedColor = DisplayMapping::HuePreservingHejlBurgessDawson(inputColor, bloomColor);
-		}
-		else
-		{
-			float maxCol = Color::RGBToLuminance(inputColor);
-			float mappedMax = GetTonemapFactorReinhard(maxCol).x;
-			float3 compressedHuePreserving = inputColor * mappedMax / maxCol;
-			blendedColor = compressedHuePreserving;
-			blendedColor += saturate(Param.x - blendedColor) * bloomColor;
-		}
+	// Keep the color grading/post-processing but without range compression
+	float blendedLuminance = Color::RGBToLuminance(blendedColor);
+	float3 linearColor = Cinematic.w * lerp(lerp(blendedLuminance, blendedColor, Cinematic.x), blendedLuminance * Tint.xyz, Tint.w).xyz;
+	linearColor = lerp(avgValue.x, linearColor, Cinematic.z);
 
-		gameSdrColor = blendedColor;
+	float3 outputColor = max(0, linearColor);
 
-		float blendedLuminance = Color::RGBToLuminance(blendedColor);
+#if defined(FADE)
+	outputColor = lerp(outputColor, Fade.xyz, Fade.w);
+#endif
 
-		float3 linearColor = Cinematic.w * lerp(lerp(blendedLuminance, blendedColor, Cinematic.x), blendedLuminance * Tint.xyz, Tint.w).xyz;
-
-		linearColor = lerp(avgValue.x, linearColor, Cinematic.z);
-
-		ppColor = max(0, linearColor);
-	}
-
-	float3 srgbColor = ppColor;
-
-#		if defined(FADE)
-	srgbColor = lerp(srgbColor, Fade.xyz, Fade.w);
-#		endif
-
-	srgbColor = FrameBuffer::ToSRGBColor(srgbColor);
-
-	psout.Color = float4(srgbColor, 1.0);
+	// Output in linear space, no sRGB conversion
+	psout.Color = float4(outputColor, 1.0);
 
 #	endif
 
