@@ -113,9 +113,9 @@ PS_OUTPUT main(PS_INPUT input)
 
 	float3 outputColor = max(0, linearColor);
 
-#if defined(FADE)
+#		if defined(FADE)
 	outputColor = lerp(outputColor, Fade.xyz, Fade.w);
-#endif
+#		endif
 
 	// Output in linear space, no sRGB conversion
 	psout.Color = float4(outputColor, 1.0);
