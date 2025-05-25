@@ -910,22 +910,22 @@ float3 GetWorldMapBaseColor(float3 originalBaseColor, float3 rawBaseColor, float
 	float lodMultiplier = 1;
 #		endif
 #		if defined(LODOBJECTS)
-    float4 lodColorMul = lodMultiplier.xxxx * float4(0.269999981, 0.281000018, 0.441000015, 0.441000015) + float4(0.0780000091, 0.09799999, -0.0349999964, 0.465000004);
-    // Reduce from 2.0 to 1.0 for HDR appropriate range
-    float4 lodColor = lodColorMul.xyzw;
-    bool useLodColorZ = lodColorMul.w > 0.5;
-    lodColor.xyz = max(lodColor.xyz, rawBaseColor.xyz);
-    lodColor.w = useLodColorZ ? lodColor.z : min(lodColor.w, rawBaseColor.z);
-    // Reduce the multiplier from 0.5 to 0.25 for better HDR balance
-    return (0.25 * lodMultiplier).xxx * (lodColor.xyw - rawBaseColor.xyz) + rawBaseColor;
+	float4 lodColorMul = lodMultiplier.xxxx * float4(0.269999981, 0.281000018, 0.441000015, 0.441000015) + float4(0.0780000091, 0.09799999, -0.0349999964, 0.465000004);
+	// Reduce from 2.0 to 1.0 for HDR appropriate range
+	float4 lodColor = lodColorMul.xyzw;
+	bool useLodColorZ = lodColorMul.w > 0.5;
+	lodColor.xyz = max(lodColor.xyz, rawBaseColor.xyz);
+	lodColor.w = useLodColorZ ? lodColor.z : min(lodColor.w, rawBaseColor.z);
+	// Reduce the multiplier from 0.5 to 0.25 for better HDR balance
+	return (0.25 * lodMultiplier).xxx * (lodColor.xyw - rawBaseColor.xyz) + rawBaseColor;
 #		else
-    float4 lodColorMul = lodMultiplier.xxxx * float4(0.199999988, 0.441000015, 0.269999981, 0.281000018) + float4(0.300000012, 0.465000004, 0.0780000091, 0.09799999);
-    // Reduce from 2.0 to 1.0 for HDR
-    float3 lodColor = lodColorMul.zwy;
-    lodColor.xy = max(lodColor.xy, rawBaseColor.xy);
-    // Adjust the z calculation for HDR range
-    lodColor.z = lodColorMul.y > 0.5 ? max((lodMultiplier * 0.441 + -0.0349999964), rawBaseColor.z) : min(lodColor.z, rawBaseColor.z);
-    return lodColorMul.xxx * (lodColor - rawBaseColor.xyz) + rawBaseColor;
+	float4 lodColorMul = lodMultiplier.xxxx * float4(0.199999988, 0.441000015, 0.269999981, 0.281000018) + float4(0.300000012, 0.465000004, 0.0780000091, 0.09799999);
+	// Reduce from 2.0 to 1.0 for HDR
+	float3 lodColor = lodColorMul.zwy;
+	lodColor.xy = max(lodColor.xy, rawBaseColor.xy);
+	// Adjust the z calculation for HDR range
+	lodColor.z = lodColorMul.y > 0.5 ? max((lodMultiplier * 0.441 + -0.0349999964), rawBaseColor.z) : min(lodColor.z, rawBaseColor.z);
+	return lodColorMul.xxx * (lodColor - rawBaseColor.xyz) + rawBaseColor;
 #		endif
 }
 #	endif
