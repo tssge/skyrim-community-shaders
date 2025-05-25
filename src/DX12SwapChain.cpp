@@ -68,18 +68,26 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 
 		// Optional: Set HDR metadata if needed
 		DXGI_HDR_METADATA_HDR10 metadata = {};
-		metadata.RedPrimary[0] = 34000;  // BT.2020
-		metadata.RedPrimary[1] = 16000;
-		metadata.GreenPrimary[0] = 13250;
-		metadata.GreenPrimary[1] = 34500;
-		metadata.BluePrimary[0] = 7500;
-		metadata.BluePrimary[1] = 3000;
-		metadata.WhitePoint[0] = 15635;
-		metadata.WhitePoint[1] = 16450;
-		metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits
-		metadata.MinMasteringLuminance = 100;           // 0.01 nits
-		metadata.MaxContentLightLevel = 1000;
-		metadata.MaxFrameAverageLightLevel = 400;
+		// BT.709/sRGB primaries - matches original content creation
+		metadata.RedPrimary[0] = 0.640;  // x
+		metadata.RedPrimary[1] = 0.330;  // y
+		metadata.GreenPrimary[0] = 0.300; // x
+		metadata.GreenPrimary[1] = 0.600; // y
+		metadata.BluePrimary[0] = 0.150;  // x
+		metadata.BluePrimary[1] = 0.060;  // y
+
+		// D65 white point (same as sRGB)
+		metadata.WhitePoint[0] = 0.3127;
+		metadata.WhitePoint[1] = 0.3290;
+
+		// For OLED, allow for good HDR headroom but don't go extreme
+		metadata.MaxMasteringLuminance = 600 * 10000;  // 600 nits peak
+		metadata.MinMasteringLuminance = 0.0001 * 10000; // OLED blacks
+
+		// Conservative light levels since original assets were SDR-based
+		metadata.MaxContentLightLevel = 400;  // Peak brightness
+		metadata.MaxFrameAverageLightLevel = 200;  // Average scene brightness
+
 
 		swapChain->SetHDRMetaData(
 			DXGI_HDR_METADATA_TYPE_HDR10,

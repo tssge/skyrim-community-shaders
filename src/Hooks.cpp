@@ -462,6 +462,29 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	if (*ppSwapChain && globals::hdr->settings.enableHDR) {
 		IDXGISwapChain4* swapChain4 = nullptr;
 		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
+			DXGI_HDR_METADATA_HDR10 metadata = {};
+
+			// BT.709/sRGB primaries - matches original content creation
+			metadata.RedPrimary[0] = 0.640;  // x
+			metadata.RedPrimary[1] = 0.330;  // y
+			metadata.GreenPrimary[0] = 0.300; // x
+			metadata.GreenPrimary[1] = 0.600; // y
+			metadata.BluePrimary[0] = 0.150;  // x
+			metadata.BluePrimary[1] = 0.060;  // y
+
+			// D65 white point (same as sRGB)
+			metadata.WhitePoint[0] = 0.3127;
+			metadata.WhitePoint[1] = 0.3290;
+
+			// For OLED, allow for good HDR headroom but don't go extreme
+			metadata.MaxMasteringLuminance = 600 * 10000;  // 600 nits peak
+			metadata.MinMasteringLuminance = 0.0001 * 10000; // OLED blacks
+
+			// Conservative light levels since original assets were SDR-based
+			metadata.MaxContentLightLevel = 400;  // Peak brightness
+			metadata.MaxFrameAverageLightLevel = 200;  // Average scene brightness
+
+			swapChain4->SetHDRMetadata(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(DXGI_HDR_METADATA_HDR10), &metadata);
 			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
 			swapChain4->Release();
 		}
