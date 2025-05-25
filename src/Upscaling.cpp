@@ -437,6 +437,8 @@ void Upscaling::SharpenTAA()
 	state->EndPerfEvent();
 
 	context->CopyResource(outputTextureResource, upscalingTexture->resource.get());
+
+	globals::game::stateUpdateFlags->set(RE::BSGraphics::ShaderFlags::DIRTY_RENDERTARGET); // Run OMSetRenderTargets again
 }
 
 void Upscaling::CreateUpscalingResources()
