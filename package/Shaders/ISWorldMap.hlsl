@@ -52,7 +52,11 @@ PS_OUTPUT main(PS_INPUT input)
 		}
 	}
 
-	psout.Color = 0.0204081628 * color;
+	float4 finalColor = 0.0204081628 * color;
+	finalColor.rgb *= 1.2;
+	// Simple Reinhard tone mapping
+	finalColor.rgb = finalColor.rgb / (1.0 + finalColor.rgb);
+	psout.Color = finalColor;
 
 	return psout;
 }

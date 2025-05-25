@@ -53,7 +53,9 @@ PS_OUTPUT main(PS_INPUT input)
 	float alpha = (dot(4 * (pow(colorLR, 2) + pow(colorBT, 2)), 1.75) + luminance) * (1 - colorCC.w);
 	float2 edgeFadeFactor = 1 - pow(2 * abs(input.TexCoord - 0.5), 5);
 
-	psout.Color.xyz = 1.04 * luminance;
+	float3 finalColor = luminance * 1.2;
+	finalColor = finalColor / (1.0 + finalColor); // tone mapping
+	psout.Color.xyz = finalColor;
 	psout.Color.w = alpha * edgeFadeFactor.x * edgeFadeFactor.y;
 
 	return psout;
