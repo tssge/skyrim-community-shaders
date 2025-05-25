@@ -154,8 +154,6 @@ void HDR::ApplyHDR()
 		ID3D11UnorderedAccessView* uavs[1] = { outputTexture->uav.get() };
 		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
 
-		context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
-
 		context->CSSetShader(GetHDROutputCS(), nullptr, 0);
 
 		context->Dispatch(dispatchCount.x, dispatchCount.y, 1);
@@ -166,9 +164,6 @@ void HDR::ApplyHDR()
 
 		uavs[0] = { nullptr };
 		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-		cbs[0] = { nullptr };
-		context->CSSetConstantBuffers(0, ARRAYSIZE(cbs), cbs);
 
 		ID3D11ComputeShader* shader = nullptr;
 		context->CSSetShader(shader, nullptr, 0);
