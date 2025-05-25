@@ -4,7 +4,7 @@ Texture2D<float4> Framebuffer : register(t0);
 RWTexture2D<float4> HDROutput : register(u0);
 
 [numthreads(8, 8, 1)] void main(uint3 dispatchID
-: SV_DispatchThreadID) {
+								: SV_DispatchThreadID) {
 	float4 framebuffer = Framebuffer[dispatchID.xy];
 
 	// Linearize the incoming HDR buffer
