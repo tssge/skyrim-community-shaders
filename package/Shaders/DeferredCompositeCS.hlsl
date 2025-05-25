@@ -8,7 +8,7 @@
 #include "Common/VR.hlsli"
 
 Texture2D<float3> SpecularTexture : register(t0);
-Texture2D<unorm float3> AlbedoTexture : register(t1);
+Texture2D<float3> AlbedoTexture : register(t1);
 Texture2D<unorm float3> NormalRoughnessTexture : register(t2);
 Texture2D<unorm float3> MasksTexture : register(t3);
 
@@ -91,7 +91,7 @@ void SampleSSGISpecular(uint2 pixCoord, sh2 lobe, out float ao, out float3 il, i
 
 	float glossiness = normalGlossiness.z;
 
-	float3 color = Color::GammaToLinear(diffuseColor) + specularColor;
+	float3 color = diffuseColor + specularColor;     // Already in linear space
 
 #if defined(DYNAMIC_CUBEMAPS)
 
@@ -115,7 +115,7 @@ void SampleSSGISpecular(uint2 pixCoord, sh2 lobe, out float ao, out float3 il, i
 		float3 finalIrradiance = 0;
 
 #	if defined(INTERIOR)
-		float3 specularIrradiance = Color::GammaToLinear(EnvTexture.SampleLevel(LinearSampler, R, level));
+		float3 specularIrradiance = EnvTexture.SampleLevel(LinearSampler, R, level);
 
 		finalIrradiance += specularIrradiance;
 #	elif defined(SKYLIGHTING)
@@ -133,16 +133,16 @@ void SampleSSGISpecular(uint2 pixCoord, sh2 lobe, out float ao, out float3 il, i
 		float3 specularIrradiance = 1;
 
 		if (skylightingSpecular < 1.0)
-			specularIrradiance = Color::GammaToLinear(EnvTexture.SampleLevel(LinearSampler, R, level));
+			specularIrradiance = EnvTexture.SampleLevel(LinearSampler, R, level);
 
 		float3 specularIrradianceReflections = 1.0;
 
 		if (skylightingSpecular > 0.0)
-			specularIrradianceReflections = Color::GammaToLinear(EnvReflectionsTexture.SampleLevel(LinearSampler, R, level));
+			specularIrradianceReflections = EnvReflectionsTexture.SampleLevel(LinearSampler, R, level);
 
 		finalIrradiance = lerp(specularIrradiance, specularIrradianceReflections, skylightingSpecular);
 #	else
-		float3 specularIrradianceReflections = Color::GammaToLinear(EnvReflectionsTexture.SampleLevel(LinearSampler, R, level));
+		float3 specularIrradianceReflections = EnvReflectionsTexture.SampleLevel(LinearSampler, R, level);
 
 		finalIrradiance += specularIrradianceReflections;
 #	endif
@@ -177,7 +177,7 @@ void SampleSSGISpecular(uint2 pixCoord, sh2 lobe, out float ao, out float3 il, i
 
 #endif
 
-	color = Color::LinearToGamma(color);
+	color = color;
 
 #if defined(DEBUG)
 

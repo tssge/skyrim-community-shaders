@@ -722,6 +722,31 @@ namespace Hooks
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
+	struct CreateRenderTarget_WaterReflections {
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
+						 RE::BSGraphics::RenderTargetProperties* a_properties) {
+			if (globals::hdr->settings.enableHDR) {
+				a_properties->format = HDR::BSGraphics_HDR_Format;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_VolumetricLighting {
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
+						 RE::BSGraphics::RenderTargetProperties* a_properties) {
+			if (globals::hdr->settings.enableHDR) {
+				a_properties->format = HDR::BSGraphics_HDR_Format;
+			}
+			globals::state->ModifyRenderTarget(a_target, a_properties);
+			func(This, a_target, a_properties);
+		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+
 	struct BSShader__BeginTechnique_SetVertexShader
 	{
 		static void thunk(RE::BSGraphics::Renderer*, RE::BSGraphics::VertexShader* a_vertexShader)

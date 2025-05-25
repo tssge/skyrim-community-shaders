@@ -42,10 +42,6 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 	swapChainDesc.SwapEffect = a_swapChainDesc.SwapEffect;
 	swapChainDesc.Flags = a_swapChainDesc.Flags;
 
-	if (globals::hdr->settings.enableHDR) {
-		swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-	}
-
 	ffx::CreateContextDescFrameGenerationSwapChainForHwndDX12 ffxSwapChainDesc{};
 
 	ffxSwapChainDesc.desc = &swapChainDesc;
@@ -55,10 +51,40 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 	ffxSwapChainDesc.hwnd = a_swapChainDesc.OutputWindow;
 	ffxSwapChainDesc.swapchain = &swapChain;
 
+	if (globals::hdr->settings.enableHDR) {
+		// Use 10-bit format for HDR10
+		swapChainDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+	}
+
 	auto fidelityFX = globals::fidelityFX;
 
 	if (CreateContext(fidelityFX->swapChainContext, nullptr, ffxSwapChainDesc) != ffx::ReturnCode::Ok) {
 		logger::critical("[FidelityFX] Failed to create swap chain context!");
+	}
+
+	// Set HDR colorspace after swap chain is created
+	if (globals::hdr->settings.enableHDR) {
+		swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+
+		// Optional: Set HDR metadata if needed
+		DXGI_HDR_METADATA_HDR10 metadata = {};
+		metadata.RedPrimary[0] = 34000;   // BT.2020
+		metadata.RedPrimary[1] = 16000;
+		metadata.GreenPrimary[0] = 13250;
+		metadata.GreenPrimary[1] = 34500;
+		metadata.BluePrimary[0] = 7500;
+		metadata.BluePrimary[1] = 3000;
+		metadata.WhitePoint[0] = 15635;
+		metadata.WhitePoint[1] = 16450;
+		metadata.MaxMasteringLuminance = 1000 * 10000; // 1000 nits
+		metadata.MinMasteringLuminance = 100;          // 0.01 nits
+		metadata.MaxContentLightLevel = 1000;
+		metadata.MaxFrameAverageLightLevel = 400;
+
+		swapChain->SetHDRMetaData(
+			DXGI_HDR_METADATA_TYPE_HDR10,
+			sizeof(metadata),
+			&metadata);
 	}
 
 	DX::ThrowIfFailed(swapChain->GetBuffer(0, IID_PPV_ARGS(&swapChainBuffers[0])));
@@ -91,6 +117,11 @@ void DX12SwapChain::CreateInterop()
 	texDesc11.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 	texDesc11.CPUAccessFlags = 0;
 	texDesc11.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
+
+	if (globals::hdr->settings.enableHDR) {
+		texDesc11.Format = DXGI_FORMAT_R10G10B10A2_UNORM;  // Match swap chain format
+	}
+
 
 	swapChainBufferWrapped = new WrappedResource(texDesc11, d3d11Device.get(), d3d12Device.get());
 }
