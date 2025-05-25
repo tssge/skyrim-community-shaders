@@ -262,8 +262,8 @@ void FidelityFX::Upscale(Texture2D* a_color, Texture2D* a_alphaMask, float2 a_ji
 
 			// Ensure auto-exposure works correctly with HDR
 			dispatchParameters.enableAutoExposure = true;
-    	} else {
-    		dispatchParameters.flags = 0;
+		} else {
+			dispatchParameters.flags = 0;
 			dispatchParameters.preExposure = 1.0f;
 		}
 

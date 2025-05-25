@@ -722,9 +722,11 @@ namespace Hooks
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
-	struct CreateRenderTarget_WaterReflections {
+	struct CreateRenderTarget_WaterReflections
+	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
-						 RE::BSGraphics::RenderTargetProperties* a_properties) {
+			RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
 			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
@@ -734,9 +736,11 @@ namespace Hooks
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
-	struct CreateRenderTarget_VolumetricLighting {
+	struct CreateRenderTarget_VolumetricLighting
+	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
-						 RE::BSGraphics::RenderTargetProperties* a_properties) {
+			RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
 			if (globals::hdr->settings.enableHDR) {
 				a_properties->format = HDR::BSGraphics_HDR_Format;
 			}
@@ -745,7 +749,6 @@ namespace Hooks
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
-
 
 	struct BSShader__BeginTechnique_SetVertexShader
 	{

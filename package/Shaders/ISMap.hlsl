@@ -46,14 +46,14 @@ PS_OUTPUT main(PS_INPUT input)
 	}
 	float4 convolved = pow(colorLR, 2) + pow(colorBT, 2);
 
-    float3 mapColor = min(0.275,
-        dot(float3(0.2, 0.2, 0.15), convolved.xyz) +
-        min(0.1, 10 * convolved.w).xxx);
-    mapColor *= 1.2;
-    mapColor = mapColor / (1.0 + mapColor); // tone mapping
-    psout.Color.xyz = mapColor;
-    psout.Color.w = 2 * dot(1, mapColor.zzz);
+	float3 mapColor = min(0.275,
+		dot(float3(0.2, 0.2, 0.15), convolved.xyz) +
+			min(0.1, 10 * convolved.w).xxx);
+	mapColor *= 1.2;
+	mapColor = mapColor / (1.0 + mapColor);  // tone mapping
+	psout.Color.xyz = mapColor;
+	psout.Color.w = 2 * dot(1, mapColor.zzz);
 
-    return psout;
+	return psout;
 }
 #endif

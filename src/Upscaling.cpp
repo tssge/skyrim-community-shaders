@@ -610,27 +610,27 @@ void Upscaling::CreateFrameGenerationResources()
 
 	{
 		if (globals::hdr->settings.enableHDR && globals::dx12SwapChain->swapChain) {
-            DXGI_HDR_METADATA_HDR10 hdr10Metadata = {};
-            // Set standard HDR10 metadata for gaming content
-            hdr10Metadata.RedPrimary[0] = 34000;     // BT.2020 Red x (0.708)
-            hdr10Metadata.RedPrimary[1] = 16000;     // BT.2020 Red y (0.292)
-            hdr10Metadata.GreenPrimary[0] = 13250;   // BT.2020 Green x (0.170)
-            hdr10Metadata.GreenPrimary[1] = 34500;   // BT.2020 Green y (0.797)
-            hdr10Metadata.BluePrimary[0] = 7500;     // BT.2020 Blue x (0.131)
-            hdr10Metadata.BluePrimary[1] = 3000;     // BT.2020 Blue y (0.046)
-            hdr10Metadata.WhitePoint[0] = 15635;     // D65 White x (0.3127)
-            hdr10Metadata.WhitePoint[1] = 16450;     // D65 White y (0.3290)
+			DXGI_HDR_METADATA_HDR10 hdr10Metadata = {};
+			// Set standard HDR10 metadata for gaming content
+			hdr10Metadata.RedPrimary[0] = 34000;    // BT.2020 Red x (0.708)
+			hdr10Metadata.RedPrimary[1] = 16000;    // BT.2020 Red y (0.292)
+			hdr10Metadata.GreenPrimary[0] = 13250;  // BT.2020 Green x (0.170)
+			hdr10Metadata.GreenPrimary[1] = 34500;  // BT.2020 Green y (0.797)
+			hdr10Metadata.BluePrimary[0] = 7500;    // BT.2020 Blue x (0.131)
+			hdr10Metadata.BluePrimary[1] = 3000;    // BT.2020 Blue y (0.046)
+			hdr10Metadata.WhitePoint[0] = 15635;    // D65 White x (0.3127)
+			hdr10Metadata.WhitePoint[1] = 16450;    // D65 White y (0.3290)
 
-            // For gaming content, these are typical values:
-            hdr10Metadata.MaxMasteringLuminance = 1000 * 10000; // 1000 nits
-            hdr10Metadata.MinMasteringLuminance = 100;          // 0.01 nits
-            hdr10Metadata.MaxContentLightLevel = 1000;          // MaxCLL: 1000 nits
-            hdr10Metadata.MaxFrameAverageLightLevel = 400;      // MaxFALL: 400 nits
+			// For gaming content, these are typical values:
+			hdr10Metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits
+			hdr10Metadata.MinMasteringLuminance = 100;           // 0.01 nits
+			hdr10Metadata.MaxContentLightLevel = 1000;           // MaxCLL: 1000 nits
+			hdr10Metadata.MaxFrameAverageLightLevel = 400;       // MaxFALL: 400 nits
 
-            DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetaData(
-                DXGI_HDR_METADATA_TYPE_HDR10,
-                sizeof(DXGI_HDR_METADATA_HDR10),
-                &hdr10Metadata));
+			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetaData(
+				DXGI_HDR_METADATA_TYPE_HDR10,
+				sizeof(DXGI_HDR_METADATA_HDR10),
+				&hdr10Metadata));
 
 			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
 		}

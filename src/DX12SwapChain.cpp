@@ -68,7 +68,7 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 
 		// Optional: Set HDR metadata if needed
 		DXGI_HDR_METADATA_HDR10 metadata = {};
-		metadata.RedPrimary[0] = 34000;   // BT.2020
+		metadata.RedPrimary[0] = 34000;  // BT.2020
 		metadata.RedPrimary[1] = 16000;
 		metadata.GreenPrimary[0] = 13250;
 		metadata.GreenPrimary[1] = 34500;
@@ -76,8 +76,8 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 		metadata.BluePrimary[1] = 3000;
 		metadata.WhitePoint[0] = 15635;
 		metadata.WhitePoint[1] = 16450;
-		metadata.MaxMasteringLuminance = 1000 * 10000; // 1000 nits
-		metadata.MinMasteringLuminance = 100;          // 0.01 nits
+		metadata.MaxMasteringLuminance = 1000 * 10000;  // 1000 nits
+		metadata.MinMasteringLuminance = 100;           // 0.01 nits
 		metadata.MaxContentLightLevel = 1000;
 		metadata.MaxFrameAverageLightLevel = 400;
 
@@ -121,7 +121,6 @@ void DX12SwapChain::CreateInterop()
 	if (globals::hdr->settings.enableHDR) {
 		texDesc11.Format = DXGI_FORMAT_R10G10B10A2_UNORM;  // Match swap chain format
 	}
-
 
 	swapChainBufferWrapped = new WrappedResource(texDesc11, d3d11Device.get(), d3d12Device.get());
 }

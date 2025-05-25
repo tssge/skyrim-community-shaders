@@ -91,7 +91,7 @@ void SampleSSGISpecular(uint2 pixCoord, sh2 lobe, out float ao, out float3 il, i
 
 	float glossiness = normalGlossiness.z;
 
-	float3 color = diffuseColor + specularColor;     // Already in linear space
+	float3 color = diffuseColor + specularColor;  // Already in linear space
 
 #if defined(DYNAMIC_CUBEMAPS)
 
