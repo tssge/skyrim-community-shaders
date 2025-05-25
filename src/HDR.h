@@ -43,8 +43,20 @@ public:
 	void SaveSettings(json& o_json);
 	void LoadSettings(json& o_json);
 	void RestoreDefaultSettings();
+	void SetupResources();
+
+	void ApplyHDR();
+
+	void DestroyResources() const;
+	void ClearShaderCache();
+
+	Texture2D* hdrTexture = nullptr;
+	Texture2D* outputTexture = nullptr;
+
+	ID3D11ComputeShader* hdrOutputCS = nullptr;
+	ID3D11ComputeShader* GetHDROutputCS();
 
 	// Format constants to be used elsewhere
-	static constexpr auto BSGraphics_HDR_Format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
+	static constexpr auto BSGraphics_HDR_Format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 	static constexpr auto BSGraphics_HDR_R10_Format = RE::BSGraphics::Format::kR10G10B10A2_UNORM;
 };

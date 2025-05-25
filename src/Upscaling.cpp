@@ -696,6 +696,7 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
+	globals::hdr->ApplyHDR();
 	globals::state->RenderReShade();
 
 	if (!d3d12Interop || !settings.frameGenerationMode) {
