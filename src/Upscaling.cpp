@@ -457,7 +457,7 @@ void Upscaling::CreateUpscalingResources()
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 	if (globals::hdr->settings.enableHDR) {
-		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+		texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
@@ -614,25 +614,25 @@ void Upscaling::CreateFrameGenerationResources()
 		if (globals::hdr->settings.enableHDR && globals::dx12SwapChain->swapChain) {
 			DXGI_HDR_METADATA_HDR10 metadata = {};
 
-			// BT.709/sRGB primaries - matches original content creation
-			metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
-			metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
-			metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
-			metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
-			metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
-			metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
+    		// BT.709/sRGB primaries - matches original content creation
+    		metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
+    		metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
+    		metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
+    		metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
+    		metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
+    		metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
 
-			// D65 white point (same as sRGB)
-			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
-			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+    		// D65 white point (same as sRGB)
+    		metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+    		metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
 
-			// For OLED, allow for good HDR headroom but don't go extreme
-			metadata.MaxMasteringLuminance = static_cast<UINT>(600 * 10000);     // 600 nits peak
-			metadata.MinMasteringLuminance = static_cast<UINT>(0.0001 * 10000);  // OLED blacks
+    		// Highlights should reach 4k nits with remastered buffers (? validate)
+    		metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);     // 4000 nits peak
+    		metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);    // Keep reasonable black
 
-			// Conservative light levels since original assets were SDR-based
-			metadata.MaxContentLightLevel = static_cast<UINT16>(400);       // Peak brightness
-			metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(200);  // Average scene brightness
+    		// Some highlights should reach 4k nits? validate
+    		metadata.MaxContentLightLevel = static_cast<UINT16>(4000);       // Peak brightness
+    		metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
 
 			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetaData(
 				DXGI_HDR_METADATA_TYPE_HDR10,

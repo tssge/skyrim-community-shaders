@@ -80,13 +80,13 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 		metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
 		metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
 
-		// For OLED, allow for good HDR headroom but don't go extreme
-		metadata.MaxMasteringLuminance = static_cast<UINT>(600 * 10000);     // 600 nits peak
-		metadata.MinMasteringLuminance = static_cast<UINT>(0.0001 * 10000);  // OLED blacks
+		// Highlights should reach 4k nits with remastered buffers (? validate)
+		metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);     // 4000 nits peak
+		metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);    // Keep reasonable black
 
-		// Conservative light levels since original assets were SDR-based
-		metadata.MaxContentLightLevel = static_cast<UINT16>(400);       // Peak brightness
-		metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(200);  // Average scene brightness
+		// Some highlights should reach 4k nits? validate
+		metadata.MaxContentLightLevel = static_cast<UINT16>(4000);       // Peak brightness
+		metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
 
 		swapChain->SetHDRMetaData(
 			DXGI_HDR_METADATA_TYPE_HDR10,
