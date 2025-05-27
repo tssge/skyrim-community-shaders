@@ -33,6 +33,11 @@ jobs:
     runs-on: windows-latest
     outputs:
       version: ${{ steps.get_version.outputs.version }}
+    env:
+      # Set environment variables for vcpkg
+      VCPKG_FEATURE_FLAGS: manifests,registries
+      VCPKG_DISABLE_METRICS: true
+      
     steps:
         - uses: actions/checkout@v3
           with:
@@ -40,73 +45,37 @@ jobs:
             fetch-depth: 0
             
         - uses: ilammy/msvc-dev-cmd@v1.10.0
-        
-        # Cache vcpkg binaries and downloads to speed up bootstrapping
-        - name: Cache vcpkg binary
-          id: cache-vcpkg-binary
-          uses: actions/cache@v3
-          with:
-            path: |
-              vcpkg/vcpkg.exe
-              vcpkg/downloads
-            key: ${{ runner.os }}-vcpkg-binary-1
-            
-        # Cache vcpkg installed packages
-        - name: Cache vcpkg installed packages
-          id: cache-vcpkg-installed
-          uses: actions/cache@v3
-          with:
-            path: |
-              vcpkg/installed
-              vcpkg/packages
-              vcpkg/buildtrees
-            key: ${{ runner.os }}-vcpkg-installed-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
-            restore-keys: |
-              ${{ runner.os }}-vcpkg-installed-
-        
-        # Set up vcpkg with the appropriate configuration
-        - name: Setup vcpkg
-          run: |
-            # Clone vcpkg if not already present
-            if (-not (Test-Path vcpkg)) {
-              git clone https://github.com/microsoft/vcpkg.git
-            }
-            
-            # Bootstrap vcpkg if not already done
-            if (-not (Test-Path vcpkg/vcpkg.exe)) {
-              cd vcpkg
-              ./bootstrap-vcpkg.bat
-              cd ..
-            }
-            
-            # Set VCPKG_ROOT environment variable for this workflow
-            echo "VCPKG_ROOT=${{ github.workspace }}/vcpkg" >> $GITHUB_ENV
-            
-        # Install dependencies using vcpkg
-        - name: Install dependencies
-          run: |
-            ./vcpkg/vcpkg.exe install --triplet=x64-windows --x-install-root=${{ github.workspace }}/vcpkg/installed
-          env:
-            VCPKG_ROOT: ${{ github.workspace }}/vcpkg
-            
-        # Cache CMake build output
-        - name: Cache CMake build output
-          uses: actions/cache@v3
-          with:
-            path: build/ALL
-            key: ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp', '.gitmodules', 'extern/**') }}
-            restore-keys: |
-              ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-
-              ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-
 
-        - name: Build using run-cmake with ALL preset
-          uses: lukka/run-cmake@v10
+        # Cache the CMake build directory (including vcpkg dependencies)
+        - name: Cache build directory
+          uses: actions/cache@v3
           with:
-            configurePreset: ALL
-            buildPreset: ALL
-          env:
-            VCPKG_ROOT: ${{ github.workspace }}/vcpkg
+            path: |
+              build
+              vcpkg_installed
+            key: ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json', '.gitmodules') }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp') }}
+            restore-keys: |
+              ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json', '.gitmodules') }}-
+              ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-
+
+        # Clone vcpkg for CMake to use (but don't run it directly)
+        - name: Clone vcpkg
+          run: |
+            git clone https://github.com/microsoft/vcpkg.git
+            .\vcpkg\bootstrap-vcpkg.bat
             
+        - name: Configure and Build with CMake
+          run: |
+            # Create build directory if it doesn't exist
+            mkdir -p build/ALL
+            cd build/ALL
+            
+            # Configure with CMake, letting it handle vcpkg integration
+            cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+            
+            # Build
+            cmake --build . --config Release
+          
         - name: extract version from CMake
           id: get_version
           shell: bash
