@@ -87,7 +87,7 @@ void Skylighting::SetupResources()
 			.Height = probeArrayDims[1],
 			.Depth = probeArrayDims[2],
 			.MipLevels = 1,
-			.Format = DXGI_FORMAT_R16G16B16A16_FLOAT,
+			.Format = DXGI_FORMAT_R11G11B10_FLOAT,
 			.Usage = D3D11_USAGE_DEFAULT,
 			.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS,
 			.CPUAccessFlags = 0,
@@ -113,7 +113,7 @@ void Skylighting::SetupResources()
 		texProbeArray->CreateSRV(srvDesc);
 		texProbeArray->CreateUAV(uavDesc);
 
-		texDesc.Format = srvDesc.Format = uavDesc.Format = DXGI_FORMAT_R8_UINT;
+		texDesc.Format = srvDesc.Format = uavDesc.Format = DXGI_FORMAT_R16_UINT;
 
 		texAccumFramesArray = new Texture3D(texDesc);
 		texAccumFramesArray->CreateSRV(srvDesc);

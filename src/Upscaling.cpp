@@ -698,24 +698,22 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-	globals::hdr->ApplyHDR();
-	globals::state->RenderReShade();
+    // First, let ReShade process the content in SDR/linear space
+    globals::state->RenderReShade();
 
-	if (!d3d12Interop || !settings.frameGenerationMode) {
-		return;
-	}
+    // Finally, apply HDR transformation as the last step before presentation
+    globals::hdr->ApplyHDR();
 
-	auto context = globals::d3d::context;
-	auto renderer = globals::game::renderer;
-
-	auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-
-	ID3D11Resource* swapChainResource;
-	swapChain.SRV->GetResource(&swapChainResource);
-
-	context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
-
-	useHUDLess = true;
+    // Then copy to HUDLess buffer (still in SDR/linear space) if frame generation is active
+    if (d3d12Interop && settings.frameGenerationMode) {
+        auto context = globals::d3d::context;
+        auto renderer = globals::game::renderer;
+        auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+        ID3D11Resource* swapChainResource;
+        swapChain.SRV->GetResource(&swapChainResource);
+        context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
+        useHUDLess = true;
+    }
 }
 
 void Upscaling::TimerSleepQPC(int64_t targetQPC)
