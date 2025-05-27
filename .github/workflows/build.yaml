@@ -46,36 +46,37 @@ jobs:
             
         - uses: ilammy/msvc-dev-cmd@v1.10.0
 
-        # Cache the CMake build directory (including vcpkg dependencies)
-        - name: Cache build directory
+        # Setup vcpkg from Microsoft's official action
+        - name: Setup vcpkg
+          uses: lukka/get-cmake@latest
+          
+        # Cache the vcpkg installed packages
+        - name: Cache vcpkg packages
           uses: actions/cache@v3
           with:
             path: |
-              build
-              vcpkg_installed
-            key: ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json', '.gitmodules') }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp') }}
+              ${{ github.workspace }}/vcpkg_installed
+            key: ${{ runner.os }}-vcpkg-installed-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
             restore-keys: |
-              ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json', '.gitmodules') }}-
-              ${{ runner.os }}-build-cache-${{ inputs.cache-key-suffix || 'default' }}-
+              ${{ runner.os }}-vcpkg-installed-
 
-        # Clone vcpkg for CMake to use (but don't run it directly)
-        - name: Clone vcpkg
+        # Configure CMake with proper vcpkg toolchain integration
+        - name: Configure CMake
           run: |
+            # Clone vcpkg for use as our toolchain
             git clone https://github.com/microsoft/vcpkg.git
-            .\vcpkg\bootstrap-vcpkg.bat
+            cd vcpkg
+            .\bootstrap-vcpkg.bat -disableMetrics
+            cd ..
             
-        - name: Configure and Build with CMake
-          run: |
-            # Create build directory if it doesn't exist
-            mkdir -p build/ALL
-            cd build/ALL
-            
-            # Configure with CMake, letting it handle vcpkg integration
-            cmake ../.. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
-            
-            # Build
-            cmake --build . --config Release
+            # Configure using the CMakePresets.json with vcpkg toolchain
+            cmake --preset=ALL -DCMAKE_TOOLCHAIN_FILE="${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake"
           
+        # Build the project
+        - name: Build
+          run: |
+            cmake --build --preset=ALL
+            
         - name: extract version from CMake
           id: get_version
           shell: bash
