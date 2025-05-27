@@ -3,7 +3,7 @@
 
 #include "State.h"
 #include "Upscaling.h"
-
+#include "HDR.h"
 #include "DX12SwapChain.h"
 #include <dx12/ffx_api_dx12.hpp>
 
