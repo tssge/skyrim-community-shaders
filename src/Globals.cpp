@@ -41,6 +41,7 @@
 
 #include "Features/LightLimitFix/ParticleLights.h"
 
+#include "HDR.h"
 #include "TruePBR.h"
 
 namespace globals
@@ -138,6 +139,7 @@ namespace globals
 	Upscaling* upscaling = nullptr;
 	DX12SwapChain* dx12SwapChain = nullptr;
 	FidelityFX* fidelityFX = nullptr;
+	HDR* hdr = nullptr;
 
 	void OnInit()
 	{
@@ -150,6 +152,37 @@ namespace globals
 		upscaling = Upscaling::GetSingleton();
 		dx12SwapChain = DX12SwapChain::GetSingleton();
 		fidelityFX = FidelityFX::GetSingleton();
+<<<<<<< HEAD
+=======
+		hdr = HDR::GetSingleton();
+
+		features::cloudShadows = CloudShadows::GetSingleton();
+		features::dynamicCubemaps = DynamicCubemaps::GetSingleton();
+		features::extendedMaterials = ExtendedMaterials::GetSingleton();
+		features::grassCollision = GrassCollision::GetSingleton();
+		features::grassLighting = GrassLighting::GetSingleton();
+		features::hairSpecular = HairSpecular::GetSingleton();
+		features::ibl = IBL::GetSingleton();
+		features::lightLimitFix = LightLimitFix::GetSingleton();
+		features::lodBlending = LODBlending::GetSingleton();
+		features::interiorSunShadows = InteriorSunShadows::GetSingleton();
+		features::inverseSquareLighting = InverseSquareLighting::GetSingleton();
+		features::screenSpaceGI = ScreenSpaceGI::GetSingleton();
+		features::screenSpaceShadows = ScreenSpaceShadows::GetSingleton();
+		features::skylighting = Skylighting::GetSingleton();
+		features::terrainVariation = TerrainVariation::GetSingleton();
+		features::skySync = SkySync::GetSingleton();
+		features::subsurfaceScattering = SubsurfaceScattering::GetSingleton();
+		features::terrainBlending = TerrainBlending::GetSingleton();
+		features::terrainHelper = TerrainHelper::GetSingleton();
+		features::terrainShadows = TerrainShadows::GetSingleton();
+		features::volumetricLighting = VolumetricLighting::GetSingleton();
+		features::vr = VR::GetSingleton();
+		features::waterEffects = WaterEffects::GetSingleton();
+		features::wetnessEffects = WetnessEffects::GetSingleton();
+
+		features::llf::particleLights = ParticleLights::GetSingleton();
+>>>>>>> 7d5aac61 (HDR)
 	}
 
 	void ReInit()

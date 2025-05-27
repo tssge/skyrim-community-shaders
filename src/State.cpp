@@ -11,6 +11,7 @@
 #include "Features/PerformanceOverlay.h"
 #include "Features/TerrainBlending.h"
 #include "Features/TerrainHelper.h"
+#include "HDR.h"
 #include "Menu.h"
 #include "SettingsOverrideManager.h"
 #include "ShaderCache.h"
@@ -140,6 +141,7 @@ void State::Setup()
 	globals::deferred->SetupResources();
 	if (!upscalerLoaded)
 		globals::upscaling->CreateUpscalingResources();
+	globals::hdr->SetupResources();
 	SetupReShade();
 	if (initialized)
 		return;
@@ -337,7 +339,24 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 			logger::warn("Missing settings for Upscaling, using default.");
 		}
 
+<<<<<<< HEAD
 		// Feature loading with new override tracking system
+=======
+		auto hdr = globals::hdr;
+		auto& hdrJson = settings[HDR::GetShortName()];
+		if (hdrJson.is_object()) {
+			logger::info("Loading HDR settings");
+			try {
+				hdr->LoadSettings(hdrJson);
+			} catch (...) {
+				logger::warn("Invalid settings for HDR, using default.");
+				hdr->RestoreDefaultSettings();
+			}
+		} else {
+			logger::warn("Missing settings for HDR, using default.");
+		}
+
+>>>>>>> 7d5aac61 (HDR)
 		for (auto* feature : Feature::GetFeatureList()) {
 			try {
 				const std::string featureName = feature->GetShortName();
@@ -443,6 +462,10 @@ void State::Save(ConfigMode a_configMode)
 	auto upscaling = globals::upscaling;
 	auto& upscalingJson = settings[upscaling->GetShortName()];
 	upscaling->SaveSettings(upscalingJson);
+
+	auto hdr = globals::hdr;
+	auto& hdrJson = settings[hdr->GetShortName()];
+	hdr->SaveSettings(hdrJson);
 
 	json originalShaders;
 	ForEachShaderTypeWithIndex([&](auto type, int classIndex) {
@@ -859,6 +882,10 @@ void State::SetupReShade()
 		reshade::api::resource reShadeSwapChainResource = reShadeDevice->get_resource_from_view(reshade::api::resource_view{ reinterpret_cast<uintptr_t>(swapChainRTV) });
 		reshade::api::resource_desc reShadeSwapChainDesc = reShadeDevice->get_resource_desc(reShadeSwapChainResource);
 
+		if (globals::hdr->settings.enableHDR) {
+			reShadeSwapChainDesc.texture.format = reshade::api::format::r16g16b16a16_float;
+			reShadeRuntime->set_color_space(reshade::api::color_space::extended_srgb_linear);
+		}
 		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 0), 0, 1, 0, 1), &reshadeSwapChainRTV);
 		reShadeDevice->create_resource_view(reShadeSwapChainResource, reshade::api::resource_usage::render_target, reshade::api::resource_view_desc(reshade::api::format_to_default_typed(reShadeSwapChainDesc.texture.format, 1), 0, 1, 0, 1), &reshadeSwapChainRTVsRGB);
 
