@@ -1,8 +1,8 @@
 #include "Common/Color.hlsli"
 
-Texture2D<float4>   Framebuffer : register(t0);
-Texture2D<float4>   UI 			: register(t1);
-RWTexture2D<float4> HDROutput   : register(u0);
+Texture2D<float4> Framebuffer : register(t0);
+Texture2D<float4> UI : register(t1);
+RWTexture2D<float4> HDROutput : register(u0);
 
 cbuffer PerFrame : register(b0)
 {

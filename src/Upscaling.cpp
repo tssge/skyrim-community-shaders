@@ -614,25 +614,25 @@ void Upscaling::CreateFrameGenerationResources()
 		if (globals::hdr->settings.enableHDR && globals::dx12SwapChain->swapChain) {
 			DXGI_HDR_METADATA_HDR10 metadata = {};
 
-    		// BT.709/sRGB primaries - matches original content creation
-    		metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
-    		metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
-    		metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
-    		metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
-    		metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
-    		metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
+			// BT.709/sRGB primaries - matches original content creation
+			metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
+			metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
+			metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
+			metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
+			metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
+			metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
 
-    		// D65 white point (same as sRGB)
-    		metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
-    		metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+			// D65 white point (same as sRGB)
+			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
 
-    		// Highlights should reach 4k nits with remastered buffers (? validate)
-    		metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);     // 4000 nits peak
-    		metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);    // Keep reasonable black
+			// Highlights should reach 4k nits with remastered buffers (? validate)
+			metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);   // 4000 nits peak
+			metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);  // Keep reasonable black
 
-    		// Some highlights should reach 4k nits? validate
-    		metadata.MaxContentLightLevel = static_cast<UINT16>(4000);       // Peak brightness
-    		metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
+			// Some highlights should reach 4k nits? validate
+			metadata.MaxContentLightLevel = static_cast<UINT16>(4000);      // Peak brightness
+			metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
 
 			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetaData(
 				DXGI_HDR_METADATA_TYPE_HDR10,
@@ -698,22 +698,22 @@ void Upscaling::CopyBuffersToSharedResources()
 
 void Upscaling::PostDisplay()
 {
-    // First, let ReShade process the content in SDR/linear space
-    globals::state->RenderReShade();
+	// First, let ReShade process the content in SDR/linear space
+	globals::state->RenderReShade();
 
-    // Finally, apply HDR transformation as the last step before presentation
-    globals::hdr->ApplyHDR();
+	// Finally, apply HDR transformation as the last step before presentation
+	globals::hdr->ApplyHDR();
 
-    // Then copy to HUDLess buffer (still in SDR/linear space) if frame generation is active
-    if (d3d12Interop && settings.frameGenerationMode) {
-        auto context = globals::d3d::context;
-        auto renderer = globals::game::renderer;
-        auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-        ID3D11Resource* swapChainResource;
-        swapChain.SRV->GetResource(&swapChainResource);
-        context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
-        useHUDLess = true;
-    }
+	// Then copy to HUDLess buffer (still in SDR/linear space) if frame generation is active
+	if (d3d12Interop && settings.frameGenerationMode) {
+		auto context = globals::d3d::context;
+		auto renderer = globals::game::renderer;
+		auto& swapChain = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
+		ID3D11Resource* swapChainResource;
+		swapChain.SRV->GetResource(&swapChainResource);
+		context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
+		useHUDLess = true;
+	}
 }
 
 void Upscaling::TimerSleepQPC(int64_t targetQPC)

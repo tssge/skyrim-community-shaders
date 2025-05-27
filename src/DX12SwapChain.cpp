@@ -81,11 +81,11 @@ void DX12SwapChain::CreateSwapChain(IDXGIAdapter* adapter, DXGI_SWAP_CHAIN_DESC 
 		metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
 
 		// Highlights should reach 4k nits with remastered buffers (? validate)
-		metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);     // 4000 nits peak
-		metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);    // Keep reasonable black
+		metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);   // 4000 nits peak
+		metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);  // Keep reasonable black
 
 		// Some highlights should reach 4k nits? validate
-		metadata.MaxContentLightLevel = static_cast<UINT16>(4000);       // Peak brightness
+		metadata.MaxContentLightLevel = static_cast<UINT16>(4000);      // Peak brightness
 		metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
 
 		swapChain->SetHDRMetaData(
