@@ -286,7 +286,7 @@ void ScreenSpaceShadows::SetupResources()
 		shadowMask.texture->GetDesc(&texDesc);
 		shadowMask.SRV->GetDesc(&srvDesc);
 
-		texDesc.Format = DXGI_FORMAT_R8_UNORM;
+		texDesc.Format = DXGI_FORMAT_R16_FLOAT;
 		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 		srvDesc.Format = texDesc.Format;
