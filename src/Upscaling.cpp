@@ -1,6 +1,7 @@
 #include "Upscaling.h"
 
 #include "DX12SwapChain.h"
+#include "HDR.h"
 #include "Hooks.h"
 #include "State.h"
 #include <Windows.h>
@@ -526,7 +527,11 @@ void Upscaling::CreateUpscalingResources()
 
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	if (globals::hdr->settings.enableHDR) {
+		texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	} else {
+		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	srvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
 
@@ -578,7 +583,11 @@ void Upscaling::CreateFrameGenerationResources()
 
 	texDesc.MiscFlags = D3D11_RESOURCE_MISC_SHARED | D3D11_RESOURCE_MISC_SHARED_NTHANDLE;
 
-	texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	if (globals::hdr->settings.enableHDR) {
+		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+	} else {
+		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	}
 	srvDesc.Format = texDesc.Format;
 	rtvDesc.Format = texDesc.Format;
 	uavDesc.Format = texDesc.Format;
@@ -672,7 +681,40 @@ void Upscaling::CreateFrameGenerationResources()
 		}
 	}
 
-	copyDepthToSharedBufferCS = (ID3D11ComputeShader*)Util::CompileShader(L"Data\\Shaders\\FrameGeneration\\CopyDepthToSharedBufferCS.hlsl", {}, "cs_5_0");
+	{
+		if (globals::hdr->settings.enableHDR && globals::dx12SwapChain->swapChain) {
+			DXGI_HDR_METADATA_HDR10 metadata = {};
+
+			// BT.709/sRGB primaries - matches original content creation
+			metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
+			metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
+			metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
+			metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
+			metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
+			metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
+
+			// D65 white point (same as sRGB)
+			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+
+			// Highlights should reach 4k nits with remastered buffers (? validate)
+			metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);   // 4000 nits peak
+			metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);  // Keep reasonable black
+
+			// Some highlights should reach 4k nits? validate
+			metadata.MaxContentLightLevel = static_cast<UINT16>(4000);      // Peak brightness
+			metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
+
+			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetHDRMetaData(
+				DXGI_HDR_METADATA_TYPE_HDR10,
+				sizeof(DXGI_HDR_METADATA_HDR10),
+				&metadata));
+
+			DX::ThrowIfFailed(globals::dx12SwapChain->swapChain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020));
+		}
+	}
+
+	copyDepthToSharedBufferCS = static_cast<ID3D11ComputeShader*>(Util::CompileShader(L"Data\\Shaders\\FrameGeneration\\CopyDepthToSharedBufferCS.hlsl", {}, "cs_5_0"));
 }
 
 void Upscaling::CopyBuffersToSharedResources()
@@ -741,6 +783,7 @@ void Upscaling::PostDisplay()
 	context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
 
 	useHUDLess = true;
+	globals::hdr->ApplyHDR();
 }
 
 void Upscaling::TimerSleepQPC(int64_t targetQPC)

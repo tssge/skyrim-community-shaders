@@ -9,6 +9,7 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
+#include "HDR.h"
 #include "Upscaling.h"
 
 void LoggingCallback(sl::LogType type, const char* msg)
@@ -334,7 +335,11 @@ void Streamline::Upscale(Texture2D* a_upscaleTexture, Texture2D* a_alphaMask, sl
 		dlssOptions.mode = sl::DLSSMode::eMaxQuality;
 		dlssOptions.outputWidth = (uint)state->screenSize.x;
 		dlssOptions.outputHeight = (uint)state->screenSize.y;
-		dlssOptions.colorBuffersHDR = sl::Boolean::eFalse;
+		if (globals::hdr->settings.enableHDR) {
+			dlssOptions.colorBuffersHDR = sl::Boolean::eTrue;
+		} else {
+			dlssOptions.colorBuffersHDR = sl::Boolean::eFalse;
+		}
 		dlssOptions.preExposure = 1.0f;
 		dlssOptions.sharpness = 0.0f;
 

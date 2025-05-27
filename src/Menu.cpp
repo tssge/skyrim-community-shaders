@@ -11,6 +11,7 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
+<<<<<<< HEAD
 #include "Feature.h"
 #include "FeatureIssues.h"
 #include "FeatureVersions.h"
@@ -21,6 +22,9 @@
 #include "Menu/OverlayRenderer.h"
 #include "Menu/SettingsTabRenderer.h"
 #include "Menu/ThemeManager.h"
+=======
+#include "HDR.h"
+>>>>>>> 7d5aac61 (HDR)
 #include "ShaderCache.h"
 #include "State.h"
 #include "Streamline.h"
@@ -400,10 +404,47 @@ void Menu::DrawDisableAtBootSettings()
  */
 void Menu::DrawDisplaySettings()
 {
+<<<<<<< HEAD
 	DisplaySettingsRenderer::RenderDisplaySettings(
 		globals::state->upscalerLoaded,
 		[](const std::string& featureName) { return globals::state->IsFeatureDisabled(featureName); },
 		[]() { globals::upscaling->DrawSettings(); });
+=======
+	if (!globals::state->upscalerLoaded) {
+		auto& themeSettings = settings.Theme;
+
+		const std::vector<std::pair<std::string, std::function<void()>>> features = {
+			{ "Upscaling", []() { globals::upscaling->DrawSettings(); } },
+			{ "High Dynamic Range", []() { globals::hdr->DrawSettings(); } }
+		};
+
+		for (const auto& [featureName, drawFunc] : features) {
+			bool isDisabled = globals::state->IsFeatureDisabled(featureName);
+
+			if (featureName == "Frame Generation" && REL::Module::IsVR()) {
+				isDisabled = true;
+			}
+
+			if (!isDisabled) {
+				if (ImGui::CollapsingHeader(featureName.c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)) {
+					drawFunc();
+				}
+			} else {
+				ImGui::PushStyleColor(ImGuiCol_Text, themeSettings.StatusPalette.Disable);
+				ImGui::CollapsingHeader(featureName.c_str(), ImGuiTreeNodeFlags_NoTreePushOnOpen);
+				ImGui::PopStyleColor();
+				if (auto _tt = Util::HoverTooltipWrapper()) {
+					ImGui::Text(
+						"%s has been disabled at boot. "
+						"Reenable in the Advanced -> Disable at Boot Menu.",
+						featureName.c_str());
+				}
+			}
+		}
+	} else {
+		ImGui::Text("Display options disabled due to Skyrim Upscaler");
+	}
+>>>>>>> 7d5aac61 (HDR)
 }
 
 void Menu::DrawFooter()

@@ -1,5 +1,6 @@
 #pragma once
 
+class HDR;
 struct CloudShadows;
 struct DynamicCubemaps;
 struct ExtendedMaterials;
@@ -138,6 +139,7 @@ namespace globals
 	extern Upscaling* upscaling;
 	extern DX12SwapChain* dx12SwapChain;
 	extern FidelityFX* fidelityFX;
+	extern HDR* hdr;
 
 	void OnInit();
 	void ReInit();
