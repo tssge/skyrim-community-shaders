@@ -1,5 +1,4 @@
 name: build Community Shaders and addons
-
 on:
   push:
     tags:
@@ -24,7 +23,6 @@ on:
 permissions:
   contents: write
   pull-requests: write
-
 jobs:
   build:
     if: >
@@ -39,41 +37,71 @@ jobs:
         - uses: actions/checkout@v3
           with:
             submodules: recursive
-
+            fetch-depth: 0
+            
         - uses: ilammy/msvc-dev-cmd@v1.10.0
 
+        # Cache vcpkg installed packages
+        - name: Cache vcpkg
+          uses: actions/cache@v3
+          id: vcpkg-cache
+          with:
+            path: |
+              C:/vcpkg/installed
+              C:/vcpkg/packages
+              C:/vcpkg/buildtrees
+              !C:/vcpkg/buildtrees/**/*.log
+              !C:/vcpkg/buildtrees/**/*.gitignore
+            key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+            restore-keys: |
+              ${{ runner.os }}-vcpkg-
+
+        # Cache the vcpkg binary
+        - name: Cache vcpkg binary
+          uses: actions/cache@v3
+          id: vcpkg-binary-cache
+          with:
+            path: |
+              C:/vcpkg/vcpkg.exe
+              C:/vcpkg/downloads
+            key: ${{ runner.os }}-vcpkg-binary-1
+            
         - uses: lukka/run-vcpkg@v11.5
           with:
             vcpkgJsonGlob: vcpkg.json
-
+            runVcpkgInstall: true
+            
+        # Cache CMake build output with a more precise cache key for better hits
         - name: Cache CMake build output
           uses: actions/cache@v3
           with:
             path: build/ALL
-            key: ${{ runner.os }}-build-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('.gitmodules', 'extern/**', 'CMakePresets.json', 'vcpkg.json', 'vcpkg-configuration.json', '**/CMakeLists.txt', '**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp') }}
+            key: ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp', '.gitmodules', 'extern/**') }}
             restore-keys: |
-              ${{ runner.os }}-build-
+              ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-
+              ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-
+              ${{ runner.os }}-cmake-
 
         - name: Build using run-cmake with ALL preset
           uses: lukka/run-cmake@v10
           with:
             configurePreset: ALL
             buildPreset: ALL
-
+            
         - name: extract version from CMake
           id: get_version
           shell: bash
           run: |
             VERSION=$(grep 'CMAKE_PROJECT_VERSION:STATIC' build/ALL/CMakeCache.txt | cut -d= -f2)
             echo "version=$VERSION" >> $GITHUB_OUTPUT
-
+            
         - name: Upload dist artifacts
           if: success()
           uses: actions/upload-artifact@v4
           with:
             name: dist-artifacts
             path: dist/
-
+            
   prerelease:
     needs: build
     if: github.event_name == 'pull_request_target'
@@ -84,7 +112,7 @@ jobs:
         with:
           name: dist-artifacts
           path: dist/
-
+          
       - name: upload prerelease
         uses: ncipollo/release-action@v1
         with:
@@ -96,7 +124,7 @@ jobs:
           allowUpdates: true
           replacesArtifacts: true
           removeArtifacts: true
-
+          
       - name: comment on PR
         if: success()
         uses: thollander/actions-comment-pull-request@v3
@@ -105,7 +133,7 @@ jobs:
           message: |
             ✅ A pre-release build is available for this PR:
             [Download](https://github.com/${{ github.repository }}/releases/tag/v${{ needs.build.outputs.version }}-pr${{ github.event.pull_request.number }})
-
+            
   release:
     needs: build
     if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
@@ -116,7 +144,7 @@ jobs:
         with:
           name: dist-artifacts
           path: dist/
-
+          
       - name: create tagged release
         uses: ncipollo/release-action@v1
         with:
