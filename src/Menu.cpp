@@ -11,6 +11,7 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
+#include "HDR.h"
 #include "ShaderCache.h"
 #include "State.h"
 #include "Streamline.h"
@@ -977,7 +978,8 @@ void Menu::DrawDisplaySettings()
 		auto& themeSettings = settings.Theme;
 
 		const std::vector<std::pair<std::string, std::function<void()>>> features = {
-			{ "Upscaling", []() { globals::upscaling->DrawSettings(); } }
+			{ "Upscaling", []() { globals::upscaling->DrawSettings(); } },
+			{ "High Dynamic Range", []() { globals::hdr->DrawSettings(); } }
 		};
 
 		for (const auto& [featureName, drawFunc] : features) {

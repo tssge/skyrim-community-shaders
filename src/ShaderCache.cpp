@@ -3,6 +3,7 @@
 #include <d3dcompiler.h>
 
 #include "Deferred.h"
+#include "HDR.h"
 #include "State.h"
 
 #include "Features/DynamicCubemaps.h"
@@ -1637,6 +1638,7 @@ namespace SIE
 				// { "BSImagespaceShaderISSAOBlurH", static_cast<uint32_t>(ISSAOBlurH) },
 				// { "BSImagespaceShaderISSAOBlurV", static_cast<uint32_t>(ISSAOBlurV) },
 				// { "BSImagespaceShaderISUnderwaterMask", static_cast<uint32_t>(ISUnderwaterMask) },
+				{ "BSImagespaceShaderISTemporalAA", static_cast<uint32_t>(ISTemporalAA) },
 				{ "BSImagespaceShaderISApplyVolumetricLighting", static_cast<uint32_t>(ISApplyVolumetricLighting) },
 				{ "BSImagespaceShaderReflectionsRayTracing", static_cast<uint32_t>(ISReflectionsRayTracing) },
 				//{ "BSImagespaceShaderReflectionsDebugSpecMask", static_cast<uint32_t>(ISReflectionsDebugSpecMask) },
