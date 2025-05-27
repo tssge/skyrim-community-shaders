@@ -36,51 +36,78 @@ jobs:
     steps:
         - uses: actions/checkout@v3
           with:
-            submodules: recursive
             fetch-depth: 0
+            
+        # Extract the submodule commit hashes to create a cache key
+        - name: Get submodule hashes
+          id: get-submodule-hashes
+          shell: bash
+          run: |
+            # Get a hash of all the submodule commits for cache key
+            echo "submodule_hash=$(git submodule status | awk '{print $1}' | sort | sha256sum | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+            
+        # Cache submodules to avoid re-cloning them
+        - name: Cache Git submodules
+          id: cache-submodules
+          uses: actions/cache@v3
+          with:
+            path: |
+              .git/modules
+              extern
+            key: ${{ runner.os }}-submodules-${{ steps.get-submodule-hashes.outputs.submodule_hash }}
+            
+        # Initialize submodules if not cached
+        - name: Initialize submodules
+          if: steps.cache-submodules.outputs.cache-hit != 'true'
+          run: git submodule update --init --recursive
             
         - uses: ilammy/msvc-dev-cmd@v1.10.0
 
-        # Cache vcpkg installed packages
-        - name: Cache vcpkg
+        # Cache the vcpkg repository itself (to avoid re-cloning it)
+        - name: Cache vcpkg repository
           uses: actions/cache@v3
-          id: vcpkg-cache
+          id: vcpkg-repo-cache
           with:
             path: |
-              C:/vcpkg/installed
-              C:/vcpkg/packages
-              C:/vcpkg/buildtrees
-              !C:/vcpkg/buildtrees/**/*.log
-              !C:/vcpkg/buildtrees/**/*.gitignore
-            key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+              vcpkg
+            key: ${{ runner.os }}-vcpkg-repo-${{ hashFiles('vcpkg-configuration.json') }}
             restore-keys: |
-              ${{ runner.os }}-vcpkg-
+              ${{ runner.os }}-vcpkg-repo-
 
-        # Cache the vcpkg binary
-        - name: Cache vcpkg binary
+        # Cache vcpkg installed packages
+        - name: Cache vcpkg packages
           uses: actions/cache@v3
-          id: vcpkg-binary-cache
+          id: vcpkg-packages-cache
           with:
             path: |
-              C:/vcpkg/vcpkg.exe
-              C:/vcpkg/downloads
-            key: ${{ runner.os }}-vcpkg-binary-1
-            
-        - uses: lukka/run-vcpkg@v11.5
-          with:
-            vcpkgJsonGlob: vcpkg.json
-            runVcpkgInstall: true
-            
+              ${{ github.workspace }}/vcpkg_installed
+            key: ${{ runner.os }}-vcpkg-installed-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+            restore-keys: |
+              ${{ runner.os }}-vcpkg-installed-
+
+        # Set up vcpkg manually to handle custom ports
+        - name: Setup vcpkg
+          if: steps.vcpkg-repo-cache.outputs.cache-hit != 'true'
+          run: |
+            git clone https://github.com/microsoft/vcpkg.git
+            cd vcpkg
+            .\bootstrap-vcpkg.bat
+
+        # Install vcpkg dependencies manually
+        - name: Install vcpkg dependencies
+          run: |
+            .\vcpkg\vcpkg.exe install --triplet=x64-windows
+          
         # Cache CMake build output with a more precise cache key for better hits
         - name: Cache CMake build output
           uses: actions/cache@v3
           with:
             path: build/ALL
-            key: ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp', '.gitmodules', 'extern/**') }}
+            key: ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-${{ steps.get-submodule-hashes.outputs.submodule_hash }}-${{ hashFiles('**/*.cpp', '**/*.c', '**/*.h', '**/*.hpp') }}
             restore-keys: |
+              ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-${{ steps.get-submodule-hashes.outputs.submodule_hash }}-
               ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', 'CMakeLists.txt', 'CMakePresets.json') }}-
               ${{ runner.os }}-cmake-${{ inputs.cache-key-suffix || 'default' }}-
-              ${{ runner.os }}-cmake-
 
         - name: Build using run-cmake with ALL preset
           uses: lukka/run-cmake@v10
