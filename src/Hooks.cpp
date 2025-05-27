@@ -17,6 +17,7 @@
 
 #include "DX12SwapChain.h"
 #include "FidelityFX.h"
+#include "HDR.h"
 #include "Streamline.h"
 #include "Upscaling.h"
 
@@ -299,6 +300,10 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 	pAdapter->GetDesc(&adapterDesc);
 	globals::state->SetAdapterDescription(adapterDesc.Description);
 
+	if (globals::hdr->settings.enableHDR) {
+		pSwapChainDesc->BufferDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
+	}
+
 	if (!REL::Module::IsVR()) {
 		pSwapChainDesc->SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
@@ -452,6 +457,37 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 		streamline->PostDevice();
 	}
 
+	if (*ppSwapChain && globals::hdr->settings.enableHDR) {
+		IDXGISwapChain4* swapChain4 = nullptr;
+		if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
+			DXGI_HDR_METADATA_HDR10 metadata = {};
+
+			// BT.709/sRGB primaries - matches original content creation
+			metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
+			metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
+			metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
+			metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
+			metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
+			metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
+
+			// D65 white point (same as sRGB)
+			metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
+			metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
+
+			// Highlights should reach 4k nits with remastered buffers (? validate)
+			metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);   // 4000 nits peak
+			metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);  // Keep reasonable black
+
+			// Some highlights should reach 4k nits? validate
+			metadata.MaxContentLightLevel = static_cast<UINT16>(4000);      // Peak brightness
+			metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
+
+			swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(DXGI_HDR_METADATA_HDR10), &metadata);
+			swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
+			swapChain4->Release();
+		}
+	}
+
 	return ret;
 }
 
@@ -563,9 +599,89 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			globals::state->ModifyRenderTarget(a_target, a_properties);
-			func(This, a_target, a_properties);
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
 		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_ImagespaceTempCopy2
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRBlurSwap
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_LDRDownsample
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation0
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_TemporalAAAccumulation1
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			func(This, a_target, &properties);
+		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -573,9 +689,11 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			globals::state->ModifyRenderTarget(a_target, a_properties);
-			func(This, a_target, a_properties);
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
 		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -583,9 +701,11 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			globals::state->ModifyRenderTarget(a_target, a_properties);
-			func(This, a_target, a_properties);
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
 		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -593,9 +713,11 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			globals::state->ModifyRenderTarget(a_target, a_properties);
-			func(This, a_target, a_properties);
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
 		}
+
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
 
@@ -603,8 +725,34 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target, RE::BSGraphics::RenderTargetProperties* a_properties)
 		{
-			globals::state->ModifyRenderTarget(a_target, a_properties);
-			func(This, a_target, a_properties);
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
+		}
+
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_WaterReflections
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
+			RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
+		}
+		static inline REL::Relocation<decltype(thunk)> func;
+	};
+
+	struct CreateRenderTarget_VolumetricLighting
+	{
+		static void thunk(RE::BSGraphics::Renderer* This, RE::RENDER_TARGETS::RENDER_TARGET a_target,
+			RE::BSGraphics::RenderTargetProperties* a_properties)
+		{
+			auto properties = *a_properties;
+			properties.supportUnorderedAccess = true;
+			func(This, a_target, &properties);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
 	};
@@ -958,6 +1106,12 @@ namespace Hooks
 
 		logger::info("Hooking BSShaderRenderTargets::Create::CreateRenderTarget(s)");
 		stl::write_thunk_call<CreateRenderTarget_Main>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x3F0, 0x3F3, 0x548));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x62F, 0x62E));
+		stl::write_thunk_call<CreateRenderTarget_ImagespaceTempCopy2>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x642, 0x641));
+		stl::write_thunk_call<CreateRenderTarget_LDRBlurSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x529, 0x528));
+		stl::write_thunk_call<CreateRenderTarget_LDRDownsample>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xB2E, 0xB2E));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation0>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE68, 0xE6A));
+		stl::write_thunk_call<CreateRenderTarget_TemporalAAAccumulation1>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0xE7E, 0xE80));
 		stl::write_thunk_call<CreateRenderTarget_Normals>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x458, 0x45B, 0x5B0));
 		stl::write_thunk_call<CreateRenderTarget_NormalsSwap>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x46B, 0x46E, 0x5C3));
 		stl::write_thunk_call<CreateRenderTarget_Snow>(REL::RelocationID(100458, 107175).address() + REL::Relocate(0x406, 0x409, 0x55e));

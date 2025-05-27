@@ -1,8 +1,8 @@
-
 #include "DX12SwapChain.h"
 #include "Deferred.h"
 #include "FrameAnnotations.h"
 #include "Globals.h"
+#include "HDR.h"
 #include "Hooks.h"
 #include "Menu.h"
 #include "ShaderCache.h"
