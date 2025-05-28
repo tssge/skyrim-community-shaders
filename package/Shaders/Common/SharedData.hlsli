@@ -195,6 +195,16 @@ namespace SharedData
 		float Strength;      // [0, 1.0] The inverse blend weight of the effect
 	};
 
+	struct SkinData
+	{
+		float4 skinParams;
+		float4 skinParams2;
+		float4 skinDetailParams;
+		float4 sssParams;
+		float4 fuzzParams;
+		float4 physicalParams;
+	};
+
 	cbuffer FeatureData : register(b6)
 	{
 		GrassLightingSettings grassLightingSettings;
@@ -209,7 +219,11 @@ namespace SharedData
 		HairSpecularSettings hairSpecularSettings;
 		TerrainVariationSettings terrainVariationSettings;
 		IBLSettings iblSettings;
+<<<<<<< HEAD
 		ExtendedTranslucencySettings extendedTranslucencySettings;
+=======
+		SkinData skinData;
+>>>>>>> 86fc4180 (Advanced Skin)
 	};
 
 	Texture2D<float4> DepthTexture : register(t17);

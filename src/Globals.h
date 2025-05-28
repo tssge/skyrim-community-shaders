@@ -28,7 +28,11 @@ struct WaterEffects;
 struct WeatherPicker;
 struct PerformanceOverlay;
 struct WetnessEffects;
+<<<<<<< HEAD
 struct ExtendedTranslucency;
+=======
+struct Skin;
+>>>>>>> 86fc4180 (Advanced Skin)
 
 class ParticleLights;
 
@@ -111,7 +115,11 @@ namespace globals
 		extern VR* vr;
 		extern WaterEffects* waterEffects;
 		extern WetnessEffects* wetnessEffects;
+<<<<<<< HEAD
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
+=======
+		extern Skin* skin;
+>>>>>>> 86fc4180 (Advanced Skin)
 
 		namespace llf
 		{

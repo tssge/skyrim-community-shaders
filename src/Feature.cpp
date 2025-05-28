@@ -18,6 +18,7 @@
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
+#include "Features/Skin.h"
 #include "Features/SkySync.h"
 #include "Features/Skylighting.h"
 #include "Features/SubsurfaceScattering.h"
@@ -250,8 +251,13 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		globals::features::hairSpecular,
 		globals::features::interiorSunShadows,
 		globals::features::terrainVariation,
+<<<<<<< HEAD
 		globals::features::ibl
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
+=======
+		globals::features::ibl,
+		globals::features::skin
+>>>>>>> 86fc4180 (Advanced Skin)
 	};
 
 	if (REL::Module::IsVR()) {
