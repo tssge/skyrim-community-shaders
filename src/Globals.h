@@ -26,6 +26,7 @@ struct VolumetricLighting;
 struct VR;
 struct WaterEffects;
 struct WetnessEffects;
+struct Skin;
 
 class ParticleLights;
 
@@ -79,6 +80,7 @@ namespace globals
 		extern VR* vr;
 		extern WaterEffects* waterEffects;
 		extern WetnessEffects* wetnessEffects;
+		extern Skin* skin;
 
 		namespace llf
 		{
