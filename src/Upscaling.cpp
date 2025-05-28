@@ -770,6 +770,7 @@ void Upscaling::CopyBuffersToSharedResources()
 void Upscaling::PostDisplay()
 {
 	globals::state->RenderReShade();
+	globals::hdr->ApplyHDR();
 
 	if (!d3d12Interop || !settings.frameGenerationMode)
 		return;
@@ -783,7 +784,6 @@ void Upscaling::PostDisplay()
 	context->CopyResource(HUDLessBufferShared->resource.get(), swapChainResource);
 
 	useHUDLess = true;
-	globals::hdr->ApplyHDR();
 }
 
 void Upscaling::TimerSleepQPC(int64_t targetQPC)
