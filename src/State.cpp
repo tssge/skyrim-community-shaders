@@ -7,6 +7,7 @@
 #include "DX12SwapChain.h"
 #include "Deferred.h"
 #include "Features/CloudShadows.h"
+#include "Features/Skin.h"
 #include "Features/TerrainBlending.h"
 #include "Features/TerrainHelper.h"
 #include "HDR.h"
@@ -23,6 +24,7 @@ void State::Draw()
 	auto terrainBlending = globals::features::terrainBlending;
 	auto terrainHelper = globals::features::terrainHelper;
 	auto cloudShadows = globals::features::cloudShadows;
+	auto skin = globals::features::skin;
 	auto truePBR = globals::truePBR;
 	auto smState = globals::game::smState;
 	auto context = globals::d3d::context;
@@ -36,6 +38,9 @@ void State::Draw()
 
 		if (terrainHelper->loaded)
 			terrainHelper->SetShaderResouces(context);
+
+		if (skin->loaded)
+			skin->SetShaderResouces(context);
 
 		truePBR->SetShaderResouces(context);
 
