@@ -418,36 +418,6 @@ HRESULT WINAPI hk_D3D11CreateDeviceAndSwapChain(
 
 				*ppSwapChain = proxy->GetSwapChainProxy();
 
-				if (*ppSwapChain && globals::hdr->settings.enableHDR) {
-					IDXGISwapChain4* swapChain4 = nullptr;
-					if (SUCCEEDED((*ppSwapChain)->QueryInterface(IID_PPV_ARGS(&swapChain4)))) {
-						DXGI_HDR_METADATA_HDR10 metadata = {};
-
-						// BT.709/sRGB primaries - matches original content creation
-						metadata.RedPrimary[0] = static_cast<UINT16>(0.640 * 50000);    // x
-						metadata.RedPrimary[1] = static_cast<UINT16>(0.330 * 50000);    // y
-						metadata.GreenPrimary[0] = static_cast<UINT16>(0.300 * 50000);  // x
-						metadata.GreenPrimary[1] = static_cast<UINT16>(0.600 * 50000);  // y
-						metadata.BluePrimary[0] = static_cast<UINT16>(0.150 * 50000);   // x
-						metadata.BluePrimary[1] = static_cast<UINT16>(0.060 * 50000);   // y
-
-						// D65 white point (same as sRGB)
-						metadata.WhitePoint[0] = static_cast<UINT16>(0.3127 * 50000);
-						metadata.WhitePoint[1] = static_cast<UINT16>(0.3290 * 50000);
-
-						// Highlights should reach 4k nits with remastered buffers (? validate)
-						metadata.MaxMasteringLuminance = static_cast<UINT>(4000 * 10000);   // 4000 nits peak
-						metadata.MinMasteringLuminance = static_cast<UINT>(0.005 * 10000);  // Keep reasonable black
-
-						// Some highlights should reach 4k nits? validate
-						metadata.MaxContentLightLevel = static_cast<UINT16>(4000);      // Peak brightness
-						metadata.MaxFrameAverageLightLevel = static_cast<UINT16>(203);  // Average scene brightness, paperwhite, 203 standard
-
-						swapChain4->SetHDRMetaData(DXGI_HDR_METADATA_TYPE_HDR10, sizeof(DXGI_HDR_METADATA_HDR10), &metadata);
-						swapChain4->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020);
-						swapChain4->Release();
-					}
-				}
 				upscaling->d3d12Interop = true;
 
 				if (streamline->initialized) {
