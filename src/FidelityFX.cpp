@@ -1,10 +1,10 @@
 #include "FidelityFX.h"
 #include "Utils/FileSystem.h"
 
+#include "DX12SwapChain.h"
+#include "HDR.h"
 #include "State.h"
 #include "Upscaling.h"
-#include "HDR.h"
-#include "DX12SwapChain.h"
 #include <dx12/ffx_api_dx12.hpp>
 
 ffxFunctions ffxModule;
@@ -109,8 +109,8 @@ void FidelityFX::Present(bool a_useFrameGeneration)
 
 				// Set min/max luminance values
 				// These should be based on your HDR implementation's nit levels
-				params->minMaxLuminance[0] = 0.005f;     // Min luminance in nits (typical black level)
-				params->minMaxLuminance[1] = 4000.0f;    // Max luminance in nits (peak brightness)
+				params->minMaxLuminance[0] = 0.005f;   // Min luminance in nits (typical black level)
+				params->minMaxLuminance[1] = 4000.0f;  // Max luminance in nits (peak brightness)
 			}
 			return ffxModule.Dispatch(reinterpret_cast<ffxContext*>(pUserCtx), &params->header);
 		};
