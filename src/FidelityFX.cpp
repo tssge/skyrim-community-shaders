@@ -103,6 +103,15 @@ void FidelityFX::Present(bool a_useFrameGeneration)
 		configParameters.frameGenerationEnabled = true;
 
 		configParameters.frameGenerationCallback = [](ffxDispatchDescFrameGeneration* params, void* pUserCtx) -> ffxReturnCode_t {
+			if (globals::hdr->settings.enableHDR) {
+				// Use PQ transfer function for HDR10
+				params->backbufferTransferFunction = FFX_API_BACKBUFFER_TRANSFER_FUNCTION_PQ;
+
+				// Set min/max luminance values
+				// These should be based on your HDR implementation's nit levels
+				params->minMaxLuminance[0] = 0.005f;     // Min luminance in nits (typical black level)
+				params->minMaxLuminance[1] = 4000.0f;    // Max luminance in nits (peak brightness)
+			}
 			return ffxModule.Dispatch(reinterpret_cast<ffxContext*>(pUserCtx), &params->header);
 		};
 		configParameters.frameGenerationCallbackUserContext = &frameGenContext;
