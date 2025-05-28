@@ -27,6 +27,7 @@
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
+#include "Features/Skin.h"
 #include "Features/SkySync.h"
 #include "Features/Skylighting.h"
 #include "Features/SubsurfaceScattering.h"
@@ -110,7 +111,11 @@ namespace globals
 		VR* vr = nullptr;
 		WaterEffects* waterEffects = nullptr;
 		WetnessEffects* wetnessEffects = nullptr;
+<<<<<<< HEAD
 >>>>>>> 93c3c432 (Screen Space Point Light Shadows)
+=======
+		Skin* skin = nullptr;
+>>>>>>> 86fc4180 (Advanced Skin)
 
 		namespace llf
 		{
@@ -199,6 +204,7 @@ namespace globals
 		features::screenSpaceGI = ScreenSpaceGI::GetSingleton();
 		features::screenSpacePointLightShadows = ScreenSpacePointLightShadows::GetSingleton();
 		features::screenSpaceShadows = ScreenSpaceShadows::GetSingleton();
+		features::skin = Skin::GetSingleton();
 		features::skylighting = Skylighting::GetSingleton();
 		features::terrainVariation = TerrainVariation::GetSingleton();
 		features::skySync = SkySync::GetSingleton();

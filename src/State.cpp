@@ -8,7 +8,11 @@
 #include "Deferred.h"
 #include "FeatureIssues.h"
 #include "Features/CloudShadows.h"
+<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
+=======
+#include "Features/Skin.h"
+>>>>>>> 86fc4180 (Advanced Skin)
 #include "Features/TerrainBlending.h"
 #include "Features/TerrainHelper.h"
 #include "HDR.h"
@@ -23,9 +27,16 @@ void State::Draw()
 {
 	auto shaderCache = globals::shaderCache;
 	auto deferred = globals::deferred;
+<<<<<<< HEAD
 	auto& terrainBlending = globals::features::terrainBlending;
 	auto& terrainHelper = globals::features::terrainHelper;
 	auto& cloudShadows = globals::features::cloudShadows;
+=======
+	auto terrainBlending = globals::features::terrainBlending;
+	auto terrainHelper = globals::features::terrainHelper;
+	auto cloudShadows = globals::features::cloudShadows;
+	auto skin = globals::features::skin;
+>>>>>>> 86fc4180 (Advanced Skin)
 	auto truePBR = globals::truePBR;
 	auto context = globals::d3d::context;
 
@@ -38,6 +49,9 @@ void State::Draw()
 
 		if (terrainHelper.loaded)
 			terrainHelper.SetShaderResouces(context);
+
+		if (skin->loaded)
+			skin->SetShaderResouces(context);
 
 		truePBR->SetShaderResouces(context);
 

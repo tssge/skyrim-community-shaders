@@ -11,6 +11,7 @@
 
 #include "Features/InteriorSun.h"
 #include "Features/LightLimitFix.h"
+#include "Features/Skin.h"
 #include "Features/TerrainHelper.h"
 #include "Features/VR.h"
 #include "Features/VolumetricLighting.h"
@@ -1028,6 +1029,12 @@ namespace Hooks
 			auto& terrainHelper = globals::features::terrainHelper;
 			if (terrainHelper.loaded) {
 				terrainHelper.BSLightingShader_SetupMaterial(material);
+			}
+
+			// advanced skin
+			auto skin = globals::features::skin;
+			if (skin->loaded) {
+				skin->BSLightingShader_SetupMaterial(material);
 			}
 		};
 		static inline REL::Relocation<decltype(thunk)> func;
