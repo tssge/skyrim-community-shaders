@@ -100,109 +100,15 @@ void HDR::RestoreDefaultSettings()
 
 void HDR::SetupResources()
 {
-	auto renderer = globals::game::renderer;
-	auto& main = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
 
-	D3D11_TEXTURE2D_DESC texDesc{};
-	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-
-	main.texture->GetDesc(&texDesc);
-	main.SRV->GetDesc(&srvDesc);
-	main.UAV->GetDesc(&uavDesc);
-
-	texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-	srvDesc.Format = texDesc.Format;
-	uavDesc.Format = texDesc.Format;
-
-	hdrTexture = new Texture2D(texDesc);
-	hdrTexture->CreateSRV(srvDesc);
-	hdrTexture->CreateUAV(uavDesc);
-
-	texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
-	srvDesc.Format = texDesc.Format;
-	uavDesc.Format = texDesc.Format;
-
-	outputTexture = new Texture2D(texDesc);
-	outputTexture->CreateSRV(srvDesc);
-	outputTexture->CreateUAV(uavDesc);
-}
-
-void HDR::ApplyHDR()
-{
-	std::lock_guard<std::mutex> lock(settingsMutex);
-
-	if (!settings.enableHDR)
-		return;
-
-	auto context = globals::d3d::context;
-	auto state = globals::state;
-	auto renderer = globals::game::renderer;
-
-	state->BeginPerfEvent("HDR");
-
-	ID3D11Resource* inputTextureResource;
-	auto& inputRT = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
-	inputRT.SRV->GetResource(&inputTextureResource);
-	context->CopyResource(hdrTexture->resource.get(), inputTextureResource);
-	{
-		auto dispatchCount = Util::GetScreenDispatchCount(false);
-
-		ID3D11ShaderResourceView* views[1] = { hdrTexture->srv.get() };
-		context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-		ID3D11UnorderedAccessView* uavs[1] = { outputTexture->uav.get() };
-		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-		context->CSSetShader(GetHDROutputCS(), nullptr, 0);
-
-		context->Dispatch(dispatchCount.x, dispatchCount.y, 1);
-
-		// Cleanup
-		views[0] = { nullptr };
-		context->CSSetShaderResources(0, ARRAYSIZE(views), views);
-
-		uavs[0] = { nullptr };
-		context->CSSetUnorderedAccessViews(0, ARRAYSIZE(uavs), uavs, nullptr);
-
-		ID3D11ComputeShader* shader = nullptr;
-		context->CSSetShader(shader, nullptr, 0);
-	}
-
-	ID3D11Resource* outputTextureResource;
-	auto& outputRT = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGET::kFRAMEBUFFER];
-	outputRT.SRV->GetResource(&outputTextureResource);
-	context->CopyResource(outputTextureResource, outputTexture->resource.get());
-
-	state->EndPerfEvent();
 }
 
 void HDR::DestroyResources() const
 {
-	hdrTexture->srv = nullptr;
-	hdrTexture->uav = nullptr;
-	hdrTexture->resource = nullptr;
-	delete hdrTexture;
 
-	outputTexture->srv = nullptr;
-	outputTexture->uav = nullptr;
-	outputTexture->resource = nullptr;
-	delete outputTexture;
 }
 
 void HDR::ClearShaderCache()
 {
-	if (hdrOutputCS) {
-		hdrOutputCS->Release();
-		hdrOutputCS = nullptr;
-	}
-}
 
-ID3D11ComputeShader* HDR::GetHDROutputCS()
-{
-	if (!hdrOutputCS) {
-		logger::debug("Compiling HDROutputCS.hlsl");
-		hdrOutputCS = static_cast<ID3D11ComputeShader*>(Util::CompileShader(L"Data\\Shaders\\HDROutputCS.hlsl", {}, "cs_5_0"));
-	}
-	return hdrOutputCS;
 }

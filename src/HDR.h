@@ -45,16 +45,8 @@ public:
 	void RestoreDefaultSettings();
 	void SetupResources();
 
-	void ApplyHDR();
-
 	void DestroyResources() const;
 	void ClearShaderCache();
-
-	Texture2D* hdrTexture = nullptr;
-	Texture2D* outputTexture = nullptr;
-
-	ID3D11ComputeShader* hdrOutputCS = nullptr;
-	ID3D11ComputeShader* GetHDROutputCS();
 
 	// Format constants to be used elsewhere
 	static constexpr auto BSGraphics_HDR_Format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
