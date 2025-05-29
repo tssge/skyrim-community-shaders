@@ -602,6 +602,7 @@ namespace Hooks
 		{
 			auto properties = *a_properties;
 			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, &properties);
 		}
 
@@ -716,6 +717,7 @@ namespace Hooks
 		{
 			auto properties = *a_properties;
 			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, &properties);
 		}
 
@@ -741,6 +743,7 @@ namespace Hooks
 		{
 			auto properties = *a_properties;
 			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, &properties);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
@@ -753,6 +756,7 @@ namespace Hooks
 		{
 			auto properties = *a_properties;
 			properties.supportUnorderedAccess = true;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, &properties);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
@@ -840,6 +844,7 @@ namespace Hooks
 		{
 			a_properties->height = 128;
 			a_properties->width = 128;
+			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, a_properties);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
