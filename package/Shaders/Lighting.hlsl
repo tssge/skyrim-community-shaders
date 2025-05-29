@@ -1044,10 +1044,6 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 
 #	include "Common/ShadowSampling.hlsli"
 
-#	if defined(IBL)
-#		include "IBL/IBL.hlsli"
-#	endif
-
 #	if defined(HAIR) && defined(CS_HAIR)
 #		include "Hair/Hair.hlsli"
 #	endif
@@ -1077,19 +1073,6 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 {
 	PS_OUTPUT psout;
 	uint eyeIndex = Stereo::GetEyeIndexPS(input.Position, VPOSOffset);
-
-	float3 viewPosition = mul(FrameBuffer::CameraView[eyeIndex], float4(input.WorldPosition.xyz, 1)).xyz;
-	float2 screenUV = FrameBuffer::ViewToUV(viewPosition, true, eyeIndex);
-	float screenNoise = Random::InterleavedGradientNoise(input.Position.xy, SharedData::FrameCount);
-
-#	if defined(DEFERRED)
-	const bool inWorld = true;
-#	else
-	const bool inWorld = (Permutation::ExtraShaderDescriptor & Permutation::ExtraFlags::InWorld);
-#	endif
-
-	float nearFactor = smoothstep(4096.0 * 2.5, 0.0, viewPosition.z);
-
 
 	float3 viewPosition = mul(FrameBuffer::CameraView[eyeIndex], float4(input.WorldPosition.xyz, 1)).xyz;
 	float2 screenUV = FrameBuffer::ViewToUV(viewPosition, true, eyeIndex);
