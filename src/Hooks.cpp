@@ -844,7 +844,7 @@ namespace Hooks
 		{
 			a_properties->height = 128;
 			a_properties->width = 128;
-			properties.format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
+			a_properties->format = RE::BSGraphics::Format::kR16G16B16A16_FLOAT;
 			func(This, a_target, a_properties);
 		}
 		static inline REL::Relocation<decltype(thunk)> func;
