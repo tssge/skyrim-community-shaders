@@ -528,7 +528,7 @@ void Upscaling::CreateUpscalingResources()
 	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 	if (globals::hdr->settings.enableHDR) {
-		texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		texDesc.Format = DXGI_FORMAT_R10G10B10A2_UNORM;
 	} else {
 		texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	}
