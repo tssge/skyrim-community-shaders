@@ -13,20 +13,6 @@ cbuffer TonemapCB : register(b1)
 	float4 Params[8];
 };
 
-float3 PerceptualQuantizerEncode(float3 color, float scaling = 10000.f)
-{
-	color *= (scaling / 10000.f);
-	float3 y_m1 = pow(color, 0.1593017578125f);
-	return pow((0.8359375f + 18.8515625f * y_m1) / (1.f + 18.6875f * y_m1), 78.84375f);
-}
-
-float3 PerceptualQuantizerDecode(float3 color, float scaling = 10000.f)
-{
-	float3 e_m12 = pow(color, 1.f / 78.84375f);
-	float3 out_color = pow(max(0, e_m12 - 0.8359375f) / (18.8515625f - 18.6875f * e_m12), 1.f / 0.1593017578125f);
-	return out_color * (10000.f / scaling);
-}
-
 /////////////////////////////////////////////////////////////////////////////////
 
 // https://www.shadertoy.com/view/ss23DD
@@ -70,12 +56,16 @@ float3 Gamma(float3 val)
 
 float3 PerceptualQuantizerEncode(float3 val)
 {
-	return PerceptualQuantizerEncode(val, Params[0].x);
+	val *= (Params[0].x / 10000.f);
+	float3 y_m1 = pow(val, 0.1593017578125f);
+	return pow((0.8359375f + 18.8515625f * y_m1) / (1.f + 18.6875f * y_m1), 78.84375f);
 }
 
 float3 PerceptualQuantizerDecode(float3 val)
 {
-	return PerceptualQuantizerDecode(val, Params[0].x);
+	float3 e_m12 = pow(val, 1.f / 78.84375f);
+	float3 out_color = pow(max(0, e_m12 - 0.8359375f) / (18.8515625f - 18.6875f * e_m12), 1.f / 0.1593017578125f);
+	return out_color * (10000.f / Params[0].x);
 }
 
 float3 ASC_CDL(float3 val)
