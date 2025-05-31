@@ -442,9 +442,26 @@ void PostProcessing::PreProcess()
 	auto renderer = globals::game::renderer;
 	auto context = globals::d3d::context;
 
-	auto gameTexMain = isrefraction ? renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN_COPY] : renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
+	// Determine source and destination textures based on isrefraction flag
+	auto srcRenderTarget = isrefraction ? RE::RENDER_TARGETS::kMAIN_COPY : RE::RENDER_TARGETS::kMAIN;
+	auto destRenderTarget = isrefraction ? RE::RENDER_TARGETS::kMAIN : RE::RENDER_TARGETS::kMAIN_COPY;
+
+	// Check if this render target has already been processed this frame
+	uint64_t* lastProcessedFrame = (srcRenderTarget == RE::RENDER_TARGETS::kMAIN) 
+		? &lastProcessedMainFrame 
+		: &lastProcessedMainCopyFrame;
+
+	if (*lastProcessedFrame == currentFrameCount) {
+		// Already processed this render target this frame, skip to avoid double processing
+		isrefraction = false;
+		return;
+	}
+
+	// Mark this render target as processed for this frame
+	*lastProcessedFrame = currentFrameCount;
+
+	auto gameTexMain = renderer->GetRuntimeData().renderTargets[srcRenderTarget];
 	PostProcessFeature::TextureInfo lastTexColor = { gameTexMain.texture, gameTexMain.SRV };
-	auto gameTexMainAlt = isrefraction ? renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN] : renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN_COPY];
 
 	// go through each fx
 	for (auto& feat : feats)
@@ -453,11 +470,10 @@ void PostProcessing::PreProcess()
 
 	D3D11_TEXTURE2D_DESC desc;
 	lastTexColor.tex->GetDesc(&desc);
+	
+	// Only copy back to the source render target, not both
 	if (desc.Format == texCopy->desc.Format) {
-		// either MAIN_COPY or MAIN is used as input for HDR pass
-		// so we copy to both so whatever the game wants we're not failing it
 		context->CopySubresourceRegion(gameTexMain.texture, 0, 0, 0, 0, lastTexColor.tex, 0, nullptr);
-		context->CopySubresourceRegion(gameTexMainAlt.texture, 0, 0, 0, 0, lastTexColor.tex, 0, nullptr);
 	} else {
 		ID3D11ShaderResourceView* srv = lastTexColor.srv;
 		ID3D11UnorderedAccessView* uav = texCopy->uav.get();
@@ -475,7 +491,6 @@ void PostProcessing::PreProcess()
 		context->CSSetShader(nullptr, nullptr, 0);
 
 		context->CopySubresourceRegion(gameTexMain.texture, 0, 0, 0, 0, texCopy->resource.get(), 0, nullptr);
-		context->CopySubresourceRegion(gameTexMainAlt.texture, 0, 0, 0, 0, texCopy->resource.get(), 0, nullptr);
 	}
 
 	isrefraction = false;
