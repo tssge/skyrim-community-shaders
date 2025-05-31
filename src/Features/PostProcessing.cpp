@@ -400,13 +400,13 @@ void PostProcessing::SetupResources()
 		gameTexMainCopy.texture->GetDesc(&texDesc);
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {
-			.Format = DXGI_FORMAT_R16G16B16A16_FLOAT,
+			.Format = texDesc.Format,
 			.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D,
 			.Texture2D = { .MostDetailedMip = 0, .MipLevels = 1 }
 		};
 
 		D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {
-			.Format = DXGI_FORMAT_R16G16B16A16_FLOAT,
+			.Format = texDesc.Format,
 			.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D,
 			.Texture2D = { .MipSlice = 0 }
 		};
