@@ -80,11 +80,6 @@ struct RTContactShadows : Feature
 	eastl::unique_ptr<ConstantBuffer> rtContactShadowsCB = nullptr;
 	winrt::com_ptr<ID3D11SamplerState> linearSampler = nullptr;
 
-	// Geometry collection
-	std::vector<GeometryData> uniqueGeometries;
-	std::vector<MeshInstance> meshInstances;
-	std::unordered_map<std::string, size_t> geometryCache;
-
 	bool rtSupported = false;
 	bool initialized = false;
 
