@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <d3d11.h>
+#include <d3d12.h>
+#include <winrt/base.h>
 
 namespace Util
 {
@@ -11,6 +13,16 @@ namespace Util
 	void SetResourceName(ID3D11DeviceChild* Resource, const char* Format, ...);
 
 	ID3D11DeviceChild* CompileShader(const wchar_t* FilePath, const std::vector<std::pair<const char*, const char*>>& Defines, const char* ProgramType, const char* Program = "main");
+
+	// Raytracing shader compilation support
+	struct CompiledRTShader
+	{
+		winrt::com_ptr<IDxcBlob> shaderBlob;
+		std::wstring entryPoint;
+		std::wstring target;
+	};
+
+	std::vector<CompiledRTShader> CompileRaytracingShaders(const wchar_t* FilePath, const std::vector<std::pair<const char*, const char*>>& Defines);
 
 	// Texture manipulation utilities
 	void ApplyHighlightTintToTexture(ID3D11Texture2D* texture, bool isHighlighted, const std::array<float, 4>& highlightColor = { 1.0f, 0.5f, 0.0f, 0.3f });
