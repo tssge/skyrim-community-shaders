@@ -88,6 +88,23 @@ Our priorities are (in order):
 - Release archives: `dist/CommunityShaders_AIO-{timestamp}.7z` (all features)
 - Individual feature archives: `dist/{FeatureName}-{timestamp}.7z`
 
+## Pull Request Guidelines
+
+### Semantic PR Title Requirements
+
+- **CRITICAL**: All PR titles MUST follow conventional commit format and will be automatically validated
+- **Format**: `<type>: <description>` where type is one of: `fix`, `feat`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`, `ci`, `build`, `revert`
+- **Validation**: Enforced by `.github/workflows/lintpr.yaml` using semantic PR action
+- **Examples**:
+    - ✅ `fix: resolve shader compilation error in water effects`
+    - ✅ `feat: add new volumetric lighting feature`
+    - ✅ `docs: update build instructions for vcpkg`
+    - ✅ `ci: fix workflow checkout issues in style_format.yml`
+    - ❌ `Fix shader bug` (missing conventional prefix)
+    - ❌ `Update readme` (missing conventional prefix)
+- **Scope**: Optional scope can be added like `feat(shaders): add new lighting system`
+- **Breaking Changes**: Use `!` after type/scope for breaking changes: `feat!: remove deprecated API`
+
 ## Common Tasks
 
 ### Development Workflow
