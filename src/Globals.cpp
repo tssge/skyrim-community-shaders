@@ -28,6 +28,7 @@
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
+#include "Features/RTContactShadows.h"
 #include "Features/Skin.h"
 #include "Features/SkySync.h"
 #include "Features/Skylighting.h"
@@ -72,6 +73,7 @@ namespace globals
 		ScreenSpaceGI* screenSpaceGI = nullptr;
 		ScreenSpacePointLightShadows* screenSpacePointLightShadows = nullptr;
 		ScreenSpaceShadows* screenSpaceShadows = nullptr;
+		RTContactShadows* rtContactShadows = nullptr;
 		Skylighting* skylighting = nullptr;
 		TerrainVariation* terrainVariation = nullptr;
 		SkySync* skySync = nullptr;
@@ -171,6 +173,7 @@ namespace globals
 		features::screenSpaceGI = ScreenSpaceGI::GetSingleton();
 		features::screenSpacePointLightShadows = ScreenSpacePointLightShadows::GetSingleton();
 		features::screenSpaceShadows = ScreenSpaceShadows::GetSingleton();
+		features::rtContactShadows = RTContactShadows::GetSingleton();
 		features::skin = Skin::GetSingleton();
 		features::skylighting = Skylighting::GetSingleton();
 		features::terrainVariation = TerrainVariation::GetSingleton();
