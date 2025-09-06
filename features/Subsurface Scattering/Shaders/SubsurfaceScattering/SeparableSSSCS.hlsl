@@ -20,8 +20,7 @@ cbuffer PerFrameSSS : register(b1)
 
 #include "SubsurfaceScattering/SeparableSSS.hlsli"
 
-[numthreads(8, 8, 1)] void main(uint3 DTid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint3 DTid : SV_DispatchThreadID) {
 	float2 texCoord = (DTid.xy + 0.5) * SharedData::BufferDim.zw;
 
 #if defined(HORIZONTAL)

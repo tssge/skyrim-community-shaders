@@ -15,8 +15,7 @@ cbuffer blurBuffer : register(b1)
 	uint ResY;
 };
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
 	float2 texCoord = (dtid + 0.5) / float2(ResX, ResY);
 	if (MipLevel <= 1) {
 		outBlurredShadow[dtid] = texShadow[dtid];
