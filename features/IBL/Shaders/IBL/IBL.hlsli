@@ -54,4 +54,4 @@ namespace ImageBasedLighting
 	}
 }
 
-#endif // __IBL_HLSLI__
+#endif  // __IBL_HLSLI__
