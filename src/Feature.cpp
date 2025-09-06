@@ -224,7 +224,7 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		globals::features::lodBlending,
 		globals::features::inverseSquareLighting,
 		globals::features::hairSpecular,
-		globals::features::interiorSunShadows,
+		globals::features::interiorSun,
 		globals::features::terrainVariation,
 		globals::features::ibl,
 		globals::features::skin,
