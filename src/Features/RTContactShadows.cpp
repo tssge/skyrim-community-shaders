@@ -409,28 +409,65 @@ void RTContactShadows::DispatchRays()
 	cbData.ScreenSizeX = static_cast<float>(texDesc.Width);
 	cbData.ScreenSizeY = static_cast<float>(texDesc.Height);
 
-	// TODO: Update constant buffer and bind resources
-	// This would:
 	// 1. Map and update the constant buffer
-	// 2. Set raytracing pipeline state
-	// 3. Bind acceleration structures and textures
-	// 4. Set shader table
-	// 5. Dispatch rays
+	if (rtContactShadowsCB) {
+		rtContactShadowsCB->Update(cbData);
+	}
 
-	// Placeholder ray dispatch
+	// 2. Set raytracing pipeline state
+	if (rtPipelineState) {
+		d3d12CommandList->SetPipelineState1(rtPipelineState.get());
+	}
+
+	// 3. Bind acceleration structures and textures
+	// Set up the global root signature with required resources
+	if (topLevelAS && contactShadowTexture) {
+		// Set top-level acceleration structure as root SRV (slot 0)
+		d3d12CommandList->SetComputeRootShaderResourceView(0, topLevelAS->GetGPUVirtualAddress());
+
+		// Set constant buffer as root CBV (slot 1)
+		if (rtContactShadowsCB && rtContactShadowsCB->buffer) {
+			// Get the underlying D3D12 resource from the DX11 constant buffer
+			// This would require proper interop setup in a real implementation
+			// For now, we'll rely on the existing DX11 binding pattern
+		}
+
+		// Note: Additional texture bindings would go here via descriptor tables
+		// - Output UAV for contact shadow texture (contactShadowTexture)
+		// - Input depth/normal textures from the main render targets
+		// This requires proper descriptor heap setup which would be done during initialization
+	}
+
+	// Prepare ray dispatch descriptor
 	D3D12_DISPATCH_RAYS_DESC rayDispatchDesc = {};
 	rayDispatchDesc.Width = texDesc.Width;
 	rayDispatchDesc.Height = texDesc.Height;
 	rayDispatchDesc.Depth = 1;
 
-	// TODO: Set up shader table addresses
-	// rayDispatchDesc.RayGenerationShaderRecord.StartAddress = ...
-	// rayDispatchDesc.MissShaderTable.StartAddress = ...
-	// rayDispatchDesc.HitGroupTable.StartAddress = ...
+	// 4. Set shader table
+	if (shaderTable) {
+		const uint32_t shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
 
-	// Set pipeline state and dispatch
-	// d3d12CommandList->SetPipelineState1(rtPipelineState.get());
-	// d3d12CommandList->DispatchRays(&rayDispatchDesc);
+		// Configure shader record addresses for dispatch
+		rayDispatchDesc.RayGenerationShaderRecord.StartAddress = shaderTable->GetGPUVirtualAddress();
+		rayDispatchDesc.RayGenerationShaderRecord.SizeInBytes = shaderIdentifierSize;
 
-	logger::trace("RT Contact Shadows ray dispatch completed for frame {}", cbData.FrameIndex);
+		rayDispatchDesc.MissShaderTable.StartAddress = shaderTable->GetGPUVirtualAddress() + shaderIdentifierSize;
+		rayDispatchDesc.MissShaderTable.SizeInBytes = shaderIdentifierSize;
+		rayDispatchDesc.MissShaderTable.StrideInBytes = shaderIdentifierSize;
+
+		rayDispatchDesc.HitGroupTable.StartAddress = shaderTable->GetGPUVirtualAddress() + (shaderIdentifierSize * 2);
+		rayDispatchDesc.HitGroupTable.SizeInBytes = shaderIdentifierSize;
+		rayDispatchDesc.HitGroupTable.StrideInBytes = shaderIdentifierSize;
+	}
+
+	// 5. Dispatch rays
+	if (rtPipelineState && shaderTable && topLevelAS) {
+		d3d12CommandList->DispatchRays(&rayDispatchDesc);
+		logger::trace("RT Contact Shadows: Dispatched rays for frame {} ({}x{})",
+			cbData.FrameIndex, rayDispatchDesc.Width, rayDispatchDesc.Height);
+	} else {
+		logger::trace("RT Contact Shadows: Skipping dispatch - missing resources (pipeline: {}, shader table: {}, TLAS: {})",
+			rtPipelineState != nullptr, shaderTable != nullptr, topLevelAS != nullptr);
+	}
 }
