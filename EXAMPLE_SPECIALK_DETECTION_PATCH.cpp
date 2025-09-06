@@ -1,6 +1,6 @@
 /*
- * Example implementation for SpecialK detection in Community Shaders
- * This is a demonstration patch showing how to detect and warn about SpecialK conflicts
+ * Enhanced implementation for SpecialK cooperation in Community Shaders
+ * This implementation includes both detection and cooperative hook management
  * 
  * File: src/Utils/CompatibilityDetection.h
  */
@@ -17,6 +17,27 @@ namespace Compatibility {
         std::vector<std::wstring> moduleNames;
         std::vector<std::string> exportNames;
         bool detected = false;
+        bool cooperative = false;  // Can we cooperate with this tool?
+    };
+
+    // SpecialK cooperation API function pointers
+    typedef DWORD   (WINAPI *SK_GetDLLRole_pfn)();
+    typedef HMODULE (WINAPI *SK_GetDLL_pfn)();
+    typedef BOOL    (WINAPI *SK_CreateFuncHook_pfn)(LPCWSTR pwszFuncName, LPVOID pTarget, LPVOID pDetour, LPVOID* ppOriginal);
+    typedef BOOL    (WINAPI *SK_EnableHook_pfn)(LPVOID pTarget);
+    typedef BOOL    (WINAPI *SK_DisableHook_pfn)(LPVOID pTarget);
+    typedef BOOL    (WINAPI *SK_RemoveHook_pfn)(LPVOID pTarget);
+    typedef VOID    (WINAPI *SK_ApplyQueuedHooks_pfn)();
+
+    struct SpecialKAPI {
+        SK_GetDLLRole_pfn GetDLLRole = nullptr;
+        SK_GetDLL_pfn GetDLL = nullptr;
+        SK_CreateFuncHook_pfn CreateFuncHook = nullptr;
+        SK_EnableHook_pfn EnableHook = nullptr;
+        SK_DisableHook_pfn DisableHook = nullptr;
+        SK_RemoveHook_pfn RemoveHook = nullptr;
+        SK_ApplyQueuedHooks_pfn ApplyQueuedHooks = nullptr;
+        bool available = false;
     };
 
     class CompatibilityChecker {
@@ -27,16 +48,24 @@ namespace Compatibility {
         }
 
         bool DetectSpecialK();
+        bool InitializeSpecialKCooperation();
         bool DetectReShade();
         bool DetectENB();
         void CheckAllConflicts();
         void LogWarnings();
         bool ShouldSkipDirectXHooks();
+        bool ShouldUseCooperativeHooks();
+        
+        // SpecialK cooperation methods
+        bool CreateHookThroughSpecialK(LPCWSTR functionName, LPVOID target, LPVOID detour, LPVOID* original);
+        const SpecialKAPI& GetSpecialKAPI() const { return specialK_API; }
 
     private:
         std::vector<ConflictingTool> knownConflicts;
+        SpecialKAPI specialK_API;
         void InitializeConflictDatabase();
         bool CheckToolPresence(const ConflictingTool& tool);
+        bool LoadSpecialKAPI(HMODULE hModule);
     };
 
     // Utility functions
@@ -45,8 +74,8 @@ namespace Compatibility {
 }
 
 /*
- * Example implementation for SpecialK detection in Community Shaders  
- * This is a demonstration patch showing how to detect and warn about SpecialK conflicts
+ * Enhanced implementation for SpecialK cooperation in Community Shaders  
+ * This implementation includes both detection and cooperative hook management
  * 
  * File: src/Utils/CompatibilityDetection.cpp
  */
@@ -70,8 +99,12 @@ namespace Compatibility {
         specialK.exportNames = {
             "SKX_GetCommandProcessor",
             "SK_GetDLLRole",
-            "SK_GetCommandProcessor"
+            "SK_GetCommandProcessor",
+            "SK_CreateFuncHook",     // Key cooperation API
+            "SK_EnableHook",
+            "SK_DisableHook"
         };
+        specialK.cooperative = true;  // SpecialK supports cooperation
         knownConflicts.push_back(specialK);
 
         // ReShade detection
@@ -87,6 +120,7 @@ namespace Compatibility {
             "ReShadeRegisterAddon",
             "ReShadeUnregisterAddon"
         };
+        reshade.cooperative = false;  // ReShade doesn't have cooperation API
         knownConflicts.push_back(reshade);
 
         // ENB Series detection  
@@ -96,6 +130,7 @@ namespace Compatibility {
             L"d3d11.dll",
             L"dxgi.dll"
         };
+        enb.cooperative = false;  // ENB doesn't have cooperation API
         // ENB doesn't export specific functions, rely on file characteristics
         knownConflicts.push_back(enb);
     }
@@ -119,6 +154,79 @@ namespace Compatibility {
         return false;
     }
 
+    bool CompatibilityChecker::InitializeSpecialKCooperation() {
+        HMODULE hSpecialK = nullptr;
+        
+        // Try to find SpecialK module
+        for (const auto& moduleName : {L"SpecialK64.dll", L"SpecialK32.dll"}) {
+            hSpecialK = GetModuleHandle(moduleName);
+            if (hSpecialK && IsModuleSpecialK(hSpecialK)) {
+                break;
+            }
+            hSpecialK = nullptr;
+        }
+
+        // Check for proxy DLLs
+        if (!hSpecialK) {
+            for (const auto& proxyName : {L"dxgi.dll", L"d3d11.dll", L"dinput8.dll"}) {
+                hSpecialK = GetModuleHandle(proxyName);
+                if (hSpecialK && IsModuleSpecialK(hSpecialK)) {
+                    break;
+                }
+                hSpecialK = nullptr;
+            }
+        }
+
+        if (hSpecialK) {
+            return LoadSpecialKAPI(hSpecialK);
+        }
+
+        return false;
+    }
+
+    bool CompatibilityChecker::LoadSpecialKAPI(HMODULE hModule) {
+        specialK_API.GetDLLRole = reinterpret_cast<SK_GetDLLRole_pfn>(GetProcAddress(hModule, "SK_GetDLLRole"));
+        specialK_API.GetDLL = reinterpret_cast<SK_GetDLL_pfn>(GetProcAddress(hModule, "SK_GetDLL"));
+        specialK_API.CreateFuncHook = reinterpret_cast<SK_CreateFuncHook_pfn>(GetProcAddress(hModule, "SK_CreateFuncHook"));
+        specialK_API.EnableHook = reinterpret_cast<SK_EnableHook_pfn>(GetProcAddress(hModule, "SK_EnableHook"));
+        specialK_API.DisableHook = reinterpret_cast<SK_DisableHook_pfn>(GetProcAddress(hModule, "SK_DisableHook"));
+        specialK_API.RemoveHook = reinterpret_cast<SK_RemoveHook_pfn>(GetProcAddress(hModule, "SK_RemoveHook"));
+        specialK_API.ApplyQueuedHooks = reinterpret_cast<SK_ApplyQueuedHooks_pfn>(GetProcAddress(hModule, "SK_ApplyQueuedHooks"));
+
+        specialK_API.available = (specialK_API.CreateFuncHook && specialK_API.EnableHook && 
+                                  specialK_API.DisableHook && specialK_API.GetDLLRole);
+
+        if (specialK_API.available) {
+            logger::info("SpecialK cooperation API successfully loaded");
+            DWORD role = specialK_API.GetDLLRole();
+            logger::info("SpecialK DLL Role: {}", role);
+        }
+
+        return specialK_API.available;
+    }
+
+    bool CompatibilityChecker::CreateHookThroughSpecialK(LPCWSTR functionName, LPVOID target, LPVOID detour, LPVOID* original) {
+        if (!specialK_API.available) {
+            return false;
+        }
+
+        if (specialK_API.CreateFuncHook(functionName, target, detour, original)) {
+            if (specialK_API.EnableHook(target)) {
+                logger::info(L"Successfully created hook through SpecialK: {}", functionName);
+                return true;
+            } else {
+                logger::warn(L"Failed to enable hook through SpecialK: {}", functionName);
+                if (specialK_API.RemoveHook) {
+                    specialK_API.RemoveHook(target);
+                }
+            }
+        } else {
+            logger::warn(L"Failed to create hook through SpecialK: {}", functionName);
+        }
+
+        return false;
+    }
+
     bool CompatibilityChecker::IsModuleSpecialK(HMODULE module) {
         if (!module) return false;
 
@@ -127,7 +235,8 @@ namespace Compatibility {
             "SKX_GetCommandProcessor",
             "SK_GetDLLRole", 
             "SK_GetCommandProcessor",
-            "SK_GetFramerate"
+            "SK_GetFramerate",
+            "SK_CreateFuncHook"  // Key indicator of cooperation support
         };
 
         for (const auto& exportName : specialKExports) {
@@ -185,6 +294,10 @@ namespace Compatibility {
 
         for (auto& tool : knownConflicts) {
             tool.detected = CheckToolPresence(tool);
+            if (tool.detected && tool.name == L"SpecialK" && tool.cooperative) {
+                // Try to initialize cooperation
+                InitializeSpecialKCooperation();
+            }
         }
     }
 
@@ -216,30 +329,47 @@ namespace Compatibility {
 
     void CompatibilityChecker::LogWarnings() {
         bool foundConflicts = false;
+        bool cooperationAvailable = false;
 
         for (const auto& tool : knownConflicts) {
             if (tool.detected) {
                 foundConflicts = true;
-                logger::warn(L"Detected conflicting tool: {}", tool.name);
-                logger::warn("This may cause DirectX hook conflicts and instability.");
+                
+                if (tool.cooperative && tool.name == L"SpecialK" && specialK_API.available) {
+                    logger::info(L"Detected cooperative tool: {} - cooperation mode available", tool.name);
+                    cooperationAvailable = true;
+                } else {
+                    logger::warn(L"Detected conflicting tool: {}", tool.name);
+                    logger::warn("This may cause DirectX hook conflicts and instability.");
+                }
             }
         }
 
-        if (foundConflicts) {
+        if (foundConflicts && !cooperationAvailable) {
             logger::warn("=== COMPATIBILITY WARNING ===");
             logger::warn("Multiple graphics enhancement tools detected!");
             logger::warn("Consider using only one tool at a time to avoid conflicts.");
             logger::warn("If issues occur, try disabling other graphics mods.");
             logger::warn("=============================");
+        } else if (cooperationAvailable) {
+            logger::info("=== COOPERATION MODE ===");
+            logger::info("SpecialK cooperation mode enabled - using shared hook management");
+            logger::info("Both tools should work together without conflicts");
+            logger::info("========================");
         }
     }
 
     bool CompatibilityChecker::ShouldSkipDirectXHooks() {
         CheckAllConflicts();
         
+        // Skip direct hooks if we're using SpecialK cooperation
+        if (ShouldUseCooperativeHooks()) {
+            return true;
+        }
+        
         // Skip hooks if SpecialK is detected and compatibility mode is enabled
         for (const auto& tool : knownConflicts) {
-            if (tool.detected && tool.name == L"SpecialK") {
+            if (tool.detected && tool.name == L"SpecialK" && !tool.cooperative) {
                 // Check if compatibility mode is enabled in config
                 return GetPrivateProfileIntW(L"Compatibility", L"SkipHooksWithSpecialK", 0, 
                                            L"./CommunityShaders.ini") != 0;
@@ -247,10 +377,15 @@ namespace Compatibility {
         }
         return false;
     }
+
+    bool CompatibilityChecker::ShouldUseCooperativeHooks() {
+        return specialK_API.available && GetPrivateProfileIntW(L"Compatibility", L"UseSpecialKCooperation", 1, 
+                                                             L"./CommunityShaders.ini") != 0;
+    }
 }
 
 /*
- * Example integration into existing Hooks.cpp
+ * Enhanced integration into existing Hooks.cpp with SpecialK cooperation
  * Add this to the InstallD3DHooks function
  */
 
@@ -263,12 +398,66 @@ void InstallD3DHooks()
     compatibility->CheckAllConflicts();
     compatibility->LogWarnings();
 
+    // Attempt SpecialK cooperation first
+    if (compatibility->ShouldUseCooperativeHooks()) {
+        logger::info("Using SpecialK cooperation mode for DirectX hooks");
+        
+        // Use SpecialK's hook management API
+        const auto& skAPI = compatibility->GetSpecialKAPI();
+        
+        if (skAPI.available) {
+            // Install hooks through SpecialK
+            bool success = true;
+            
+            success &= compatibility->CreateHookThroughSpecialK(
+                L"D3D11CreateDeviceAndSwapChain",
+                GetProcAddress(GetModuleHandle(L"d3d11.dll"), "D3D11CreateDeviceAndSwapChain"),
+                hk_D3D11CreateDeviceAndSwapChain,
+                (LPVOID*)&ptrD3D11CreateDeviceAndSwapChain
+            );
+            
+            success &= compatibility->CreateHookThroughSpecialK(
+                L"CreateDXGIFactory1", 
+                GetProcAddress(GetModuleHandle(L"dxgi.dll"), 
+                               !REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1"),
+                hk_CreateDXGIFactory,
+                (LPVOID*)&ptrCreateDXGIFactory
+            );
+            
+            if (success) {
+                logger::info("Successfully installed DirectX hooks through SpecialK cooperation");
+                // Apply queued hooks if function is available
+                if (skAPI.ApplyQueuedHooks) {
+                    skAPI.ApplyQueuedHooks();
+                }
+                
+                // Still initialize FidelityFX, but it will work through the cooperative hooks
+                globals::fidelityFX->LoadFFX();
+                return;
+            } else {
+                logger::warn("Failed to install hooks through SpecialK, falling back to compatibility mode");
+            }
+        }
+    }
+
+    // Fallback: Check if we should skip direct hooks due to conflicts
     if (compatibility->ShouldSkipDirectXHooks()) {
         logger::info("Skipping DirectX hooks due to compatibility mode");
+        
+        // Load FidelityFX in limited mode without DirectX hooks
+        globals::fidelityFX->LoadFFX();
+        
+        // Show user notification about limited functionality
+        logger::warn("=== LIMITED FUNCTIONALITY MODE ===");
+        logger::warn("DirectX hooks disabled due to detected conflicts.");
+        logger::warn("Some Community Shaders features may not be available.");
+        logger::warn("Consider using only one graphics enhancement tool for full functionality.");
+        logger::warn("====================================");
         return;
     }
 
-    // Original hook installation code
+    // Standard mode: Install hooks directly (original behavior)
+    logger::info("Installing DirectX hooks in standard mode");
     globals::fidelityFX->LoadFFX();
     *(uintptr_t*)&ptrD3D11CreateDeviceAndSwapChain = SKSE::PatchIAT(hk_D3D11CreateDeviceAndSwapChain, "d3d11.dll", "D3D11CreateDeviceAndSwapChain");
     *(uintptr_t*)&ptrCreateDXGIFactory = SKSE::PatchIAT(hk_CreateDXGIFactory, "dxgi.dll", !REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1");
