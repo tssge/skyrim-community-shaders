@@ -153,16 +153,19 @@ namespace Compatibility
 
 		if (specialK_API.CreateFuncHook(functionName, target, detour, original)) {
 			if (specialK_API.EnableHook(target)) {
-				logger::info(L"Successfully created hook through SpecialK: {}", functionName);
+				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				logger::info("Successfully created hook through SpecialK: {}", functionNameStr);
 				return true;
 			} else {
-				logger::warn(L"Failed to enable hook through SpecialK: {}", functionName);
+				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				logger::warn("Failed to enable hook through SpecialK: {}", functionNameStr);
 				if (specialK_API.RemoveHook) {
 					specialK_API.RemoveHook(target);
 				}
 			}
 		} else {
-			logger::warn(L"Failed to create hook through SpecialK: {}", functionName);
+			std::string functionNameStr(functionName, functionName + wcslen(functionName));
+			logger::warn("Failed to create hook through SpecialK: {}", functionNameStr);
 		}
 
 		return false;
@@ -285,7 +288,8 @@ namespace Compatibility
 				foundConflicts = true;
 
 				if (tool.cooperative && tool.name == L"SpecialK" && specialK_API.available) {
-					logger::info(L"Detected cooperative tool: {} - cooperation mode available", tool.name);
+					std::string toolNameStr(tool.name.begin(), tool.name.end());
+					logger::info("Detected cooperative tool: {} - cooperation mode available", toolNameStr);
 					cooperationAvailable = true;
 				} else {
 					std::string toolNameStr(tool.name.begin(), tool.name.end());
