@@ -358,8 +358,60 @@ void RTContactShadows::CreateShaderTable()
 		return;
 	}
 
-	// TODO: Map buffer and copy shader identifiers
-	// This would use ID3D12StateObjectProperties to get shader identifiers
+	// Get shader identifiers using ID3D12StateObjectProperties
+	winrt::com_ptr<ID3D12StateObjectProperties> stateObjectProps;
+	hr = rtPipelineState->QueryInterface(IID_PPV_ARGS(&stateObjectProps));
+	if (FAILED(hr)) {
+		logger::error("Failed to query ID3D12StateObjectProperties interface");
+		return;
+	}
+
+	// Map the shader table buffer
+	void* shaderTableData = nullptr;
+	hr = shaderTable->Map(0, nullptr, &shaderTableData);
+	if (FAILED(hr)) {
+		logger::error("Failed to map shader table buffer");
+		return;
+	}
+
+	// Copy shader identifiers to the buffer
+	// Note: These shader names would correspond to the actual shader entry points
+	// in a complete raytracing implementation
+	uint8_t* bufferPtr = static_cast<uint8_t*>(shaderTableData);
+
+	// RayGen shader identifier
+	const void* raygenId = stateObjectProps->GetShaderIdentifier(L"ContactShadowsRayGen");
+	if (raygenId) {
+		memcpy(bufferPtr, raygenId, shaderIdentifierSize);
+	} else {
+		logger::warn("Failed to get RayGen shader identifier");
+		memset(bufferPtr, 0, shaderIdentifierSize);
+	}
+	bufferPtr += shaderIdentifierSize;
+
+	// Miss shader identifier
+	const void* missId = stateObjectProps->GetShaderIdentifier(L"ContactShadowsMiss");
+	if (missId) {
+		memcpy(bufferPtr, missId, shaderIdentifierSize);
+	} else {
+		logger::warn("Failed to get Miss shader identifier");
+		memset(bufferPtr, 0, shaderIdentifierSize);
+	}
+	bufferPtr += shaderIdentifierSize;
+
+	// Hit group shader identifier
+	const void* hitGroupId = stateObjectProps->GetShaderIdentifier(L"ContactShadowsHitGroup");
+	if (hitGroupId) {
+		memcpy(bufferPtr, hitGroupId, shaderIdentifierSize);
+	} else {
+		logger::warn("Failed to get Hit Group shader identifier");
+		memset(bufferPtr, 0, shaderIdentifierSize);
+	}
+
+	// Unmap the buffer
+	shaderTable->Unmap(0, nullptr);
+
+	logger::info("RT Contact Shadows: Shader table populated with identifiers");
 }
 
 void RTContactShadows::ClearShaderCache()
