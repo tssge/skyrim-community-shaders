@@ -115,8 +115,7 @@ namespace LightLimitFix
 
 	bool IsLightIgnored(Light light)
 	{
-		if (light.lightFlags & LightLimitFix::LightFlags::Shadow)
-		{
+		if (light.lightFlags & LightLimitFix::LightFlags::Shadow) {
 			return !(ShadowBitMask & (1 << light.shadowLightIndex));
 		}
 

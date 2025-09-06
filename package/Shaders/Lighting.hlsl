@@ -76,7 +76,7 @@ struct VS_OUTPUT
 		TexCoord0 : TEXCOORD0;
 
 #if defined(WORLD_MAP)
-		float3 InputPosition : TEXCOORD4;
+	float3 InputPosition : TEXCOORD4;
 #endif
 
 #if defined(SKINNED) || !defined(MODELSPACENORMALS) || (defined(SKIN) && defined(CS_SKIN))
@@ -1252,20 +1252,20 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 
 	// Compute stochastic offsets and derivatives once for all layers (only when terrain variation is enabled)
 #		if defined(TERRAIN_VARIATION)
-			bool useTerrainVariation = SharedData::terrainVariationSettings.enableTilingFix;
-			// Initialise dx, dy, and sharedOffset for when Terrain Variation is disabled via enableTilingFix but still #defined
-			float2 dx = 0, dy = 0;
-			StochasticOffsets sharedOffset;
-			sharedOffset.offset1 = float2(0, 0);
-			sharedOffset.offset2 = float2(0, 0);
-			sharedOffset.offset3 = float2(0, 0);
-			sharedOffset.weights = float3(0, 0, 0);
-			[branch] if (useTerrainVariation)
-			{
-				dx = ddx(input.TexCoord0.zw);
-				dy = ddy(input.TexCoord0.zw);
-				sharedOffset = ComputeStochasticOffsets(input.TexCoord0.zw);
-			}
+	bool useTerrainVariation = SharedData::terrainVariationSettings.enableTilingFix;
+	// Initialise dx, dy, and sharedOffset for when Terrain Variation is disabled via enableTilingFix but still #defined
+	float2 dx = 0, dy = 0;
+	StochasticOffsets sharedOffset;
+	sharedOffset.offset1 = float2(0, 0);
+	sharedOffset.offset2 = float2(0, 0);
+	sharedOffset.offset3 = float2(0, 0);
+	sharedOffset.weights = float3(0, 0, 0);
+	[branch] if (useTerrainVariation)
+	{
+		dx = ddx(input.TexCoord0.zw);
+		dy = ddy(input.TexCoord0.zw);
+		sharedOffset = ComputeStochasticOffsets(input.TexCoord0.zw);
+	}
 #		endif
 
 #		if defined(EMAT)
@@ -1316,8 +1316,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #			endif
 		}
 	}
-
-#		if defined(TERRAIN_VARIATION)
+#			if defined(TERRAIN_VARIATION)
 	else if (useTerrainVariation) {
 		// Calculate proper mip levels for terrain variation when parallax is disabled but EMAT is available
 		mipLevels[0] = ExtendedMaterials::GetMipLevel(uv, TexColorSampler);
@@ -1327,7 +1326,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 		mipLevels[4] = ExtendedMaterials::GetMipLevel(uv, TexLandColor5Sampler);
 		mipLevels[5] = ExtendedMaterials::GetMipLevel(uv, TexLandColor6Sampler);
 	}
-#		endif
+#			endif
 #		else
 	// Initialize mip levels for non-EMAT case
 	mipLevels[0] = mipLevels[1] = mipLevels[2] = mipLevels[3] = mipLevels[4] = mipLevels[5] = 0.0;
@@ -1672,7 +1671,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #			else
 			landRMAOS4 = TexLandRMAOS4Sampler.SampleBias(SampLandRMAOS4Sampler, uv, SharedData::MipBias) * float4(LandscapeTexture4PBRParams.x, 1, 1, LandscapeTexture4PBRParams.z);
 #			endif
-			if ((PBRFlags & PBR::TerrainFlags::LandTile3HasGlint) != 0) {\
+			if ((PBRFlags & PBR::TerrainFlags::LandTile3HasGlint) != 0) {
 				glintParameters += weight * LandscapeTexture4GlintParameters;
 			}
 		}
@@ -1813,7 +1812,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 		float3 landNormalRGB6 = landNormal6.rgb;
 		float landNormalAlpha6 = landNormal6.a;
 #		if defined(SNOW) && !defined(TRUE_PBR)
-		landSnowMask += LandscapeTexture5to6IsSnow.y * 	input.LandBlendWeights2.y * landSnowMask6;
+		landSnowMask += LandscapeTexture5to6IsSnow.y * input.LandBlendWeights2.y * landSnowMask6;
 #		endif  // SNOW
 
 		// Sample RMAOS texture for layer 6
@@ -1862,28 +1861,27 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 	normal = normalColor;
 #		if defined(TRUE_PBR)
 	rawRMAOS = TexRMAOSSampler.SampleBias(SampRMAOSSampler, diffuseUv, SharedData::MipBias) * float4(PBRParams1.x, 1, 1, PBRParams1.z);
-		if ((PBRFlags & PBR::Flags::Glint) != 0) {
-				glintParameters = MultiLayerParallaxData;
-			}
+	if ((PBRFlags & PBR::Flags::Glint) != 0) {
+		glintParameters = MultiLayerParallaxData;
+	}
 #		endif
 #	endif
-
 
 #	if defined(LOD_BLENDING)
 #		if defined(LODOBJECTS) || defined(LODOBJECTSHD)
 	baseColor.xyz *= SharedData::lodBlendingSettings.LODObjectBrightness;
 #		elif defined(LODLANDSCAPE)
-	// First apply terrain variation if enabled
-	#			if defined(TERRAIN_VARIATION)
-		if (SharedData::terrainVariationSettings.enableLODTerrainTilingFix) {
-			float2 dx = ddx(uv);
-			float2 dy = ddy(uv);
-			StochasticOffsets lodOffset = ComputeStochasticOffsetsLOD(uv);
-			float4 lodStochasticColor = StochasticSampleLOD(screenNoise, TexColorSampler, SampColorSampler, uv, lodOffset, dx, dy);
+// First apply terrain variation if enabled
+#			if defined(TERRAIN_VARIATION)
+	if (SharedData::terrainVariationSettings.enableLODTerrainTilingFix) {
+		float2 dx = ddx(uv);
+		float2 dy = ddy(uv);
+		StochasticOffsets lodOffset = ComputeStochasticOffsetsLOD(uv);
+		float4 lodStochasticColor = StochasticSampleLOD(screenNoise, TexColorSampler, SampColorSampler, uv, lodOffset, dx, dy);
 
-			// Apply the stochastic result directly
-			baseColor.xyz = Color::Diffuse(lodStochasticColor.rgb);
-		}
+		// Apply the stochastic result directly
+		baseColor.xyz = Color::Diffuse(lodStochasticColor.rgb);
+	}
 #			endif
 	baseColor.xyz *= SharedData::lodBlendingSettings.LODTerrainBrightness;
 #		endif
@@ -1946,7 +1944,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #		if defined(SNOW) && !defined(TRUE_PBR)
 	landSnowMask = LandscapeTexture1to4IsSnow.x * input.LandBlendWeights1.x;
 #		endif  // SNOW
-#	endif  // LANDSCAPE
+#	endif      // LANDSCAPE
 
 #	if defined(EMAT_ENVMAP)
 	complexMaterial = complexMaterial && complexMaterialColor.y > (4.0 / 255.0);
@@ -1954,7 +1952,6 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 	if (complexMaterial) {
 		complexSpecular = lerp(1.0, baseColor.xyz, complexMaterialColor.z);
 		baseColor.xyz = lerp(baseColor.xyz, 0.0, complexMaterialColor.z);
-
 	}
 #	endif  // defined (EMAT) && defined(ENVMAP)
 
@@ -2613,8 +2610,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 			float hairShadow = Hair::HairSelfShadow(input.WorldPosition.xyz, DirLightDirection, screenNoise, eyeIndex);
 			Hair::GetHairDirectLight(dirDiffuseColor, lightsSpecularColor, dirTransmissionColor, hairT, DirLightDirection, viewDirection, worldNormal.xyz, vertexNormal.xyz, dirLightColor.xyz * dirDetailShadow, SharedData::hairSpecularSettings.HairGlossiness, hairShadow, uv, baseColor.xyz);
 			transmissionColor += dirTransmissionColor;
-		}
-		else {
+		} else {
 #			if defined(SPECULAR)
 			lightsSpecularColor = GetLightSpecularInput(input, DirLightDirection, viewDirection, worldNormal.xyz, dirLightColor.xyz * dirDetailShadow, shininess, uv);
 #			endif
@@ -2800,7 +2796,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 
 		float contactShadow = 1.0;
 
-#	if defined(DEFERRED)
+#			if defined(DEFERRED)
 		[branch] if (
 			SharedData::lightLimitFixSettings.EnableContactShadows &&
 			!(light.lightFlags & LightLimitFix::LightFlags::Simple) &&
@@ -2810,7 +2806,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 			float3 normalizedLightDirectionVS = normalize(light.positionVS[eyeIndex].xyz - viewPosition.xyz);
 			contactShadow = LightLimitFix::ContactShadows(viewPosition, screenNoise, normalizedLightDirectionVS, contactShadowSteps, eyeIndex);
 		}
-#	endif
+#			endif
 
 		float3 refractedLightDirection = normalizedLightDirection;
 #			if defined(TRUE_PBR) && !defined(LANDSCAPE) && !defined(LODLANDSCAPE)
@@ -3351,7 +3347,7 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #		elif defined(HAIR) && defined(CS_HAIR)
 	if (!SharedData::hairSpecularSettings.Enabled)
 #		endif
-		specularColor = (specularColor * glossiness * MaterialData.yyy) * SpecularColor.xyz;
+	specularColor = (specularColor * glossiness * MaterialData.yyy) * SpecularColor.xyz;
 #	elif defined(SPECULAR) && defined(SKIN) && defined(CS_SKIN)
 	if (SharedData::skinData.skinParams.w < 1e-5) {
 		specularColor = (specularColor * glossiness * MaterialData.yyy) * SpecularColor.xyz;
@@ -3505,7 +3501,8 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 	float AlphaMaterialReduction = 0.f;
 	float AlphaMaterialSoftness = 0.f;
 	float AlphaMaterialStrength = 0.f;
-	[branch] if (AlphaMaterialModel == ExtendedTranslucency::MaterialModel::Default) {
+	[branch] if (AlphaMaterialModel == ExtendedTranslucency::MaterialModel::Default)
+	{
 		AlphaMaterialModel = SharedData::extendedTranslucencySettings.MaterialModel;
 		AlphaMaterialReduction = SharedData::extendedTranslucencySettings.Reduction;
 		AlphaMaterialSoftness = SharedData::extendedTranslucencySettings.Softness;
