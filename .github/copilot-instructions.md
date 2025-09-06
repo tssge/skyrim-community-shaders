@@ -4,6 +4,17 @@ SKSE core plugin providing community-driven advanced graphics modifications for 
 
 **CRITICAL**: Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
+## Project Context and Priorities
+
+This repository houses Skyrim Community Shaders, dedicated to providing high-quality, performant visual enhancements for Skyrim (AE, SE, VR).
+
+Our priorities are (in order):
+
+1. **Stability:** Code must not cause Crash-to-Desktop (CTD). We operate within the game's process; stability is paramount.
+2. **Performance:** Shaders and C++ logic must be highly optimized. We often prioritize performance over textbook readability, provided the code remains maintainable.
+3. **Compatibility:** Must work across various hardware and adhere strictly to CommonLibSSE/VR patterns.
+4. **Visual Quality:** Implementation of advanced rendering techniques.
+
 ## Working Effectively
 
 ### Prerequisites and Environment Setup
@@ -144,3 +155,126 @@ SKSE core plugin providing community-driven advanced graphics modifications for 
 - Plugin loads in Skyrim without crashes (requires game testing)
 
 **REMINDER**: NEVER CANCEL long-running builds or CI workflows. Build times of 15-40 minutes are normal for this complex DirectX/HLSL project.
+
+## C++ Style and Conventions
+
+### Code Style
+
+- **Braces:** Allman style (braces on new lines) enforced by clang-format
+- **Naming:** `m_` prefix for member variables, PascalCase for types and functions
+- **Indentation:** 4 spaces, tabs for alignment (configured in .clang-format)
+- **Line endings:** CRLF (Windows standard)
+
+### C++ Constraints and Frameworks
+
+- **STRICTLY NO:** STL containers (e.g., `std::vector`, `std::string`), exceptions, or RTTI in performance-critical paths or code that interacts with the game engine.
+- **Framework Adherence:** Heavily prioritize `RE/SkyrimSE` structures (e.g., `RE::BSTArray`) for engine interaction and `CommonLibSSE` patterns for architecture. Do not introduce patterns that deviate from these frameworks.
+- **Version Independence:** Always use CommonLibSSE/VR and the Address Library. **Never** use hardcoded memory offsets.
+- **Pointer Safety:** Treat all pointers retrieved from the game engine (`RE::*`) as potentially invalid. Always null-check before dereferencing. Be extremely cautious with object lifetimes managed by the engine.
+- **Memory Management:** Avoid standard `new`/`delete` unless wrapped in framework-provided managers. Adhere strictly to RAII principles where applicable within the constraints of the framework.
+
+### Example: Preferred Framework Usage
+
+**❌ Bad (Avoid):**
+
+```cpp
+// Using STL and raw pointers unsafely
+std::vector<RE::Actor*> actors;
+auto* player = RE::PlayerCharacter::GetSingleton();
+actors.push_back(player); // No null check, STL usage
+```
+
+**✅ Good (Prefer):**
+
+```cpp
+// Using RE framework patterns with safety checks
+RE::BSTArray<RE::Actor*> actors;
+if (auto* player = RE::PlayerCharacter::GetSingleton()) {
+    actors.push_back(player);
+}
+```
+
+## HLSL/Shaders
+
+### Code Style
+
+- **Braces:** K&R style for HLSL (opening brace on same line) enforced by clang-format
+- **Naming:** camelCase for variables and functions, PascalCase for types and textures
+- **Precision:** Explicit precision qualifiers where performance matters
+
+### HLSL Practices and Optimization
+
+- **Performance First:** Prioritize Arithmetic Logic Unit (ALU) operations (calculations) over texture fetches (memory bandwidth) when feasible.
+- **Precision:** Be mindful of floating-point precision. Use `float` (32-bit) for critical calculations (e.g., view/projection transforms, texture coordinates, temporal calculations). Use `half` (16-bit) only for optimization where precision loss is visually acceptable (e.g., normalized vectors, simple color storage).
+- **Branching:** Prefer arithmetic solutions (e.g., `lerp`, `step`, `saturate`) over dynamic branching (`if` statements) in pixel shaders. Prefer static or constant-buffer-driven branching.
+- **Intrinsics:** Utilize HLSL intrinsics (like `mad`, `rcp`, `rsq`) effectively.
+- **Color Spaces:** Be rigorous about color space conversions. All lighting calculations MUST occur in linear space. Clearly comment conversions between linear and gamma/sRGB space.
+- **Documentation:** For complex mathematical operations or novel rendering techniques, comments must explain the _why_. If implementing a technique from a paper (e.g., GDC presentation, academic journal), include a reference or link in the comments.
+
+### Example: Prefer Arithmetic over Dynamic Branching
+
+Dynamic 'if' statements based on per-pixel data cause GPU divergence and harm performance. Use interpolation or arithmetic instead.
+
+**❌ Bad (Avoid):**
+
+```hlsl
+float4 CalculateColor(float2 uv) {
+    float4 color = TextureA.Sample(Sampler, uv);
+    if (uv.x > 0.5) {
+        // Expensive divergent branch
+        color *= 2.0;
+    }
+    return color;
+}
+```
+
+**✅ Good (Prefer):**
+
+```hlsl
+float4 CalculateColor(float2 uv) {
+    float4 color = TextureA.Sample(Sampler, uv);
+    // Create a mask using step (returns 0 or 1)
+    float multiplierMask = step(0.5, uv.x);
+    // Use lerp to choose the multiplier (1.0 if false, 2.0 if true)
+    float multiplier = lerp(1.0, 2.0, multiplierMask);
+    color *= multiplier;
+    return color;
+}
+```
+
+## C++/HLSL Interface
+
+- **Constant Buffer Alignment:** C++ structs and HLSL Constant Buffers (`cbuffer`) layouts must match exactly. Adhere strictly to HLSL 16-byte packing rules.
+- **Verification:** Use `static_assert` in the C++ definition to verify alignment.
+    - Example: `static_assert(sizeof(MyCBufferStruct) % 16 == 0, "Constant Buffer must be 16-byte aligned.");`
+- **Padding:** Explicitly pad structs to maintain alignment. Use `float pad[N];` or similar for clarity.
+
+### Example: Proper Constant Buffer Alignment
+
+**❌ Bad (Avoid):**
+
+```cpp
+struct Settings {
+    float opacity;        // 4 bytes
+    bool enableFeature;   // 1 byte - misaligned!
+};                       // Total: 5 bytes - not 16-byte aligned
+```
+
+**✅ Good (Prefer):**
+
+```cpp
+struct alignas(16) Settings {
+    float opacity;        // 4 bytes
+    float enableFeature;  // 4 bytes (use float instead of bool)
+    float pad[2];         // 8 bytes padding
+};                       // Total: 16 bytes - properly aligned
+static_assert(sizeof(Settings) % 16 == 0, "Settings must be 16-byte aligned");
+```
+
+## Changes and Refactoring
+
+- **Context is King:** Always prioritize the conventions and patterns found in the surrounding code over general best practices. Do not change styles mid-file.
+- **Incremental Changes:** Prefer smaller, focused changes over large, sweeping refactors.
+- **Adherence:** Ensure all refactored code strictly adheres to the constraints above. Do not introduce modern C++ features or libraries that violate the project's constraints during refactoring.
+- **Performance Impact:** Consider the performance implications of any changes, especially in shader code or frequently-called C++ functions.
+- **Framework Consistency:** When refactoring, ensure the code continues to follow CommonLibSSE/VR patterns and RE framework usage.
