@@ -14,11 +14,8 @@
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
-<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
-=======
 #include "Features/PostProcessing.h"
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
@@ -204,34 +201,6 @@ void Feature::WriteDiskCacheInfo(CSimpleIniA& a_ini)
 const std::vector<Feature*>& Feature::GetFeatureList()
 {
 	static std::vector<Feature*> features = {
-<<<<<<< HEAD
-		&globals::features::grassLighting,
-		&globals::features::grassCollision,
-		&globals::features::screenSpaceShadows,
-		&globals::features::extendedMaterials,
-		&globals::features::wetnessEffects,
-		&globals::features::lightLimitFix,
-		&globals::features::dynamicCubemaps,
-		&globals::features::cloudShadows,
-		&globals::features::waterEffects,
-		&globals::features::weatherPicker,
-		&globals::features::performanceOverlay,
-		&globals::features::subsurfaceScattering,
-		&globals::features::terrainShadows,
-		&globals::features::screenSpaceGI,
-		&globals::features::skylighting,
-		&globals::features::skySync,
-		&globals::features::terrainBlending,
-		&globals::features::terrainHelper,
-		&globals::features::volumetricLighting,
-		&globals::features::lodBlending,
-		&globals::features::inverseSquareLighting,
-		&globals::features::hairSpecular,
-		&globals::features::interiorSun,
-		&globals::features::terrainVariation,
-		&globals::features::ibl,
-		&globals::features::extendedTranslucency
-=======
 		globals::features::grassLighting,
 		globals::features::grassCollision,
 		globals::features::screenSpaceShadows,
@@ -255,18 +224,9 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		globals::features::hairSpecular,
 		globals::features::interiorSunShadows,
 		globals::features::terrainVariation,
-<<<<<<< HEAD
-		globals::features::ibl
->>>>>>> 93c3c432 (Screen Space Point Light Shadows)
-=======
 		globals::features::ibl,
-<<<<<<< HEAD
-		globals::features::skin
->>>>>>> 86fc4180 (Advanced Skin)
-=======
 		globals::features::skin,
 		globals::features::postProcessing
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	};
 
 	if (REL::Module::IsVR()) {
