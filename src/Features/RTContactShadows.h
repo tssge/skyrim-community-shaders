@@ -1,9 +1,9 @@
 #pragma once
 
+#include <DirectXMath.h>
+#include <string>
 #include <unordered_map>
 #include <vector>
-#include <string>
-#include <DirectXMath.h>
 
 struct RTContactShadows : Feature
 {
@@ -41,11 +41,11 @@ struct RTContactShadows : Feature
 	// Geometry data structures for BLAS building
 	struct GeometryData
 	{
-		std::vector<float> vertices;      // Vertex position data (x,y,z per vertex)
-		std::vector<uint32_t> indices;    // Index data
+		std::vector<float> vertices;    // Vertex position data (x,y,z per vertex)
+		std::vector<uint32_t> indices;  // Index data
 		uint32_t vertexCount = 0;
 		uint32_t indexCount = 0;
-		uint32_t vertexStride = 12;       // 3 floats * 4 bytes = 12 bytes per vertex
+		uint32_t vertexStride = 12;  // 3 floats * 4 bytes = 12 bytes per vertex
 	};
 
 	struct MeshInstance

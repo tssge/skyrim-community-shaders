@@ -237,7 +237,7 @@ void RTContactShadows::CreateAccelerationStructures()
 		return;
 	}
 
-	logger::trace("RT Contact Shadows: Collected {} unique geometries, {} instances", 
+	logger::trace("RT Contact Shadows: Collected {} unique geometries, {} instances",
 		uniqueGeometries.size(), meshInstances.size());
 
 	// Step 2: Create vertex/index buffers on GPU
@@ -417,30 +417,30 @@ void RTContactShadows::CollectSceneGeometry()
 	// TODO: This is a placeholder implementation
 	// In a full implementation, this would need to hook into the render pipeline
 	// to collect geometry from active render passes during scene rendering
-	
+
 	// For now, create a simple test geometry (triangle)
 	GeometryData testGeometry;
 	testGeometry.vertices = {
-		0.0f, 1.0f, 0.0f,   // Top vertex
-		-1.0f, -1.0f, 0.0f, // Bottom left
-		1.0f, -1.0f, 0.0f   // Bottom right
+		0.0f, 1.0f, 0.0f,    // Top vertex
+		-1.0f, -1.0f, 0.0f,  // Bottom left
+		1.0f, -1.0f, 0.0f    // Bottom right
 	};
 	testGeometry.indices = { 0, 1, 2 };
 	testGeometry.vertexCount = 3;
 	testGeometry.indexCount = 3;
-	
+
 	// Add to unique geometries
 	uniqueGeometries.push_back(testGeometry);
-	
+
 	// Create instance
 	MeshInstance instance;
 	instance.geometry = &uniqueGeometries.back();
 	instance.transform = DirectX::XMMatrixIdentity();
 	instance.instanceID = 0;
-	
+
 	meshInstances.push_back(instance);
-	
-	logger::trace("RT Contact Shadows: Added test geometry with {} vertices, {} indices", 
+
+	logger::trace("RT Contact Shadows: Added test geometry with {} vertices, {} indices",
 		testGeometry.vertexCount, testGeometry.indexCount);
 }
 
@@ -464,31 +464,31 @@ void RTContactShadows::ProcessRenderPass(RE::BSRenderPass* a_pass)
 
 	// Get geometry hash for caching
 	std::string geoHash = GetGeometryHash(a_pass->geometry);
-	
+
 	// Check if we already have this geometry
 	auto cacheIt = geometryCache.find(geoHash);
 	GeometryData* geometry = nullptr;
-	
+
 	if (cacheIt == geometryCache.end()) {
 		// Create new geometry data
 		GeometryData newGeometry;
-		
+
 		// Extract vertex positions
 		uint32_t vertexSize = rendererData->vertexDesc.GetSize();
 		uint32_t positionOffset = rendererData->vertexDesc.GetAttributeOffset(RE::BSGraphics::Vertex::Attribute::VA_POSITION);
 		uint32_t vertexCount = triShape->GetTrishapeRuntimeData().vertexCount;
-		
+
 		newGeometry.vertices.reserve(vertexCount * 3);
-		
+
 		for (uint32_t v = 0; v < vertexCount; v++) {
 			float* position = reinterpret_cast<float*>(&rendererData->rawVertexData[vertexSize * v + positionOffset]);
 			newGeometry.vertices.push_back(position[0]);
 			newGeometry.vertices.push_back(position[1]);
 			newGeometry.vertices.push_back(position[2]);
 		}
-		
+
 		newGeometry.vertexCount = vertexCount;
-		
+
 		// Extract indices if available
 		// Note: Index data access depends on BSTriShape implementation details
 		// This is a simplified approach
@@ -496,7 +496,7 @@ void RTContactShadows::ProcessRenderPass(RE::BSRenderPass* a_pass)
 			newGeometry.indices.push_back(i);
 		}
 		newGeometry.indexCount = vertexCount;
-		
+
 		// Add to collection
 		uniqueGeometries.push_back(newGeometry);
 		geometryCache[geoHash] = uniqueGeometries.size() - 1;
@@ -505,17 +505,17 @@ void RTContactShadows::ProcessRenderPass(RE::BSRenderPass* a_pass)
 		// Use cached geometry
 		geometry = &uniqueGeometries[cacheIt->second];
 	}
-	
+
 	// Create instance with transform
 	MeshInstance instance;
 	instance.geometry = geometry;
-	
+
 	// Get world transform from the geometry node
 	if (auto node = a_pass->geometry->GetObjectByName()) {
 		auto& worldTransform = node->world;
 		instance.transform = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(reinterpret_cast<const DirectX::XMFLOAT4X4*>(&worldTransform)));
 	}
-	
+
 	instance.instanceID = static_cast<uint32_t>(meshInstances.size());
 	meshInstances.push_back(instance);
 }
@@ -525,16 +525,16 @@ std::string RTContactShadows::GetGeometryHash(RE::BSGeometry* geometry)
 	if (!geometry) {
 		return "";
 	}
-	
+
 	// Create a simple hash based on geometry pointer and vertex count
 	auto triShape = geometry->AsTriShape();
 	if (!triShape) {
 		return "";
 	}
-	
+
 	uint32_t vertexCount = triShape->GetTrishapeRuntimeData().vertexCount;
 	size_t geoPtr = reinterpret_cast<size_t>(geometry);
-	
+
 	return std::to_string(geoPtr) + "_" + std::to_string(vertexCount);
 }
 
@@ -547,7 +547,7 @@ void RTContactShadows::CreateGeometryBuffers()
 	// Calculate total buffer sizes
 	size_t totalVertexData = 0;
 	size_t totalIndexData = 0;
-	
+
 	for (const auto& geometry : uniqueGeometries) {
 		totalVertexData += geometry.vertices.size() * sizeof(float);
 		totalIndexData += geometry.indices.size() * sizeof(uint32_t);
@@ -587,13 +587,13 @@ void RTContactShadows::CreateGeometryBuffers()
 		if (SUCCEEDED(hr)) {
 			uint8_t* destPtr = static_cast<uint8_t*>(mappedData);
 			size_t offset = 0;
-			
+
 			for (const auto& geometry : uniqueGeometries) {
 				size_t dataSize = geometry.vertices.size() * sizeof(float);
 				memcpy(destPtr + offset, geometry.vertices.data(), dataSize);
 				offset += dataSize;
 			}
-			
+
 			vertexBuffer->Unmap(0, nullptr);
 		}
 	}
@@ -632,18 +632,18 @@ void RTContactShadows::CreateGeometryBuffers()
 		if (SUCCEEDED(hr)) {
 			uint8_t* destPtr = static_cast<uint8_t*>(mappedData);
 			size_t offset = 0;
-			
+
 			for (const auto& geometry : uniqueGeometries) {
 				size_t dataSize = geometry.indices.size() * sizeof(uint32_t);
 				memcpy(destPtr + offset, geometry.indices.data(), dataSize);
 				offset += dataSize;
 			}
-			
+
 			indexBuffer->Unmap(0, nullptr);
 		}
 	}
 
-	logger::trace("RT Contact Shadows: Created geometry buffers - vertex: {} bytes, index: {} bytes", 
+	logger::trace("RT Contact Shadows: Created geometry buffers - vertex: {} bytes, index: {} bytes",
 		totalVertexData, totalIndexData);
 }
 
@@ -664,20 +664,20 @@ void RTContactShadows::BuildBLAS()
 		D3D12_RAYTRACING_GEOMETRY_DESC geoDesc = {};
 		geoDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 		geoDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
-		
+
 		// Set vertex buffer
 		geoDesc.Triangles.VertexBuffer.StartAddress = vertexBuffer->GetGPUVirtualAddress() + vertexOffset;
 		geoDesc.Triangles.VertexBuffer.StrideInBytes = geometry.vertexStride;
 		geoDesc.Triangles.VertexCount = geometry.vertexCount;
 		geoDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-		
+
 		// Set index buffer
 		geoDesc.Triangles.IndexBuffer = indexBuffer->GetGPUVirtualAddress() + indexOffset;
 		geoDesc.Triangles.IndexCount = geometry.indexCount;
 		geoDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
-		
+
 		geometryDescs.push_back(geoDesc);
-		
+
 		vertexOffset += geometry.vertices.size() * sizeof(float);
 		indexOffset += geometry.indices.size() * sizeof(uint32_t);
 	}
