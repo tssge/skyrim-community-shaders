@@ -288,7 +288,8 @@ namespace Compatibility
 					logger::info(L"Detected cooperative tool: {} - cooperation mode available", tool.name);
 					cooperationAvailable = true;
 				} else {
-					logger::warn(L"Detected conflicting tool: {}", tool.name);
+					std::string toolNameStr(tool.name.begin(), tool.name.end());
+					logger::warn("Detected conflicting tool: {}", toolNameStr);
 					logger::warn("This may cause DirectX hook conflicts and instability.");
 				}
 			}
