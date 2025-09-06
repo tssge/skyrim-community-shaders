@@ -613,8 +613,7 @@ float3 KajiyaTonemap(float3 col)
 	return lerp(tm0, tm1, bt * bt) * final_mult;
 }
 
-[numthreads(8, 8, 1)] void main(uint2 tid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint2 tid : SV_DispatchThreadID) {
 	float3 color = TexColor[tid].rgb;
 
 	color = TRANSFORM_FUNC(color);
