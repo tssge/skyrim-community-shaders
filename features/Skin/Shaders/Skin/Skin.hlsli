@@ -88,7 +88,7 @@ namespace Skin
 		                 float3(0.358, 0.004, 0.0) * exp(dd / 1.99) +
 		                 float3(0.078, 0.0, 0.0) * exp(dd / 7.41);
 
-		/**
+		/** 
 		* Using the profile, we finally approximate the transmitted lighting from
 		* the back of the object:
 		*/

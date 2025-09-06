@@ -121,7 +121,7 @@ public:
 	 * <p>
 	 * Developer mode is active when the log level is trace or debug.
 	 * </p>
-	 *
+	 * 
      * @return Whether in developer mode.
      */
 	bool IsDeveloperMode();
