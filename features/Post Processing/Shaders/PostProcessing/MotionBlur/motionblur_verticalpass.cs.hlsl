@@ -1,6 +1,6 @@
 /**
  * Motion Blur - Vertical Reduction Pass (Pass 1b of 3)
- * 
+ *
  * Performs vertical reduction from [grid × height] to [grid × grid]
  * Each column of threads processes a vertical strip of the input texture
  * Preserves the maximum velocity vectors for each grid cell
