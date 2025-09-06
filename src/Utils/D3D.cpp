@@ -508,8 +508,8 @@ namespace Util
 				winrt::com_ptr<IDxcBlobUtf8> errors;
 				compileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&errors), nullptr);
 				if (errors && errors->GetStringLength() > 0) {
-					logger::warn("RT shader compilation warning/error for {}: {}", 
-						Util::WStringToString(entry.entryPoint), 
+					logger::warn("RT shader compilation warning/error for {}: {}",
+						Util::WStringToString(entry.entryPoint),
 						static_cast<const char*>(errors->GetBufferPointer()));
 				}
 
@@ -528,13 +528,13 @@ namespace Util
 						logger::debug("Successfully compiled RT shader: {}", Util::WStringToString(entry.entryPoint));
 					}
 				} else {
-					logger::error("RT shader compilation failed for {}: HRESULT={:#x}", 
-						Util::WStringToString(entry.entryPoint), 
+					logger::error("RT shader compilation failed for {}: HRESULT={:#x}",
+						Util::WStringToString(entry.entryPoint),
 						static_cast<uint32_t>(compileStatus));
 				}
 			} else {
-				logger::error("DXC compile call failed for {}: HRESULT={:#x}", 
-					Util::WStringToString(entry.entryPoint), 
+				logger::error("DXC compile call failed for {}: HRESULT={:#x}",
+					Util::WStringToString(entry.entryPoint),
 					static_cast<uint32_t>(hr));
 			}
 		}
