@@ -1,5 +1,10 @@
 #pragma once
 
+#include <unordered_map>
+#include <vector>
+#include <string>
+#include <DirectXMath.h>
+
 struct RTContactShadows : Feature
 {
 	static RTContactShadows* GetSingleton()
@@ -33,6 +38,23 @@ struct RTContactShadows : Feature
 		float PaddingY;
 	};
 
+	// Geometry data structures for BLAS building
+	struct GeometryData
+	{
+		std::vector<float> vertices;      // Vertex position data (x,y,z per vertex)
+		std::vector<uint32_t> indices;    // Index data
+		uint32_t vertexCount = 0;
+		uint32_t indexCount = 0;
+		uint32_t vertexStride = 12;       // 3 floats * 4 bytes = 12 bytes per vertex
+	};
+
+	struct MeshInstance
+	{
+		GeometryData* geometry = nullptr;
+		DirectX::XMMATRIX transform = DirectX::XMMatrixIdentity();
+		uint32_t instanceID = 0;
+	};
+
 	// DX12 Raytracing resources
 	winrt::com_ptr<ID3D12Device5> d3d12Device = nullptr;
 	winrt::com_ptr<ID3D12GraphicsCommandList4> d3d12CommandList = nullptr;
@@ -41,10 +63,27 @@ struct RTContactShadows : Feature
 	winrt::com_ptr<ID3D12Resource> topLevelAS = nullptr;
 	winrt::com_ptr<ID3D12Resource> bottomLevelAS = nullptr;
 
+	// Geometry buffers for BLAS
+	winrt::com_ptr<ID3D12Resource> vertexBuffer = nullptr;
+	winrt::com_ptr<ID3D12Resource> indexBuffer = nullptr;
+	winrt::com_ptr<ID3D12Resource> blasScratchBuffer = nullptr;
+	winrt::com_ptr<ID3D12Resource> tlasInstanceBuffer = nullptr;
+	winrt::com_ptr<ID3D12Resource> tlasScratchBuffer = nullptr;
+
+	// Geometry collection
+	std::vector<GeometryData> uniqueGeometries;
+	std::vector<MeshInstance> meshInstances;
+	std::unordered_map<std::string, size_t> geometryCache;
+
 	// DX11 resources for integration
 	eastl::unique_ptr<Texture2D> contactShadowTexture = nullptr;
 	eastl::unique_ptr<ConstantBuffer> rtContactShadowsCB = nullptr;
 	winrt::com_ptr<ID3D11SamplerState> linearSampler = nullptr;
+
+	// Geometry collection
+	std::vector<GeometryData> uniqueGeometries;
+	std::vector<MeshInstance> meshInstances;
+	std::unordered_map<std::string, size_t> geometryCache;
 
 	bool rtSupported = false;
 	bool initialized = false;
@@ -60,6 +99,14 @@ struct RTContactShadows : Feature
 	void CreateRaytracingPipeline();
 	void CreateShaderTable();
 	void DispatchRays();
+
+	// Geometry collection methods
+	void CollectSceneGeometry();
+	void ProcessRenderPass(RE::BSRenderPass* a_pass);
+	std::string GetGeometryHash(RE::BSGeometry* geometry);
+	void CreateGeometryBuffers();
+	void BuildBLAS();
+	void BuildTLAS();
 
 	virtual void LoadSettings(json& o_json) override;
 	virtual void SaveSettings(json& o_json) override;

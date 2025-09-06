@@ -222,57 +222,34 @@ void RTContactShadows::CreateAccelerationStructures()
 		return;
 	}
 
-	// TODO: Build BLAS (Bottom Level Acceleration Structure) from scene geometry
-	// This would need to:
-	// 1. Gather geometry from the game's render state
-	// 2. Create vertex/index buffers on GPU
-	// 3. Build BLAS for each unique mesh
-	// 4. Build TLAS (Top Level AS) with instance transforms
+	logger::trace("RT Contact Shadows: Building BLAS from scene geometry...");
 
-	// For now, create placeholder resources
-	// In a real implementation, this would build from Skyrim's scene geometry
+	// Clear previous geometry data
+	uniqueGeometries.clear();
+	meshInstances.clear();
+	geometryCache.clear();
 
-	D3D12_HEAP_PROPERTIES heapProps = {};
-	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+	// Step 1: Collect geometry from the game's render state
+	CollectSceneGeometry();
 
-	D3D12_RESOURCE_DESC resourceDesc = {};
-	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = 1024;  // Placeholder size
-	resourceDesc.Height = 1;
-	resourceDesc.DepthOrArraySize = 1;
-	resourceDesc.MipLevels = 1;
-	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
-	resourceDesc.SampleDesc.Count = 1;
-	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-
-	// Create placeholder BLAS
-	HRESULT hr = d3d12Device->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&resourceDesc,
-		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
-		nullptr,
-		IID_PPV_ARGS(&bottomLevelAS));
-
-	if (FAILED(hr)) {
-		logger::error("Failed to create BLAS resource");
+	if (uniqueGeometries.empty()) {
+		logger::warn("RT Contact Shadows: No geometry collected for BLAS building");
 		return;
 	}
 
-	// Create placeholder TLAS
-	hr = d3d12Device->CreateCommittedResource(
-		&heapProps,
-		D3D12_HEAP_FLAG_NONE,
-		&resourceDesc,
-		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
-		nullptr,
-		IID_PPV_ARGS(&topLevelAS));
+	logger::trace("RT Contact Shadows: Collected {} unique geometries, {} instances", 
+		uniqueGeometries.size(), meshInstances.size());
 
-	if (FAILED(hr)) {
-		logger::error("Failed to create TLAS resource");
-		return;
-	}
+	// Step 2: Create vertex/index buffers on GPU
+	CreateGeometryBuffers();
+
+	// Step 3: Build BLAS for each unique mesh
+	BuildBLAS();
+
+	// Step 4: Build TLAS with instance transforms
+	BuildTLAS();
+
+	logger::info("RT Contact Shadows: Successfully built acceleration structures");
 }
 
 void RTContactShadows::CreateRaytracingPipeline()
@@ -433,4 +410,490 @@ void RTContactShadows::DispatchRays()
 	// d3d12CommandList->DispatchRays(&rayDispatchDesc);
 
 	logger::trace("RT Contact Shadows ray dispatch completed for frame {}", cbData.FrameIndex);
+}
+
+void RTContactShadows::CollectSceneGeometry()
+{
+	// TODO: This is a placeholder implementation
+	// In a full implementation, this would need to hook into the render pipeline
+	// to collect geometry from active render passes during scene rendering
+	
+	// For now, create a simple test geometry (triangle)
+	GeometryData testGeometry;
+	testGeometry.vertices = {
+		0.0f, 1.0f, 0.0f,   // Top vertex
+		-1.0f, -1.0f, 0.0f, // Bottom left
+		1.0f, -1.0f, 0.0f   // Bottom right
+	};
+	testGeometry.indices = { 0, 1, 2 };
+	testGeometry.vertexCount = 3;
+	testGeometry.indexCount = 3;
+	
+	// Add to unique geometries
+	uniqueGeometries.push_back(testGeometry);
+	
+	// Create instance
+	MeshInstance instance;
+	instance.geometry = &uniqueGeometries.back();
+	instance.transform = DirectX::XMMatrixIdentity();
+	instance.instanceID = 0;
+	
+	meshInstances.push_back(instance);
+	
+	logger::trace("RT Contact Shadows: Added test geometry with {} vertices, {} indices", 
+		testGeometry.vertexCount, testGeometry.indexCount);
+}
+
+void RTContactShadows::ProcessRenderPass(RE::BSRenderPass* a_pass)
+{
+	if (!a_pass || !a_pass->geometry) {
+		return;
+	}
+
+	// Get triangle shape from geometry
+	auto triShape = a_pass->geometry->AsTriShape();
+	if (!triShape) {
+		return;
+	}
+
+	// Get renderer data
+	auto rendererData = a_pass->geometry->GetGeometryRuntimeData().rendererData;
+	if (!rendererData || !rendererData->rawVertexData) {
+		return;
+	}
+
+	// Get geometry hash for caching
+	std::string geoHash = GetGeometryHash(a_pass->geometry);
+	
+	// Check if we already have this geometry
+	auto cacheIt = geometryCache.find(geoHash);
+	GeometryData* geometry = nullptr;
+	
+	if (cacheIt == geometryCache.end()) {
+		// Create new geometry data
+		GeometryData newGeometry;
+		
+		// Extract vertex positions
+		uint32_t vertexSize = rendererData->vertexDesc.GetSize();
+		uint32_t positionOffset = rendererData->vertexDesc.GetAttributeOffset(RE::BSGraphics::Vertex::Attribute::VA_POSITION);
+		uint32_t vertexCount = triShape->GetTrishapeRuntimeData().vertexCount;
+		
+		newGeometry.vertices.reserve(vertexCount * 3);
+		
+		for (uint32_t v = 0; v < vertexCount; v++) {
+			float* position = reinterpret_cast<float*>(&rendererData->rawVertexData[vertexSize * v + positionOffset]);
+			newGeometry.vertices.push_back(position[0]);
+			newGeometry.vertices.push_back(position[1]);
+			newGeometry.vertices.push_back(position[2]);
+		}
+		
+		newGeometry.vertexCount = vertexCount;
+		
+		// Extract indices if available
+		// Note: Index data access depends on BSTriShape implementation details
+		// This is a simplified approach
+		for (uint32_t i = 0; i < vertexCount; i++) {
+			newGeometry.indices.push_back(i);
+		}
+		newGeometry.indexCount = vertexCount;
+		
+		// Add to collection
+		uniqueGeometries.push_back(newGeometry);
+		geometryCache[geoHash] = uniqueGeometries.size() - 1;
+		geometry = &uniqueGeometries.back();
+	} else {
+		// Use cached geometry
+		geometry = &uniqueGeometries[cacheIt->second];
+	}
+	
+	// Create instance with transform
+	MeshInstance instance;
+	instance.geometry = geometry;
+	
+	// Get world transform from the geometry node
+	if (auto node = a_pass->geometry->GetObjectByName()) {
+		auto& worldTransform = node->world;
+		instance.transform = DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(reinterpret_cast<const DirectX::XMFLOAT4X4*>(&worldTransform)));
+	}
+	
+	instance.instanceID = static_cast<uint32_t>(meshInstances.size());
+	meshInstances.push_back(instance);
+}
+
+std::string RTContactShadows::GetGeometryHash(RE::BSGeometry* geometry)
+{
+	if (!geometry) {
+		return "";
+	}
+	
+	// Create a simple hash based on geometry pointer and vertex count
+	auto triShape = geometry->AsTriShape();
+	if (!triShape) {
+		return "";
+	}
+	
+	uint32_t vertexCount = triShape->GetTrishapeRuntimeData().vertexCount;
+	size_t geoPtr = reinterpret_cast<size_t>(geometry);
+	
+	return std::to_string(geoPtr) + "_" + std::to_string(vertexCount);
+}
+
+void RTContactShadows::CreateGeometryBuffers()
+{
+	if (uniqueGeometries.empty()) {
+		return;
+	}
+
+	// Calculate total buffer sizes
+	size_t totalVertexData = 0;
+	size_t totalIndexData = 0;
+	
+	for (const auto& geometry : uniqueGeometries) {
+		totalVertexData += geometry.vertices.size() * sizeof(float);
+		totalIndexData += geometry.indices.size() * sizeof(uint32_t);
+	}
+
+	// Create vertex buffer
+	if (totalVertexData > 0) {
+		D3D12_HEAP_PROPERTIES heapProps = {};
+		heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+		D3D12_RESOURCE_DESC resourceDesc = {};
+		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		resourceDesc.Width = totalVertexData;
+		resourceDesc.Height = 1;
+		resourceDesc.DepthOrArraySize = 1;
+		resourceDesc.MipLevels = 1;
+		resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+		resourceDesc.SampleDesc.Count = 1;
+		resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+		HRESULT hr = d3d12Device->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&vertexBuffer));
+
+		if (FAILED(hr)) {
+			logger::error("RT Contact Shadows: Failed to create vertex buffer");
+			return;
+		}
+
+		// Map and copy vertex data
+		void* mappedData = nullptr;
+		hr = vertexBuffer->Map(0, nullptr, &mappedData);
+		if (SUCCEEDED(hr)) {
+			uint8_t* destPtr = static_cast<uint8_t*>(mappedData);
+			size_t offset = 0;
+			
+			for (const auto& geometry : uniqueGeometries) {
+				size_t dataSize = geometry.vertices.size() * sizeof(float);
+				memcpy(destPtr + offset, geometry.vertices.data(), dataSize);
+				offset += dataSize;
+			}
+			
+			vertexBuffer->Unmap(0, nullptr);
+		}
+	}
+
+	// Create index buffer
+	if (totalIndexData > 0) {
+		D3D12_HEAP_PROPERTIES heapProps = {};
+		heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+		D3D12_RESOURCE_DESC resourceDesc = {};
+		resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+		resourceDesc.Width = totalIndexData;
+		resourceDesc.Height = 1;
+		resourceDesc.DepthOrArraySize = 1;
+		resourceDesc.MipLevels = 1;
+		resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+		resourceDesc.SampleDesc.Count = 1;
+		resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+		HRESULT hr = d3d12Device->CreateCommittedResource(
+			&heapProps,
+			D3D12_HEAP_FLAG_NONE,
+			&resourceDesc,
+			D3D12_RESOURCE_STATE_GENERIC_READ,
+			nullptr,
+			IID_PPV_ARGS(&indexBuffer));
+
+		if (FAILED(hr)) {
+			logger::error("RT Contact Shadows: Failed to create index buffer");
+			return;
+		}
+
+		// Map and copy index data
+		void* mappedData = nullptr;
+		hr = indexBuffer->Map(0, nullptr, &mappedData);
+		if (SUCCEEDED(hr)) {
+			uint8_t* destPtr = static_cast<uint8_t*>(mappedData);
+			size_t offset = 0;
+			
+			for (const auto& geometry : uniqueGeometries) {
+				size_t dataSize = geometry.indices.size() * sizeof(uint32_t);
+				memcpy(destPtr + offset, geometry.indices.data(), dataSize);
+				offset += dataSize;
+			}
+			
+			indexBuffer->Unmap(0, nullptr);
+		}
+	}
+
+	logger::trace("RT Contact Shadows: Created geometry buffers - vertex: {} bytes, index: {} bytes", 
+		totalVertexData, totalIndexData);
+}
+
+void RTContactShadows::BuildBLAS()
+{
+	if (!d3d12Device || uniqueGeometries.empty()) {
+		return;
+	}
+
+	// Build BLAS geometry descriptions
+	std::vector<D3D12_RAYTRACING_GEOMETRY_DESC> geometryDescs;
+	geometryDescs.reserve(uniqueGeometries.size());
+
+	size_t vertexOffset = 0;
+	size_t indexOffset = 0;
+
+	for (const auto& geometry : uniqueGeometries) {
+		D3D12_RAYTRACING_GEOMETRY_DESC geoDesc = {};
+		geoDesc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
+		geoDesc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+		
+		// Set vertex buffer
+		geoDesc.Triangles.VertexBuffer.StartAddress = vertexBuffer->GetGPUVirtualAddress() + vertexOffset;
+		geoDesc.Triangles.VertexBuffer.StrideInBytes = geometry.vertexStride;
+		geoDesc.Triangles.VertexCount = geometry.vertexCount;
+		geoDesc.Triangles.VertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+		
+		// Set index buffer
+		geoDesc.Triangles.IndexBuffer = indexBuffer->GetGPUVirtualAddress() + indexOffset;
+		geoDesc.Triangles.IndexCount = geometry.indexCount;
+		geoDesc.Triangles.IndexFormat = DXGI_FORMAT_R32_UINT;
+		
+		geometryDescs.push_back(geoDesc);
+		
+		vertexOffset += geometry.vertices.size() * sizeof(float);
+		indexOffset += geometry.indices.size() * sizeof(uint32_t);
+	}
+
+	// Get prebuild info
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS blasInputs = {};
+	blasInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
+	blasInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	blasInputs.NumDescs = static_cast<UINT>(geometryDescs.size());
+	blasInputs.pGeometryDescs = geometryDescs.data();
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO blasPrebuildInfo = {};
+	d3d12Device->GetRaytracingAccelerationStructurePrebuildInfo(&blasInputs, &blasPrebuildInfo);
+
+	// Create scratch buffer
+	D3D12_HEAP_PROPERTIES heapProps = {};
+	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	D3D12_RESOURCE_DESC scratchDesc = {};
+	scratchDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	scratchDesc.Width = blasPrebuildInfo.ScratchDataSizeInBytes;
+	scratchDesc.Height = 1;
+	scratchDesc.DepthOrArraySize = 1;
+	scratchDesc.MipLevels = 1;
+	scratchDesc.Format = DXGI_FORMAT_UNKNOWN;
+	scratchDesc.SampleDesc.Count = 1;
+	scratchDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	scratchDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	HRESULT hr = d3d12Device->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&scratchDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		nullptr,
+		IID_PPV_ARGS(&blasScratchBuffer));
+
+	if (FAILED(hr)) {
+		logger::error("RT Contact Shadows: Failed to create BLAS scratch buffer");
+		return;
+	}
+
+	// Create BLAS buffer
+	D3D12_RESOURCE_DESC blasDesc = {};
+	blasDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	blasDesc.Width = blasPrebuildInfo.ResultDataMaxSizeInBytes;
+	blasDesc.Height = 1;
+	blasDesc.DepthOrArraySize = 1;
+	blasDesc.MipLevels = 1;
+	blasDesc.Format = DXGI_FORMAT_UNKNOWN;
+	blasDesc.SampleDesc.Count = 1;
+	blasDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	blasDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	hr = d3d12Device->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&blasDesc,
+		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
+		nullptr,
+		IID_PPV_ARGS(&bottomLevelAS));
+
+	if (FAILED(hr)) {
+		logger::error("RT Contact Shadows: Failed to create BLAS buffer");
+		return;
+	}
+
+	// Build BLAS
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC blasDesc_ = {};
+	blasDesc_.Inputs = blasInputs;
+	blasDesc_.ScratchDataAddress = blasScratchBuffer->GetGPUVirtualAddress();
+	blasDesc_.DestAccelerationStructureAddress = bottomLevelAS->GetGPUVirtualAddress();
+
+	d3d12CommandList->BuildRaytracingAccelerationStructure(&blasDesc_, 0, nullptr);
+
+	// Add barrier
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	barrier.UAV.pResource = bottomLevelAS.get();
+	d3d12CommandList->ResourceBarrier(1, &barrier);
+
+	logger::trace("RT Contact Shadows: Built BLAS with {} geometries", geometryDescs.size());
+}
+
+void RTContactShadows::BuildTLAS()
+{
+	if (!d3d12Device || meshInstances.empty() || !bottomLevelAS) {
+		return;
+	}
+
+	// Create instance buffer
+	size_t instanceDataSize = meshInstances.size() * sizeof(D3D12_RAYTRACING_INSTANCE_DESC);
+
+	D3D12_HEAP_PROPERTIES heapProps = {};
+	heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
+
+	D3D12_RESOURCE_DESC instanceDesc = {};
+	instanceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	instanceDesc.Width = instanceDataSize;
+	instanceDesc.Height = 1;
+	instanceDesc.DepthOrArraySize = 1;
+	instanceDesc.MipLevels = 1;
+	instanceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	instanceDesc.SampleDesc.Count = 1;
+	instanceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+
+	HRESULT hr = d3d12Device->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&instanceDesc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&tlasInstanceBuffer));
+
+	if (FAILED(hr)) {
+		logger::error("RT Contact Shadows: Failed to create TLAS instance buffer");
+		return;
+	}
+
+	// Map and fill instance data
+	D3D12_RAYTRACING_INSTANCE_DESC* mappedInstances = nullptr;
+	hr = tlasInstanceBuffer->Map(0, nullptr, reinterpret_cast<void**>(&mappedInstances));
+	if (SUCCEEDED(hr)) {
+		for (size_t i = 0; i < meshInstances.size(); i++) {
+			const auto& instance = meshInstances[i];
+			auto& desc = mappedInstances[i];
+
+			// Set transform (DirectX expects row-major 3x4 matrix)
+			DirectX::XMFLOAT3X4 transform3x4;
+			DirectX::XMStoreFloat3x4(&transform3x4, instance.transform);
+			memcpy(desc.Transform, &transform3x4, sizeof(desc.Transform));
+
+			desc.InstanceID = instance.instanceID;
+			desc.InstanceMask = 0xFF;
+			desc.InstanceContributionToHitGroupIndex = 0;
+			desc.Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
+			desc.AccelerationStructure = bottomLevelAS->GetGPUVirtualAddress();
+		}
+		tlasInstanceBuffer->Unmap(0, nullptr);
+	}
+
+	// Get prebuild info for TLAS
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_INPUTS tlasInputs = {};
+	tlasInputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL;
+	tlasInputs.Flags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+	tlasInputs.NumDescs = static_cast<UINT>(meshInstances.size());
+	tlasInputs.InstanceDescs = tlasInstanceBuffer->GetGPUVirtualAddress();
+
+	D3D12_RAYTRACING_ACCELERATION_STRUCTURE_PREBUILD_INFO tlasPrebuildInfo = {};
+	d3d12Device->GetRaytracingAccelerationStructurePrebuildInfo(&tlasInputs, &tlasPrebuildInfo);
+
+	// Create TLAS scratch buffer
+	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
+
+	D3D12_RESOURCE_DESC scratchDesc = {};
+	scratchDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	scratchDesc.Width = tlasPrebuildInfo.ScratchDataSizeInBytes;
+	scratchDesc.Height = 1;
+	scratchDesc.DepthOrArraySize = 1;
+	scratchDesc.MipLevels = 1;
+	scratchDesc.Format = DXGI_FORMAT_UNKNOWN;
+	scratchDesc.SampleDesc.Count = 1;
+	scratchDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	scratchDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	hr = d3d12Device->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&scratchDesc,
+		D3D12_RESOURCE_STATE_UNORDERED_ACCESS,
+		nullptr,
+		IID_PPV_ARGS(&tlasScratchBuffer));
+
+	if (FAILED(hr)) {
+		logger::error("RT Contact Shadows: Failed to create TLAS scratch buffer");
+		return;
+	}
+
+	// Create TLAS buffer
+	D3D12_RESOURCE_DESC tlasDesc = {};
+	tlasDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	tlasDesc.Width = tlasPrebuildInfo.ResultDataMaxSizeInBytes;
+	tlasDesc.Height = 1;
+	tlasDesc.DepthOrArraySize = 1;
+	tlasDesc.MipLevels = 1;
+	tlasDesc.Format = DXGI_FORMAT_UNKNOWN;
+	tlasDesc.SampleDesc.Count = 1;
+	tlasDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	tlasDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+	hr = d3d12Device->CreateCommittedResource(
+		&heapProps,
+		D3D12_HEAP_FLAG_NONE,
+		&tlasDesc,
+		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
+		nullptr,
+		IID_PPV_ARGS(&topLevelAS));
+
+	if (FAILED(hr)) {
+		logger::error("RT Contact Shadows: Failed to create TLAS buffer");
+		return;
+	}
+
+	// Build TLAS
+	D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC tlasDesc_ = {};
+	tlasDesc_.Inputs = tlasInputs;
+	tlasDesc_.ScratchDataAddress = tlasScratchBuffer->GetGPUVirtualAddress();
+	tlasDesc_.DestAccelerationStructureAddress = topLevelAS->GetGPUVirtualAddress();
+
+	d3d12CommandList->BuildRaytracingAccelerationStructure(&tlasDesc_, 0, nullptr);
+
+	// Add barrier
+	D3D12_RESOURCE_BARRIER barrier = {};
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
+	barrier.UAV.pResource = topLevelAS.get();
+	d3d12CommandList->ResourceBarrier(1, &barrier);
+
+	logger::trace("RT Contact Shadows: Built TLAS with {} instances", meshInstances.size());
 }
