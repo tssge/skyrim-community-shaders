@@ -552,9 +552,9 @@ float3 MelonTonemap(float3 color)
 	return clamp(color, float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0));
 }
 
-/* 
+/*
     EmbarkStudios/kajiya
-        url:    https://github.com/EmbarkStudios/kajiya	
+        url:    https://github.com/EmbarkStudios/kajiya
         license:
 			Copyright (c) 2019 Embark Studios
 
@@ -611,6 +611,342 @@ float3 KajiyaTonemap(float3 col)
 	float3 tm1 = KajiyaCurve(desat_col);
 
 	return lerp(tm0, tm1, bt * bt) * final_mult;
+}
+
+/////////////////////////////////////////////////////////////////////////////////
+// Enhanced HDR Functions (inspired by SpecialK)
+/////////////////////////////////////////////////////////////////////////////////
+
+// PQ-based perceptual boost similar to SpecialK's implementation
+float3 PerceptualBoost(float3 color)
+{
+	// Parameters from UI
+	float perceptual_strength = Params[0].x;
+	float color_boost = Params[0].y;
+	float luminance_threshold = Params[0].z;
+	float blend_factor = Params[0].w;
+
+	if (perceptual_strength <= 0.0f)
+		return color;
+
+	// Convert to XYZ to get proper luminance
+	float3 xyz_color = mul(float3x3(
+							   0.4123908, 0.35758434, 0.18048079,
+							   0.21263901, 0.71516868, 0.07219232,
+							   0.01933082, 0.11919478, 0.95053215),
+		color);
+
+	float luminance = max(xyz_color.y, 0.0f);
+	float3 normalized_color = luminance > 0.0f ? xyz_color / luminance : xyz_color;
+
+	if (luminance > 0.0f) {
+		// Apply PQ-based perceptual boost
+		float pq_luma = Color::pq::Encode(float3(luminance, luminance, luminance), perceptual_strength).x;
+		float3 pq_color = Color::pq::Encode(xyz_color, perceptual_strength);
+
+		// Enhanced PQ curve processing
+		pq_luma = pow(pq_luma * blend_factor, 1.0f / blend_factor);
+		pq_color = pow(pq_color * blend_factor, 1.0f / blend_factor);
+
+		// Decode back to linear
+		float boosted_luma = Color::pq::Decode(float3(pq_luma, pq_luma, pq_luma), perceptual_strength).x;
+		float3 boosted_color = Color::pq::Decode(pq_color, perceptual_strength);
+
+		// Apply color boost for highly saturated content
+		if (color_boost > 0.0f) {
+			float3 luma_ratio = boosted_luma > 0.0f ? (boosted_color / boosted_luma) : float3(1, 1, 1);
+			boosted_color = lerp(luma_ratio * boosted_luma, boosted_color, color_boost);
+		}
+
+		// Convert back to RGB
+		xyz_color = boosted_color;
+	}
+
+	// Convert XYZ back to RGB
+	color = mul(float3x3(
+					3.24096994, -1.53738318, -0.49861076,
+					-0.96924364, 1.8759675, 0.04155506,
+					0.05563008, -0.20397696, 1.05697151),
+		xyz_color);
+
+	return max(color, 0.0f);
+}
+
+// Enhanced gamut expansion similar to SpecialK's implementation
+float3 EnhancedGamutExpansion(float3 color)
+{
+	float expansion_factor = Params[0].x;
+	float saturation_threshold = Params[0].y;
+	float luminance_weight = Params[0].z;
+
+	if (expansion_factor <= 0.0f)
+		return color;
+
+	// Convert to AP1 working space (similar to SpecialK's approach)
+	static const float3x3 sRGB_to_AP1 = float3x3(
+		0.61319, 0.33951, 0.04737,
+		0.07021, 0.91634, 0.01345,
+		0.02062, 0.10957, 0.86961);
+
+	static const float3x3 AP1_to_sRGB = float3x3(
+		1.70505, -0.62179, -0.08326,
+		-0.13026, 1.14080, -0.01055,
+		-0.02400, -0.12897, 1.15297);
+
+	float3 color_ap1 = mul(sRGB_to_AP1, color);
+
+	// Calculate luminance and chromaticity
+	float luma_ap1 = Color::RGBToLuminance(mul(AP1_to_sRGB, color_ap1));
+	float3 chroma_ap1 = luma_ap1 > 0.0f ? (color_ap1 / luma_ap1) : float3(1, 1, 1);
+
+	// Calculate chroma distance (saturation)
+	float chroma_dist_sqr = dot(chroma_ap1 - 1.0f, chroma_ap1 - 1.0f);
+	chroma_dist_sqr = max(chroma_dist_sqr, 0.000001f);
+
+	// Calculate expansion amount based on chroma and luminance
+	float expansion_amount = (1.0f - exp2(-4.0f * chroma_dist_sqr)) *
+	                         (1.0f - exp2(-4.0f * expansion_factor * luma_ap1 * luminance_weight));
+
+	// Apply expansion only if above saturation threshold
+	if (sqrt(chroma_dist_sqr) > saturation_threshold) {
+		// Wide gamut matrix (expands towards P3/BT2020-like)
+		static const float3x3 expand_matrix = float3x3(
+			0.83451690546233900, 0.1602595895494930, 0.00522350498816804,
+			0.02554519357785500, 0.9731015318660700, 0.00135327455607548,
+			0.00192582885428273, 0.0303727970124423, 0.96770137413327500);
+
+		float3 expanded_color = mul(expand_matrix, color_ap1);
+		color_ap1 = lerp(color_ap1, expanded_color, expansion_amount);
+	}
+
+	// Convert back to sRGB
+	return mul(AP1_to_sRGB, color_ap1);
+}
+
+// Content EOTF handling
+float3 ContentEOTF(float3 color)
+{
+	int eotf_type = (int)Params[0].x;
+	float custom_gamma = Params[0].y;
+	float midgray_adjust = Params[0].z;
+
+	// Apply EOTF based on type
+	switch (eotf_type) {
+	case 0:  // Linear - no change
+		break;
+
+	case 1:  // sRGB
+		color = pow(abs(color), 2.2f) * sign(color);
+		break;
+
+	case 2:  // Gamma 2.2
+		color = pow(abs(color), 2.2f) * sign(color);
+		break;
+
+	case 3:  // Gamma 2.4
+		color = pow(abs(color), 2.4f) * sign(color);
+		break;
+
+	case 4:  // Custom
+		color = pow(abs(color), custom_gamma) * sign(color);
+		break;
+	}
+
+	// Apply mid-gray adjustment if specified
+	if (abs(midgray_adjust) > 0.001f) {
+		float luma = Color::RGBToLuminance(color);
+		float adjusted_luma = luma * (1.0f + midgray_adjust);
+		color = luma > 0.0f ? (color / luma) * adjusted_luma : color;
+	}
+
+	return color;
+}
+
+// HDR Visualization tools
+float3 HDRVisualization(float3 color)
+{
+	int viz_type = (int)Params[0].x;
+	float max_luminance = Params[0].y;
+	float reference_white = Params[0].z;
+	float gamut_scale = Params[0].w;
+
+	if (viz_type == 0)  // None
+		return color;
+
+	float3 result = color;
+
+	switch (viz_type) {
+	case 1:  // Luminance Heatmap
+		{
+			float luminance = Color::RGBToLuminance(color) * 80.0f;  // Convert to nits
+			float normalized_luma = saturate(luminance / max_luminance);
+
+			// Create heatmap from blue (low) through green, yellow, red to white (high)
+			if (normalized_luma < 0.25f)
+				result = lerp(float3(0, 0, 1), float3(0, 1, 1), normalized_luma * 4.0f);
+			else if (normalized_luma < 0.5f)
+				result = lerp(float3(0, 1, 1), float3(0, 1, 0), (normalized_luma - 0.25f) * 4.0f);
+			else if (normalized_luma < 0.75f)
+				result = lerp(float3(0, 1, 0), float3(1, 1, 0), (normalized_luma - 0.5f) * 4.0f);
+			else if (normalized_luma < 1.0f)
+				result = lerp(float3(1, 1, 0), float3(1, 0, 0), (normalized_luma - 0.75f) * 4.0f);
+			else
+				result = float3(1, 1, 1);  // Overexposed
+			break;
+		}
+
+	case 2:  // Exposure Stops
+		{
+			float luminance = Color::RGBToLuminance(color) * 80.0f;
+			float stops = log2(luminance / reference_white);
+
+			// Color code by exposure stops
+			if (stops < -4.0f)
+				result = float3(0.1, 0.0, 0.3);  // Very dark purple
+			else if (stops < -2.0f)
+				result = float3(0.0, 0.0, 1.0);  // Blue
+			else if (stops < -1.0f)
+				result = float3(0.0, 0.5, 1.0);  // Cyan
+			else if (stops < 0.0f)
+				result = float3(0.0, 1.0, 0.0);  // Green
+			else if (stops < 1.0f)
+				result = float3(1.0, 1.0, 0.0);  // Yellow
+			else if (stops < 2.0f)
+				result = float3(1.0, 0.5, 0.0);  // Orange
+			else if (stops < 4.0f)
+				result = float3(1.0, 0.0, 0.0);  // Red
+			else
+				result = float3(1.0, 1.0, 1.0);  // White (overexposed)
+			break;
+		}
+
+	case 3:  // Gamut Coverage (Rec.709)
+	case 4:  // Gamut Coverage (P3)
+		{
+			// Check if color is outside target gamut
+			bool outside_gamut = false;
+
+			if (viz_type == 3)  // Rec.709
+			{
+				// Simple check: if any component is significantly outside [0,1] after scaling
+				float3 scaled = color * gamut_scale;
+				outside_gamut = any(scaled < -0.01f) || any(scaled > 1.01f);
+			} else  // P3
+			{
+				// Convert to P3 and check bounds
+				static const float3x3 sRGB_to_P3 = float3x3(
+					0.8224621, 0.1775380, 0.0000000,
+					0.0331941, 0.9668058, 0.0000000,
+					0.0170826, 0.0723974, 0.9105199);
+				float3 p3_color = mul(sRGB_to_P3, color * gamut_scale);
+				outside_gamut = any(p3_color < -0.01f) || any(p3_color > 1.01f);
+			}
+
+			if (outside_gamut) {
+				// Show out-of-gamut areas in magenta
+				result = lerp(color, float3(1, 0, 1), 0.7f);
+			} else {
+				// Desaturate in-gamut areas
+				float luma = Color::RGBToLuminance(color);
+				result = lerp(float3(luma, luma, luma), color, 0.3f);
+			}
+			break;
+		}
+
+	case 5:  // 8-bit Quantization
+	case 6:  // 10-bit Quantization
+		{
+			uint scale = (viz_type == 5) ? 255 : 1023;
+			float scale_f = (float)scale;
+
+			// Quantize to target bit depth
+			uint3 quantized = uint3(color * scale);
+			result = float3(quantized) / scale_f;
+
+			// Highlight quantization errors
+			float3 error = abs(color - result);
+			float max_error = max(error.r, max(error.g, error.b));
+			if (max_error > 0.01f) {
+				result = lerp(result, float3(1, 0, 0), min(max_error * 10.0f, 0.5f));
+			}
+			break;
+		}
+
+	case 7:  // Overbright Detection
+		{
+			float max_component = max(color.r, max(color.g, color.b));
+			if (max_component > 1.0f) {
+				// Flash bright areas in red
+				float flash = sin(SharedData::FrameCount * 0.1f) * 0.5f + 0.5f;
+				result = lerp(color, float3(1, 0, 0), flash * 0.8f);
+			} else {
+				// Dim areas within normal range
+				result = color * 0.3f;
+			}
+			break;
+		}
+	}
+
+	return result;
+}
+
+// Enhanced ACES tonemapping with better color preservation
+float3 EnhancedACES(float3 color)
+{
+	float exposure = Params[0].x;
+	float saturation = Params[0].y;
+	float highlight_protection = Params[0].z;
+	float shoulder_strength = Params[0].w;
+
+	color *= exposure;
+
+	// Convert to ACES working space
+	static const float3x3 sRGB_to_ACES = float3x3(
+		0.59719, 0.35458, 0.04823,
+		0.07600, 0.90834, 0.01566,
+		0.02840, 0.13383, 0.83777);
+
+	static const float3x3 ACES_to_sRGB = float3x3(
+		1.60475, -0.53108, -0.07367,
+		-0.10208, 1.10813, -0.00605,
+		-0.00327, -0.07276, 1.07602);
+
+	float3 aces_color = mul(sRGB_to_ACES, color);
+
+	// Apply saturation adjustment in ACES space
+	if (abs(saturation - 1.0f) > 0.001f) {
+		float aces_luma = dot(aces_color, float3(0.2722287, 0.6740818, 0.0536895));
+		aces_color = lerp(float3(aces_luma, aces_luma, aces_luma), aces_color, saturation);
+	}
+
+	// Enhanced ACES curve with highlight protection
+	float3 a = aces_color * (aces_color + 0.0245786f) - 0.000090537f;
+	float3 b = aces_color * (0.983729f * aces_color + 0.4329510f) + 0.238081f;
+	float3 tone_mapped = a / b;
+
+	// Apply highlight protection to preserve color
+	if (highlight_protection > 0.0f) {
+		float input_luma = dot(aces_color, float3(0.2722287, 0.6740818, 0.0536895));
+		float output_luma = dot(tone_mapped, float3(0.2722287, 0.6740818, 0.0536895));
+
+		// Calculate color ratio preservation
+		float3 color_ratio = input_luma > 0.0f ? (aces_color / input_luma) : float3(1, 1, 1);
+		float3 protected_color = color_ratio * output_luma;
+
+		// Blend between standard tonemap and protected version
+		float protection_weight = saturate(input_luma * highlight_protection);
+		tone_mapped = lerp(tone_mapped, protected_color, protection_weight);
+	}
+
+	// Apply shoulder strength adjustment
+	if (abs(shoulder_strength - 1.0f) > 0.001f) {
+		tone_mapped = pow(abs(tone_mapped), 1.0f / shoulder_strength) * sign(tone_mapped);
+	}
+
+	// Convert back to sRGB
+	float3 result = mul(ACES_to_sRGB, tone_mapped);
+
+	return saturate(result);
 }
 
 [numthreads(8, 8, 1)] void main(uint2 tid : SV_DispatchThreadID) {
