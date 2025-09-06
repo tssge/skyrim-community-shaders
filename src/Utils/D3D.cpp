@@ -4,6 +4,7 @@
 #include "Utils/Format.h"
 
 #include <d3dcompiler.h>
+#include <dxcapi.h>
 #include <mutex>
 
 namespace Util
@@ -404,5 +405,141 @@ namespace Util
 		}
 
 		return S_OK;
+	}
+
+	std::vector<CompiledRTShader> CompileRaytracingShaders(const wchar_t* FilePath, const std::vector<std::pair<const char*, const char*>>& Defines)
+	{
+		std::vector<CompiledRTShader> compiledShaders;
+
+		// Initialize DXC
+		winrt::com_ptr<IDxcUtils> dxcUtils;
+		winrt::com_ptr<IDxcCompiler3> dxcCompiler;
+		winrt::com_ptr<IDxcIncludeHandler> includeHandler;
+
+		HRESULT hr = DxcCreateInstance(CLSID_DxcUtils, IID_PPV_ARGS(&dxcUtils));
+		if (FAILED(hr)) {
+			logger::error("Failed to create DXC utils");
+			return compiledShaders;
+		}
+
+		hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
+		if (FAILED(hr)) {
+			logger::error("Failed to create DXC compiler");
+			return compiledShaders;
+		}
+
+		hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
+		if (FAILED(hr)) {
+			logger::error("Failed to create DXC include handler");
+			return compiledShaders;
+		}
+
+		// Load shader source
+		winrt::com_ptr<IDxcBlobEncoding> sourceBlob;
+		hr = dxcUtils->LoadFile(FilePath, nullptr, &sourceBlob);
+		if (FAILED(hr)) {
+			logger::error("Failed to load RT shader file: {}", Util::WStringToString(FilePath));
+			return compiledShaders;
+		}
+
+		// Build arguments for compilation
+		std::vector<LPCWSTR> arguments;
+		arguments.push_back(FilePath);  // Source file name
+
+		// Add defines
+		std::vector<std::wstring> defineStrings;
+		for (const auto& define : Defines) {
+			if (define.first && _stricmp(define.first, "") != 0) {
+				std::wstring defineArg = L"-D";
+				defineArg += Util::StringToWString(define.first);
+				if (define.second && _stricmp(define.second, "") != 0) {
+					defineArg += L"=";
+					defineArg += Util::StringToWString(define.second);
+				}
+				defineStrings.push_back(defineArg);
+				arguments.push_back(defineStrings.back().c_str());
+			}
+		}
+
+		// Add common defines
+		if (REL::Module::IsVR()) {
+			defineStrings.emplace_back(L"-DVR");
+			arguments.push_back(defineStrings.back().c_str());
+		}
+
+		// Set debug mode if in developer mode
+		if (globals::state->IsDeveloperMode()) {
+			arguments.push_back(L"-Zi");  // Debug info
+			arguments.push_back(L"-Od");  // Disable optimization
+		} else {
+			arguments.push_back(L"-O3");  // Optimization level 3
+		}
+
+		// Define entry points and targets for RT shaders
+		struct ShaderEntry
+		{
+			const wchar_t* entryPoint;
+			const wchar_t* target;
+		};
+
+		std::vector<ShaderEntry> shaderEntries = {
+			{ L"ContactShadowRayGen", L"lib_6_3" },
+			{ L"ContactShadowMiss", L"lib_6_3" },
+			{ L"ContactShadowAnyHit", L"lib_6_3" }
+		};
+
+		// Compile each shader entry point
+		for (const auto& entry : shaderEntries) {
+			std::vector<LPCWSTR> currentArgs = arguments;
+			currentArgs.push_back(L"-E");
+			currentArgs.push_back(entry.entryPoint);
+			currentArgs.push_back(L"-T");
+			currentArgs.push_back(entry.target);
+
+			DxcBuffer sourceBuffer = {};
+			sourceBuffer.Ptr = sourceBlob->GetBufferPointer();
+			sourceBuffer.Size = sourceBlob->GetBufferSize();
+			sourceBuffer.Encoding = 0;
+
+			winrt::com_ptr<IDxcResult> compileResult;
+			hr = dxcCompiler->Compile(&sourceBuffer, currentArgs.data(), static_cast<UINT32>(currentArgs.size()), includeHandler.get(), IID_PPV_ARGS(&compileResult));
+
+			if (SUCCEEDED(hr)) {
+				winrt::com_ptr<IDxcBlobUtf8> errors;
+				compileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&errors), nullptr);
+				if (errors && errors->GetStringLength() > 0) {
+					logger::warn("RT shader compilation warning/error for {}: {}",
+						Util::WStringToString(entry.entryPoint),
+						static_cast<const char*>(errors->GetBufferPointer()));
+				}
+
+				HRESULT compileStatus;
+				compileResult->GetStatus(&compileStatus);
+				if (SUCCEEDED(compileStatus)) {
+					winrt::com_ptr<IDxcBlob> shaderBlob;
+					compileResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&shaderBlob), nullptr);
+					if (shaderBlob) {
+						CompiledRTShader compiled;
+						compiled.shaderBlob = shaderBlob;
+						compiled.entryPoint = entry.entryPoint;
+						compiled.target = entry.target;
+						compiledShaders.push_back(compiled);
+
+						logger::debug("Successfully compiled RT shader: {}", Util::WStringToString(entry.entryPoint));
+					}
+				} else {
+					logger::error("RT shader compilation failed for {}: HRESULT={:#x}",
+						Util::WStringToString(entry.entryPoint),
+						static_cast<uint32_t>(compileStatus));
+				}
+			} else {
+				logger::error("DXC compile call failed for {}: HRESULT={:#x}",
+					Util::WStringToString(entry.entryPoint),
+					static_cast<uint32_t>(hr));
+			}
+		}
+
+		logger::info("Compiled {} RT shader entry points from {}", compiledShaders.size(), Util::WStringToString(FilePath));
+		return compiledShaders;
 	}
 }  // namespace Util
