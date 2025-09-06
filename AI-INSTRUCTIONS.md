@@ -6,13 +6,13 @@ This file provides guidance for AI assistants working with the Skyrim Community 
 
 **For comprehensive development guidance, see `.claude/CLAUDE.md`** which provides detailed information on:
 
--   Build commands and development setup
--   Architecture overview and critical dependencies (CommonLibSSE-NG)
--   Runtime targeting system for SE/AE/VR compatibility
--   Core architecture including Globals system and feature registry
--   Shader architecture (base shaders in `package/Shaders/`, feature shaders, compute shader patterns)
--   Development workflows and best practices
--   Common pitfalls and testing requirements
+- Build commands and development setup
+- Architecture overview and critical dependencies (CommonLibSSE-NG)
+- Runtime targeting system for SE/AE/VR compatibility
+- Core architecture including Globals system and feature registry
+- Shader architecture (base shaders in `package/Shaders/`, feature shaders, compute shader patterns)
+- Development workflows and best practices
+- Common pitfalls and testing requirements
 
 ## Quick Reference
 
@@ -22,9 +22,9 @@ SKSE plugin providing advanced DirectX 11 graphics modifications for Skyrim SE/A
 
 ### Essential Commands
 
--   **Build**: `./BuildRelease.bat [PRESET]` (WSL: use `powershell.exe -Command`)
--   **Shader Test**: `hlslkit-compile --shader-dir [target]` (install via pip first)
--   **Feature Access**: `globals::features::*` namespace
+- **Build**: `./BuildRelease.bat [PRESET]` (WSL: use `powershell.exe -Command`)
+- **Shader Test**: `hlslkit-compile --shader-dir [target]` (install via pip first)
+- **Feature Access**: `globals::features::*` namespace
 
 ### AI Assistant Role
 

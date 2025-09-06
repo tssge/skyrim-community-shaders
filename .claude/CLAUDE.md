@@ -21,12 +21,12 @@ powershell.exe -Command "./BuildRelease.bat [PRESET_NAME]"
 
 **Available Presets** (from CMakePresets.json):
 
--   `ALL` (default) - Builds for SE/AE/VR in single binary
--   `SE` - Skyrim Special Edition only
--   `AE` - Anniversary Edition only
--   `VR` - Skyrim VR only
--   `ALL-TRACY` - Includes Tracy profiler support
--   `ALL-WITH-AUTO-DEPLOYMENT` - Auto-deploys to configured Skyrim directories when template used.
+- `ALL` (default) - Builds for SE/AE/VR in single binary
+- `SE` - Skyrim Special Edition only
+- `AE` - Anniversary Edition only
+- `VR` - Skyrim VR only
+- `ALL-TRACY` - Includes Tracy profiler support
+- `ALL-WITH-AUTO-DEPLOYMENT` - Auto-deploys to configured Skyrim directories when template used.
 
 ### Development Setup
 
@@ -81,10 +81,10 @@ hlslkit-buffer-scan --features-dir features/
 
 **Key Classes**:
 
--   `Feature` (src/Feature.h) - Base class for all graphics features
--   `State` (src/State.h) - Global singleton managing feature lifecycle
--   `ShaderCache` (src/ShaderCache.h) - Runtime shader compilation and caching
--   `Menu` (src/Menu.h) - ImGui-based in-game configuration interface
+- `Feature` (src/Feature.h) - Base class for all graphics features
+- `State` (src/State.h) - Global singleton managing feature lifecycle
+- `ShaderCache` (src/ShaderCache.h) - Runtime shader compilation and caching
+- `Menu` (src/Menu.h) - ImGui-based in-game configuration interface
 
 ### Feature Implementation Pattern
 
@@ -116,16 +116,16 @@ Each feature follows consistent structure:
 
 **Core Functionality**:
 
--   **Game Object Access**: RE namespace with Skyrim's internal classes and structures
--   **Memory Management**: Safe access to game memory with proper lifetime management
--   **Event System**: Hook into Skyrim's event dispatching (rendering, input, etc.)
--   **Address Library Integration**: Runtime address resolution for different game versions
+- **Game Object Access**: RE namespace with Skyrim's internal classes and structures
+- **Memory Management**: Safe access to game memory with proper lifetime management
+- **Event System**: Hook into Skyrim's event dispatching (rendering, input, etc.)
+- **Address Library Integration**: Runtime address resolution for different game versions
 
 **Key Namespaces**:
 
--   `RE::` - Skyrim game objects and classes (BSShader, TESObjectREFR, etc.)
--   `REL::` - Relative addressing and version management
--   `SKSE::` - SKSE plugin interfaces and utilities
+- `RE::` - Skyrim game objects and classes (BSShader, TESObjectREFR, etc.)
+- `REL::` - Relative addressing and version management
+- `SKSE::` - SKSE plugin interfaces and utilities
 
 ### Runtime Targeting System
 
@@ -133,10 +133,10 @@ CommonLibSSE-NG supports multiple Skyrim versions through sophisticated runtime 
 
 **Build Presets**:
 
--   `SE` - Skyrim Special Edition only
--   `AE` - Anniversary Edition only
--   `VR` - Skyrim VR only
--   `ALL` - Multi-runtime support (default for this project)
+- `SE` - Skyrim Special Edition only
+- `AE` - Anniversary Edition only
+- `VR` - Skyrim VR only
+- `ALL` - Multi-runtime support (default for this project)
 
 **Compile-Time vs Runtime Patterns**:
 
@@ -170,10 +170,10 @@ if (REL::Module::IsVR()) {
 
 **Key Runtime Utilities**:
 
--   `REL::RelocateMember<T>()` - Access members with different offsets
--   `REL::RelocateVirtual<T>()` - Call virtual functions with variant vtables
--   `REL::Module::IsVR()`, `IsAE()`, `IsSE()` - Runtime version detection
--   `REL::RelocationID()` - Dynamic address resolution based on version
+- `REL::RelocateMember<T>()` - Access members with different offsets
+- `REL::RelocateVirtual<T>()` - Call virtual functions with variant vtables
+- `REL::Module::IsVR()`, `IsAE()`, `IsSE()` - Runtime version detection
+- `REL::RelocationID()` - Dynamic address resolution based on version
 
 **Critical for Development**: When modifying classes that inherit from game objects, always check if they have runtime-specific variations and use appropriate accessor patterns.
 
@@ -185,54 +185,54 @@ Central coordination point providing access to all major subsystems:
 
 **Core Systems**:
 
--   `globals::state` - Main plugin state and feature lifecycle management
--   `globals::deferred` - Deferred rendering pipeline coordinator
--   `globals::menu` - ImGui-based in-game configuration interface
--   `globals::shaderCache` - Runtime shader compilation and caching
+- `globals::state` - Main plugin state and feature lifecycle management
+- `globals::deferred` - Deferred rendering pipeline coordinator
+- `globals::menu` - ImGui-based in-game configuration interface
+- `globals::shaderCache` - Runtime shader compilation and caching
 
 **Graphics Integration**:
 
--   `globals::d3d::*` - DirectX 11 device, context, and swapchain access
--   `globals::game::*` - Skyrim graphics state (shadowState, renderer, shaders)
--   `globals::upscaling` - FidelityFX and Streamline integration
--   `globals::dx12SwapChain` - DirectX 12 support for advanced features
+- `globals::d3d::*` - DirectX 11 device, context, and swapchain access
+- `globals::game::*` - Skyrim graphics state (shadowState, renderer, shaders)
+- `globals::upscaling` - FidelityFX and Streamline integration
+- `globals::dx12SwapChain` - DirectX 12 support for advanced features
 
 **Feature Registry** (`globals::features::`):
 All graphics features are globally accessible for cross-feature coordination:
 
--   Lighting: `lightLimitFix`, `volumetricLighting`, `skylighting`, `ibl`
--   Terrain: `terrainShadows`, `terrainBlending`, `terrainVariation`, `terrainHelper`
--   Materials: `extendedMaterials`, `hairSpecular`, `subsurfaceScattering`
--   Effects: `screenSpaceGI`, `screenSpaceShadows`, `waterEffects`, `wetnessEffects`
--   Environment: `cloudShadows`, `dynamicCubemaps`, `weatherPicker`, `skySync`
--   VR: `vr` - VR-specific adaptations and coordinate transformations
+- Lighting: `lightLimitFix`, `volumetricLighting`, `skylighting`, `ibl`
+- Terrain: `terrainShadows`, `terrainBlending`, `terrainVariation`, `terrainHelper`
+- Materials: `extendedMaterials`, `hairSpecular`, `subsurfaceScattering`
+- Effects: `screenSpaceGI`, `screenSpaceShadows`, `waterEffects`, `wetnessEffects`
+- Environment: `cloudShadows`, `dynamicCubemaps`, `weatherPicker`, `skySync`
+- VR: `vr` - VR-specific adaptations and coordinate transformations
 
 ### Shared Utilities (`src/Utils/`)
 
 Common functionality organized by domain:
 
--   `UI.h/cpp` - ImGui utilities, input mapping, and UI helper functions
--   `D3D.h/cpp` - DirectX utilities and helper functions
--   `Game.h/cpp` - Skyrim-specific game state and object utilities
--   `VRUtils.h/cpp` - VR-specific utilities and coordinate transformations
--   `FileSystem.h/cpp` - File I/O and path manipulation helpers
--   `Format.h/cpp` - String formatting and conversion utilities
--   `Serialize.h/cpp` - JSON serialization helpers
+- `UI.h/cpp` - ImGui utilities, input mapping, and UI helper functions
+- `D3D.h/cpp` - DirectX utilities and helper functions
+- `Game.h/cpp` - Skyrim-specific game state and object utilities
+- `VRUtils.h/cpp` - VR-specific utilities and coordinate transformations
+- `FileSystem.h/cpp` - File I/O and path manipulation helpers
+- `Format.h/cpp` - String formatting and conversion utilities
+- `Serialize.h/cpp` - JSON serialization helpers
 
 ### Shader Architecture
 
 **Base Shader Library** (`package/Shaders/`):
 
--   **Core Rendering**: `Lighting.hlsl`, `Water.hlsl`, `Sky.hlsl`, `Particle.hlsl` - Skyrim's main rendering pipeline
--   **Image Space Effects**: `IS*.hlsl` files - Post-processing effects (blur, depth of field, volumetric lighting)
--   **Compute Shaders**: `*CS.hlsl` files - GPU parallel processing (deferred composite, ambient composite)
--   **Common Utilities**: `Common/` directory with shared includes (BRDF.hlsli, Math.hlsli, GBuffer.hlsli)
+- **Core Rendering**: `Lighting.hlsl`, `Water.hlsl`, `Sky.hlsl`, `Particle.hlsl` - Skyrim's main rendering pipeline
+- **Image Space Effects**: `IS*.hlsl` files - Post-processing effects (blur, depth of field, volumetric lighting)
+- **Compute Shaders**: `*CS.hlsl` files - GPU parallel processing (deferred composite, ambient composite)
+- **Common Utilities**: `Common/` directory with shared includes (BRDF.hlsli, Math.hlsli, GBuffer.hlsli)
 
 **Feature Shaders** (`features/*/Shaders/`):
 
--   **Feature-Specific**: Each feature has its own shader directory (e.g., `ScreenSpaceGI/`, `LightLimitFix/`)
--   **Compute-Heavy Features**: Many use compute shaders for performance (ClusterBuildingCS.hlsl, gi.cs.hlsl)
--   **Include Integration**: Features can use shared utilities from `package/Shaders/Common/`
+- **Feature-Specific**: Each feature has its own shader directory (e.g., `ScreenSpaceGI/`, `LightLimitFix/`)
+- **Compute-Heavy Features**: Many use compute shaders for performance (ClusterBuildingCS.hlsl, gi.cs.hlsl)
+- **Include Integration**: Features can use shared utilities from `package/Shaders/Common/`
 
 ### Menu System
 
@@ -255,10 +255,10 @@ Modular ImGui-based configuration interface with specialized renderers for diffe
 
 ### Testing and Validation
 
--   **Shader Compilation**: Use hlslkit tools for validation before commit
--   **Buffer Conflicts**: Run buffer_scan.py to detect register conflicts
--   **Integration Testing**: Build and test in-game with various Skyrim editions
--   **A/B Testing**: Use built-in A/B testing framework for performance comparisons
+- **Shader Compilation**: Use hlslkit tools for validation before commit
+- **Buffer Conflicts**: Run buffer_scan.py to detect register conflicts
+- **Integration Testing**: Build and test in-game with various Skyrim editions
+- **A/B Testing**: Use built-in A/B testing framework for performance comparisons
 
 ### Version Management
 
@@ -268,53 +268,53 @@ Feature versions are automatically extracted from `.ini` files and compiled into
 
 ### Memory Management
 
--   Modern C++23 with RAII principles
--   Smart pointers for automatic resource management
--   Thread pool (bshoshany-thread-pool) for parallel operations
+- Modern C++23 with RAII principles
+- Smart pointers for automatic resource management
+- Thread pool (bshoshany-thread-pool) for parallel operations
 
 ### Configuration System
 
--   JSON-based settings with nlohmann_json
--   Hot-reload capability through ImGui interface
--   Versioned feature configurations for compatibility
+- JSON-based settings with nlohmann_json
+- Hot-reload capability through ImGui interface
+- Versioned feature configurations for compatibility
 
 ### Error Handling
 
--   **Comprehensive Logging**: Integrated with SKSE logging system with different severity levels
--   **Graceful Degradation**: Features should disable cleanly on shader compilation failures
--   **User-Friendly Errors**: Report errors through ImGui interface with actionable guidance
--   **Graphics-Specific Errors**: Handle DirectX device lost scenarios and shader compilation failures
--   **Recovery Mechanisms**: Provide fallback rendering paths when advanced features fail
--   **Error Context**: Include relevant graphics state (current shader, buffer sizes) in error messages
+- **Comprehensive Logging**: Integrated with SKSE logging system with different severity levels
+- **Graceful Degradation**: Features should disable cleanly on shader compilation failures
+- **User-Friendly Errors**: Report errors through ImGui interface with actionable guidance
+- **Graphics-Specific Errors**: Handle DirectX device lost scenarios and shader compilation failures
+- **Recovery Mechanisms**: Provide fallback rendering paths when advanced features fail
+- **Error Context**: Include relevant graphics state (current shader, buffer sizes) in error messages
 
 ### Performance Considerations
 
 **Runtime Graphics Performance** (Critical for Skyrim gameplay):
 
--   **Deferred Rendering Impact**: Features hook into Skyrim's rendering pipeline, adding GPU workload
--   **Feature Toggles**: Users can disable individual features at boot if performance is impacted (`Disable at Boot` buttons)
--   **A/B Testing Framework**: Built-in performance comparison system for measuring feature impact
--   **VR Performance**: VR has higher performance requirements; some features may need different settings
--   **Tracy Profiler**: Optional build-time integration (`TRACY_SUPPORT`) for detailed performance analysis
+- **Deferred Rendering Impact**: Features hook into Skyrim's rendering pipeline, adding GPU workload
+- **Feature Toggles**: Users can disable individual features at boot if performance is impacted (`Disable at Boot` buttons)
+- **A/B Testing Framework**: Built-in performance comparison system for measuring feature impact
+- **VR Performance**: VR has higher performance requirements; some features may need different settings
+- **Tracy Profiler**: Optional build-time integration (`TRACY_SUPPORT`) for detailed performance analysis
 
 **Shader Performance Patterns**:
 
--   **Compute Shaders**: Many features use compute shaders for parallel GPU processing (Screen Space GI, Light Limit Fix)
--   **Buffer Management**: Careful GPU buffer allocation to avoid conflicts and minimize memory transfers
--   **LOD Considerations**: Features should respect Skyrim's LOD system to maintain performance at distance
--   **Resolution Scaling**: Consider how features scale with different rendering resolutions
+- **Compute Shaders**: Many features use compute shaders for parallel GPU processing (Screen Space GI, Light Limit Fix)
+- **Buffer Management**: Careful GPU buffer allocation to avoid conflicts and minimize memory transfers
+- **LOD Considerations**: Features should respect Skyrim's LOD system to maintain performance at distance
+- **Resolution Scaling**: Consider how features scale with different rendering resolutions
 
 **Performance Testing**:
 
--   **In-Game Profiling**: Use Tracy integration to measure actual frame impact
--   **Feature Isolation**: Test features individually to identify performance bottlenecks
--   **Cross-Edition Impact**: SE/AE/VR may have different performance characteristics for the same feature
+- **In-Game Profiling**: Use Tracy integration to measure actual frame impact
+- **Feature Isolation**: Test features individually to identify performance bottlenecks
+- **Cross-Edition Impact**: SE/AE/VR may have different performance characteristics for the same feature
 
 ### Development Performance
 
--   **Shader Testing**: Full validation suite can be time-consuming; use targeted testing during development
--   **Build Performance**: Multi-threaded compilation with job control (`hlslkit-compile --jobs N`)
--   **Iterative Development**: Test specific shader files/directories rather than entire shader suite
+- **Shader Testing**: Full validation suite can be time-consuming; use targeted testing during development
+- **Build Performance**: Multi-threaded compilation with job control (`hlslkit-compile --jobs N`)
+- **Iterative Development**: Test specific shader files/directories rather than entire shader suite
 
 ## AI Assistant Guidelines
 
@@ -322,35 +322,35 @@ Feature versions are automatically extracted from `.ini` files and compiled into
 
 **Act as an experienced graphics programming and Skyrim modding expert** with deep knowledge of:
 
--   DirectX 11/12 rendering pipelines and performance optimization
--   SKSE plugin development and Skyrim's game engine internals
--   CommonLibSSE-NG runtime targeting and cross-version compatibility
--   HLSL shader development and GPU compute programming
--   ImGui interface design and user experience considerations
+- DirectX 11/12 rendering pipelines and performance optimization
+- SKSE plugin development and Skyrim's game engine internals
+- CommonLibSSE-NG runtime targeting and cross-version compatibility
+- HLSL shader development and GPU compute programming
+- ImGui interface design and user experience considerations
 
 ### Constructive Proactivity
 
 **Identify and address issues proactively**:
 
--   **Performance Concerns**: If code could impact rendering performance, suggest optimizations or user toggles
--   **Security Risks**: Flag potential crashes from unvalidated user input, malformed configs, or unsafe DirectX operations
--   **Runtime Compatibility**: Warn when code might break SE/AE/VR compatibility or suggest `REL::RelocateMember()` patterns
--   **Buffer Conflicts**: Highlight potential GPU register conflicts and recommend hlslkit buffer scanning
--   **Graphics Best Practices**: Suggest more idiomatic DirectX/HLSL patterns when appropriate
+- **Performance Concerns**: If code could impact rendering performance, suggest optimizations or user toggles
+- **Security Risks**: Flag potential crashes from unvalidated user input, malformed configs, or unsafe DirectX operations
+- **Runtime Compatibility**: Warn when code might break SE/AE/VR compatibility or suggest `REL::RelocateMember()` patterns
+- **Buffer Conflicts**: Highlight potential GPU register conflicts and recommend hlslkit buffer scanning
+- **Graphics Best Practices**: Suggest more idiomatic DirectX/HLSL patterns when appropriate
 
 **Implementation Standards**:
 
--   Provide complete, working solutions rather than TODO/FIXME placeholders
--   Explain reasoning for graphics/performance-related changes
--   Consider the full rendering pipeline impact of modifications
--   Always include necessary error handling for graphics operations
+- Provide complete, working solutions rather than TODO/FIXME placeholders
+- Explain reasoning for graphics/performance-related changes
+- Consider the full rendering pipeline impact of modifications
+- Always include necessary error handling for graphics operations
 
 ### Code Quality Expectations
 
--   **No Placeholders**: Never include TODO, FIXME, or incomplete implementations unless explicitly requested for planning
--   **Complete Solutions**: Provide fully functional code with proper error handling and resource management
--   **Performance Conscious**: Always consider GPU workload and user experience impact
--   **Documentation**: Include Doxygen comments for public methods, especially graphics-related functions
+- **No Placeholders**: Never include TODO, FIXME, or incomplete implementations unless explicitly requested for planning
+- **Complete Solutions**: Provide fully functional code with proper error handling and resource management
+- **Performance Conscious**: Always consider GPU workload and user experience impact
+- **Documentation**: Include Doxygen comments for public methods, especially graphics-related functions
 
 ## Development Best Practices (Learned from Codebase)
 
@@ -358,70 +358,70 @@ Feature versions are automatically extracted from `.ini` files and compiled into
 
 Follow conventional commit format for consistency:
 
--   **Format**: `type(scope): description`
--   **Title Limit**: 50 characters maximum
--   **Body Wrap**: 72 characters per line
--   **Types**: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`
--   **Examples**:
-    -   `feat(menu): extract DrawMenuVisitor helper methods`
-    -   `fix(imgui): resolve orphaned TableNextColumn calls`
-    -   `refactor(constants): centralize UI constants in ThemeManager`
+- **Format**: `type(scope): description`
+- **Title Limit**: 50 characters maximum
+- **Body Wrap**: 72 characters per line
+- **Types**: `feat`, `fix`, `refactor`, `docs`, `style`, `test`, `chore`
+- **Examples**:
+    - `feat(menu): extract DrawMenuVisitor helper methods`
+    - `fix(imgui): resolve orphaned TableNextColumn calls`
+    - `refactor(constants): centralize UI constants in ThemeManager`
 
 ### Code Organization and Refactoring Patterns
 
--   **Extract Large Functions**: Functions over ~200 lines should be broken into focused helper methods (see `FeatureListRenderer::DrawMenuVisitor` refactoring)
--   **Centralize Constants**: Magic numbers should be extracted to named constants in appropriate classes (see `ThemeManager::Constants`)
--   **Modular UI Design**: UI components should be separated by responsibility (Menu system uses HeaderRenderer, FeatureListRenderer, etc.)
+- **Extract Large Functions**: Functions over ~200 lines should be broken into focused helper methods (see `FeatureListRenderer::DrawMenuVisitor` refactoring)
+- **Centralize Constants**: Magic numbers should be extracted to named constants in appropriate classes (see `ThemeManager::Constants`)
+- **Modular UI Design**: UI components should be separated by responsibility (Menu system uses HeaderRenderer, FeatureListRenderer, etc.)
 
 ### ImGui Integration Patterns
 
--   **Table API Compliance**: Always pair `ImGui::BeginTable()` with `ImGui::EndTable()` - orphaned `TableNextColumn()` calls will cause issues
--   **Style Management**: Use RAII pattern for ImGui style changes; avoid save/restore without actual modifications
--   **Consistent Spacing**: Use centralized constants for UI spacing and padding rather than hardcoded values
+- **Table API Compliance**: Always pair `ImGui::BeginTable()` with `ImGui::EndTable()` - orphaned `TableNextColumn()` calls will cause issues
+- **Style Management**: Use RAII pattern for ImGui style changes; avoid save/restore without actual modifications
+- **Consistent Spacing**: Use centralized constants for UI spacing and padding rather than hardcoded values
 
 ### Menu System Development
 
--   **Callback Pattern**: Use callbacks to access private methods from extracted UI components rather than making methods public
--   **State Management**: UI state should be managed centrally in Menu class, with components receiving state as parameters
--   **Documentation Standards**: Use Doxygen comments for all public methods, especially extracted utilities
+- **Callback Pattern**: Use callbacks to access private methods from extracted UI components rather than making methods public
+- **State Management**: UI state should be managed centrally in Menu class, with components receiving state as parameters
+- **Documentation Standards**: Use Doxygen comments for all public methods, especially extracted utilities
 
 ### Shader Development Workflow
 
--   **Build Before Test**: Always run `cmake --build ./build/ALL --target prepare_shaders` before shader validation
--   **Targeted Testing**: Use specific shader/directory paths with hlslkit-compile during development to avoid full suite delays
--   **Performance Optimization**: Use `--jobs`, `--strip-debug-defines`, and `--optimization-level` flags for faster compilation
--   **Validation Early**: Use hlslkit validation in development, not just CI, to catch issues early
+- **Build Before Test**: Always run `cmake --build ./build/ALL --target prepare_shaders` before shader validation
+- **Targeted Testing**: Use specific shader/directory paths with hlslkit-compile during development to avoid full suite delays
+- **Performance Optimization**: Use `--jobs`, `--strip-debug-defines`, and `--optimization-level` flags for faster compilation
+- **Validation Early**: Use hlslkit validation in development, not just CI, to catch issues early
 
 ### Testing and Validation
 
--   **Build Verification**: Always test builds after significant refactoring - this codebase has complex dependencies
--   **Cross-Edition Testing**: Changes may affect SE/AE/VR differently due to engine differences
--   **Memory Management**: Pay attention to smart pointer usage and RAII patterns when modifying existing code
+- **Build Verification**: Always test builds after significant refactoring - this codebase has complex dependencies
+- **Cross-Edition Testing**: Changes may affect SE/AE/VR differently due to engine differences
+- **Memory Management**: Pay attention to smart pointer usage and RAII patterns when modifying existing code
 
 ### Security and Input Validation
 
--   **Configuration Files**: Always validate `.ini` files and user settings - malformed configurations can crash Skyrim
--   **Shader Input Validation**: Validate shader parameters and buffer sizes to prevent GPU driver crashes
--   **File Path Validation**: Sanitize file paths for texture/asset loading to prevent directory traversal
--   **Memory Safety**: Use bounds checking for buffer operations, especially with DirectX resource management
--   **Resource Limits**: Enforce reasonable limits on user-configurable values (texture sizes, buffer counts, etc.)
+- **Configuration Files**: Always validate `.ini` files and user settings - malformed configurations can crash Skyrim
+- **Shader Input Validation**: Validate shader parameters and buffer sizes to prevent GPU driver crashes
+- **File Path Validation**: Sanitize file paths for texture/asset loading to prevent directory traversal
+- **Memory Safety**: Use bounds checking for buffer operations, especially with DirectX resource management
+- **Resource Limits**: Enforce reasonable limits on user-configurable values (texture sizes, buffer counts, etc.)
 
 ### Code Quality Standards
 
--   **Descriptive Naming**: Use domain-specific names that clearly indicate graphics/rendering purpose
-    -   `screenSpaceAmbientOcclusion` not `ssao`
-    -   `UpdateShadowCascades()` not `UpdateSC()`
--   **Single Responsibility**: Each feature class should handle one graphics technique only
--   **Function Complexity**: Keep rendering functions focused; extract complex GPU operations into separate methods
--   **Resource Management**: Always pair graphics resource creation with proper cleanup (RAII)
+- **Descriptive Naming**: Use domain-specific names that clearly indicate graphics/rendering purpose
+    - `screenSpaceAmbientOcclusion` not `ssao`
+    - `UpdateShadowCascades()` not `UpdateSC()`
+- **Single Responsibility**: Each feature class should handle one graphics technique only
+- **Function Complexity**: Keep rendering functions focused; extract complex GPU operations into separate methods
+- **Resource Management**: Always pair graphics resource creation with proper cleanup (RAII)
 
 ### Common Pitfalls to Avoid
 
--   **Include Dependencies**: New features often require adding includes (ShaderCache.h, imgui_stdlib.h, etc.)
--   **Forward Declarations**: Use forward declarations in headers when possible, full includes in .cpp files
--   **VR Considerations**: VR has different rendering requirements - check VR-specific code paths when modifying graphics features
--   **Feature Versioning**: Feature .ini files use semantic versioning - increment appropriately when changing settings structure
--   **Performance Impact**: Always consider GPU workload when adding new rendering features - provide toggle options for users
--   **Buffer Conflicts**: Check hlslkit buffer scanning to avoid GPU register conflicts that cause rendering issues
--   **Graphics State Corruption**: Minimize DirectX state changes; restore state after modifications
--   **Thread Safety**: Graphics operations must consider Skyrim's rendering thread vs game logic thread
+- **Include Dependencies**: New features often require adding includes (ShaderCache.h, imgui_stdlib.h, etc.)
+- **Forward Declarations**: Use forward declarations in headers when possible, full includes in .cpp files
+- **VR Considerations**: VR has different rendering requirements - check VR-specific code paths when modifying graphics features
+- **Feature Versioning**: Feature .ini files use semantic versioning - increment appropriately when changing settings structure
+- **Performance Impact**: Always consider GPU workload when adding new rendering features - provide toggle options for users
+- **Buffer Conflicts**: Check hlslkit buffer scanning to avoid GPU register conflicts that cause rendering issues
+- **Graphics State Corruption**: Minimize DirectX state changes; restore state after modifications
+- **Thread Safety**: Graphics operations must consider Skyrim's rendering thread vs game logic thread
