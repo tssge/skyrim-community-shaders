@@ -276,6 +276,57 @@ namespace Color
 		}
 
 	}  // namespace Correct
+
+	// Enhanced gamut expansion for HDR content
+	// Expands sRGB content towards P3/BT2020-like gamut for wider color reproduction
+	float3 ExpandGamut(float3 color, float expansion_factor = 0.015f)
+	{
+		if (expansion_factor <= 0.0f)
+			return color;
+
+		// Use AP1 working space for professional-grade color handling
+		static const float3x3 sRGB_to_AP1 = float3x3(
+			0.61319f, 0.33951f, 0.04737f,
+			0.07021f, 0.91634f, 0.01345f,
+			0.02062f, 0.10957f, 0.86961f);
+
+		static const float3x3 AP1_to_sRGB = float3x3(
+			1.70505f, -0.62179f, -0.08326f,
+			-0.13026f, 1.14080f, -0.01055f,
+			-0.02400f, -0.12897f, 1.15297f);
+
+		float3 color_ap1 = mul(sRGB_to_AP1, color);
+
+		// Calculate luminance and chromaticity in AP1 space
+		float luma_ap1 = dot(color_ap1, float3(0.2722287f, 0.6740818f, 0.0536895f));
+		float3 chroma_ap1 = luma_ap1 > 0.0f ? (color_ap1 / luma_ap1) : float3(1.0f, 1.0f, 1.0f);
+
+		// Calculate chroma distance (saturation measure)
+		float chroma_dist_sqr = dot(chroma_ap1 - 1.0f, chroma_ap1 - 1.0f);
+		chroma_dist_sqr = max(chroma_dist_sqr, 0.000001f);
+
+		// Calculate expansion amount based on chroma and luminance
+		float expansion_amount = (1.0f - exp2(-4.0f * chroma_dist_sqr)) *
+		                         (1.0f - exp2(-4.0f * expansion_factor * luma_ap1 * luma_ap1));
+
+		// Wide gamut expansion matrix (expands towards P3/BT2020)
+		static const float3x3 wide_gamut_matrix = float3x3(
+			0.83451690546233900f, 0.1602595895494930f, 0.00522350498816804f,
+			0.02554519357785500f, 0.9731015318660700f, 0.00135327455607548f,
+			0.00192582885428273f, 0.0303727970124423f, 0.96770137413327500f);
+
+		float3 expanded_color = mul(wide_gamut_matrix, color_ap1);
+		color_ap1 = lerp(color_ap1, expanded_color, expansion_amount);
+
+		// Convert back to sRGB
+		return mul(AP1_to_sRGB, color_ap1);
+	}
+
+	// Simple gamut expansion (legacy compatibility)
+	float3 ExpandGamutSimple(float3 color, float factor)
+	{
+		return ExpandGamut(color, factor);
+	}
 }
 
 #endif  //__COLOR_DEPENDENCY_HLSL__

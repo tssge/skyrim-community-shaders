@@ -370,6 +370,117 @@ struct TransformInfo
 				"Tonemapper designed by Tomasz Stachowiak/Embark for their real time ray tracing engine Kajiya."sv,
 				[](CTP& params) { exposureSlider(&params[0].x); },
 				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
+
+			{ "_"sv, "HDR Enhancement"sv,
+				"Advanced HDR processing features inspired by SpecialK."sv,
+				[](CTP&) {},
+				{} },
+
+			{ "Perceptual Boost"sv, "PerceptualBoost"sv,
+				"Enhanced perceptual processing using PQ curve manipulation for better HDR highlights and color intensity."sv,
+				[](CTP& params) {
+					ImGui::SliderFloat("Perceptual Strength", &params[0].x, 0.0f, 20.0f, "%.2f");
+					ImGui::SliderFloat("Color Boost", &params[0].y, 0.0f, 1.0f, "%.3f");
+					ImGui::SliderFloat("Luminance Threshold", &params[0].z, 0.1f, 5.0f, "%.2f");
+					ImGui::SliderFloat("Blend Factor", &params[0].w, 0.5f, 2.0f, "%.2f");
+					if (auto _tt = Util::HoverTooltipWrapper())
+						ImGui::Text(
+							"Perceptual boost enhances HDR content using PQ curve manipulation.\n"
+							"Color Boost: Enhances highly saturated colors\n"
+							"Luminance Threshold: Controls where boost begins\n"
+							"Blend Factor: Controls boost curve shape");
+				},
+				{ f4{ 8.8f, 0.333f, 1.0f, 1.0f } } },
+
+			{ "Enhanced Gamut Expansion"sv, "EnhancedGamutExpansion"sv,
+				"Advanced gamut expansion for wider color reproduction, expanding sRGB to P3/BT2020-like gamut."sv,
+				[](CTP& params) {
+					ImGui::SliderFloat("Expansion Factor", &params[0].x, 0.0f, 1.0f, "%.3f");
+					ImGui::SliderFloat("Saturation Threshold", &params[0].y, 0.0f, 2.0f, "%.3f");
+					ImGui::SliderFloat("Luminance Weight", &params[0].z, 0.0f, 5.0f, "%.3f");
+					if (auto _tt = Util::HoverTooltipWrapper())
+						ImGui::Text(
+							"Enhanced gamut expansion using advanced algorithm for better wide-gamut rendering.\n"
+							"Expansion Factor: Strength of gamut expansion\n"
+							"Saturation Threshold: Minimum saturation for expansion\n"
+							"Luminance Weight: How much luminance affects expansion");
+				},
+				{ f4{ 0.015f, 1.0f, 4.0f, 0.0f } } },
+
+			{ "Content EOTF"sv, "ContentEOTF"sv,
+				"Apply electro-optical transfer function for different content types (sRGB, Linear, Custom Gamma)."sv,
+				[](CTP& params) {
+					int eotf_type = (int)params[0].x;
+					const char* eotf_types[] = { "Linear (1.0)", "sRGB (2.2 + sRGB curve)", "Gamma 2.2", "Gamma 2.4", "Custom" };
+					if (ImGui::Combo("EOTF Type", &eotf_type, eotf_types, 5))
+						params[0].x = (float)eotf_type;
+
+					if (eotf_type == 4) {  // Custom
+						ImGui::SliderFloat("Custom Gamma", &params[0].y, 1.0f, 3.0f, "%.2f");
+					}
+
+					ImGui::SliderFloat("Mid-Gray Adjustment", &params[0].z, -0.5f, 0.5f, "%.3f");
+					if (auto _tt = Util::HoverTooltipWrapper())
+						ImGui::Text(
+							"Content EOTF handles different source gamma/transfer functions.\n"
+							"Linear: No gamma correction\n"
+							"sRGB: Standard sRGB transfer function\n"
+							"Gamma 2.2/2.4: Simple power law\n"
+							"Mid-Gray: Adjusts middle gray levels");
+				},
+				{ f4{ 1.0f, 2.2f, 0.0f, 0.0f } } },
+
+			{ "HDR Visualization"sv, "HDRVisualization"sv,
+				"HDR debugging and analysis tools for luminance, gamut coverage, and quantization analysis."sv,
+				[](CTP& params) {
+					int viz_type = (int)params[0].x;
+					const char* viz_types[] = {
+						"None",
+						"Luminance Heatmap",
+						"Exposure Stops",
+						"Gamut Coverage (Rec.709)",
+						"Gamut Coverage (P3)",
+						"8-bit Quantization",
+						"10-bit Quantization",
+						"Overbright Detection"
+					};
+					if (ImGui::Combo("Visualization Type", &viz_type, viz_types, 8))
+						params[0].x = (float)viz_type;
+
+					if (viz_type == 1 || viz_type == 2) {  // Luminance or Exposure
+						ImGui::SliderFloat("Max Luminance (nits)", &params[0].y, 100.0f, 10000.0f, "%.1f");
+						ImGui::SliderFloat("Reference White (nits)", &params[0].z, 80.0f, 400.0f, "%.1f");
+					}
+
+					if (viz_type >= 3 && viz_type <= 4) {  // Gamut
+						ImGui::SliderFloat("Gamut Scale", &params[0].w, 0.5f, 2.0f, "%.2f");
+					}
+
+					if (auto _tt = Util::HoverTooltipWrapper())
+						ImGui::Text(
+							"HDR visualization tools for debugging and analysis.\n"
+							"Luminance Heatmap: Shows luminance distribution\n"
+							"Exposure Stops: Shows exposure in photographic stops\n"
+							"Gamut Coverage: Shows colors outside target gamut\n"
+							"Quantization: Shows bit depth limitations");
+				},
+				{ f4{ 0.0f, 1000.0f, 203.0f, 1.0f } } },
+
+			{ "Enhanced ACES"sv, "EnhancedACES"sv,
+				"ACES tonemapping with enhanced saturation preservation and highlight handling, similar to SpecialK's approach."sv,
+				[](CTP& params) {
+					exposureSlider(&params[0].x);
+					ImGui::SliderFloat("Saturation", &params[0].y, 0.5f, 2.0f, "%.3f");
+					ImGui::SliderFloat("Highlight Protection", &params[0].z, 0.0f, 1.0f, "%.3f");
+					ImGui::SliderFloat("Shoulder Strength", &params[0].w, 0.5f, 2.0f, "%.3f");
+					if (auto _tt = Util::HoverTooltipWrapper())
+						ImGui::Text(
+							"Enhanced ACES with better color preservation.\n"
+							"Saturation: Preserves color intensity in highlights\n"
+							"Highlight Protection: Prevents color shifting\n"
+							"Shoulder Strength: Controls highlight rolloff");
+				},
+				{ f4{ 2.f, 1.125f, 0.5f, 1.0f } } },
 		};
 
 		static std::once_flag flag;
