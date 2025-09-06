@@ -56,8 +56,8 @@ void OverlayRenderer::RenderOverlay(
 
 void OverlayRenderer::HandleVRSetup()
 {
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.RecreateOverlayTexturesIfNeeded();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->RecreateOverlayTexturesIfNeeded();
 	}
 }
 
