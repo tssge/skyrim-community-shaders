@@ -225,15 +225,9 @@ namespace SharedData
 		HairSpecularSettings hairSpecularSettings;
 		TerrainVariationSettings terrainVariationSettings;
 		IBLSettings iblSettings;
-<<<<<<< HEAD
 		ExtendedTranslucencySettings extendedTranslucencySettings;
-=======
 		SkinData skinData;
-<<<<<<< HEAD
->>>>>>> 86fc4180 (Advanced Skin)
-=======
 		PostProcessingSettings postProcessingSettings;
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	};
 
 	Texture2D<float4> DepthTexture : register(t17);

@@ -22,8 +22,6 @@
 #	define DYNAMIC_CUBEMAPS
 #endif
 
-<<<<<<< HEAD
-=======
 #if defined(HAIR) && defined(CS_HAIR)
 #	define DYNAMIC_CUBEMAPS
 #endif
@@ -31,8 +29,6 @@
 #if defined(SKINNED) || defined(ENVMAP) || defined(EYE) || defined(MULTI_LAYER_PARALLAX)
 #	define DRAW_IN_WORLDSPACE
 #endif
-
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #if (defined(TREE_ANIM) || defined(LANDSCAPE)) && !defined(VC)
 #	define VC
 #endif  // TREE_ANIM || LANDSCAPE || !VC
@@ -81,13 +77,9 @@ struct VS_OUTPUT
 
 #if defined(WORLD_MAP)
 		float3 InputPosition : TEXCOORD4;
-<<<<<<< HEAD
 #endif
 
-#if defined(SKINNED) || !defined(MODELSPACENORMALS)
-=======
 #if defined(SKINNED) || !defined(MODELSPACENORMALS) || (defined(SKIN) && defined(CS_SKIN))
->>>>>>> 86fc4180 (Advanced Skin)
 	float3 TBN0 : TEXCOORD1;
 	float3 TBN1 : TEXCOORD2;
 	float3 TBN2 : TEXCOORD3;
@@ -1009,15 +1001,14 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 #		include "ScreenSpacePointLightShadows/SSPLS.hlsli"
 #	endif
 
-<<<<<<< HEAD
 #	if defined(EXTENDED_TRANSLUCENCY) && !(defined(LOD) || defined(SKIN) || defined(HAIR) || defined(EYE) || defined(TREE_ANIM) || defined(LODOBJECTSHD) || defined(LODOBJECTS) || defined(DEPTH_WRITE_DECALS))
 #		include "ExtendedTranslucency/ExtendedTranslucency.hlsli"
 #		define ANISOTROPIC_ALPHA
-=======
+#	endif
+
 #	if defined(CS_SKIN)
 #		include "Common/PBR.hlsli"
 #		include "Skin/Skin.hlsli"
->>>>>>> 86fc4180 (Advanced Skin)
 #	endif
 
 #	define LinearSampler SampColorSampler
@@ -3013,12 +3004,8 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 		directionalAmbientColor = Color::GammaToLinear(directionalAmbientColor);
 
 		directionalAmbientColor *= skylightingDiffuse;
-<<<<<<< HEAD
-		directionalAmbientColor *= 1.0 + saturate(worldNormal.z) * (1.0 - SharedData::skylightingSettings.MinDiffuseVisibility);
-=======
 		directionalAmbientColor *= 1.0 + saturate(worldSpaceNormal.z) * (1.0 - SharedData::skylightingSettings.MinDiffuseVisibility);
 #		if !(defined(SKIN) && defined(CS_SKIN))
->>>>>>> 86fc4180 (Advanced Skin)
 		directionalAmbientColor = Color::LinearToGamma(directionalAmbientColor);
 #		else
 		if (SharedData::skinData.skinParams.w == 0) {
@@ -3358,25 +3345,17 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 #		endif
 #	endif  // MULTI_LAYER_PARALLAX
 
-<<<<<<< HEAD
-#	if defined(SPECULAR)
-# 		if defined(HAIR) && defined(CS_HAIR)
-=======
 #	if defined(SPECULAR) && !(defined(SKIN) && defined(CS_SKIN))
 #		if defined(EMAT_ENVMAP)
 	specularColor = (specularColor * glossiness * MaterialData.yyy) * lerp(SpecularColor.xyz, Color::LinearToGamma(complexSpecular), complexMaterial);
 #		elif defined(HAIR) && defined(CS_HAIR)
->>>>>>> 86fc4180 (Advanced Skin)
 	if (!SharedData::hairSpecularSettings.Enabled)
 #		endif
-<<<<<<< HEAD
 		specularColor = (specularColor * glossiness * MaterialData.yyy) * SpecularColor.xyz;
-=======
 #	elif defined(SPECULAR) && defined(SKIN) && defined(CS_SKIN)
 	if (SharedData::skinData.skinParams.w < 1e-5) {
 		specularColor = (specularColor * glossiness * MaterialData.yyy) * SpecularColor.xyz;
 	}
->>>>>>> 86fc4180 (Advanced Skin)
 #	elif defined(SPARKLE)
 	specularColor *= glossiness;
 #	endif  // SPECULAR
@@ -3699,17 +3678,9 @@ PS_OUTPUT main(PS_INPUT input, bool frontFace : SV_IsFrontFace)
 	psout.NormalGlossiness = float4(GBuffer::EncodeNormal(screenSpaceNormal), outGlossiness, psout.Diffuse.w);
 #		endif
 
-<<<<<<< HEAD
-=======
 #		if defined(TERRAIN_BLENDING)
 	psout.NormalGlossiness.w = 1;
 #		endif
-
-#		if defined(TERRAIN_BLENDING)
-	psout.NormalGlossiness.w = 1;
-#		endif
-
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #		if defined(SNOW)
 	psout.Parameters.w = psout.Diffuse.w;
 #		endif
