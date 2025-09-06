@@ -40,7 +40,7 @@ struct RTContactShadows : Feature
 	winrt::com_ptr<ID3D12Resource> shaderTable = nullptr;
 	winrt::com_ptr<ID3D12Resource> topLevelAS = nullptr;
 	winrt::com_ptr<ID3D12Resource> bottomLevelAS = nullptr;
-	
+
 	// DX11 resources for integration
 	eastl::unique_ptr<Texture2D> contactShadowTexture = nullptr;
 	eastl::unique_ptr<ConstantBuffer> rtContactShadowsCB = nullptr;

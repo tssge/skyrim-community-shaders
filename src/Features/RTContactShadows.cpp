@@ -1,8 +1,8 @@
 #include "RTContactShadows.h"
 
+#include "DX12SwapChain.h"
 #include "State.h"
 #include "Util.h"
-#include "DX12SwapChain.h"
 
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 	RTContactShadows::Settings,
@@ -52,7 +52,7 @@ void RTContactShadows::SaveSettings(json& o_json)
 void RTContactShadows::SetupResources()
 {
 	CheckRaytracingSupport();
-	
+
 	if (!rtSupported) {
 		settings.Enable = false;
 		logger::info("RT Contact Shadows: DirectX Raytracing not supported, feature disabled");
@@ -67,19 +67,19 @@ void RTContactShadows::SetupResources()
 	{
 		D3D11_TEXTURE2D_DESC mainTexDesc;
 		mainRT.texture->GetDesc(&mainTexDesc);
-		
+
 		D3D11_TEXTURE2D_DESC texDesc = {};
 		texDesc.Width = mainTexDesc.Width;
 		texDesc.Height = mainTexDesc.Height;
 		texDesc.MipLevels = 1;
 		texDesc.ArraySize = 1;
-		texDesc.Format = DXGI_FORMAT_R8_UNORM; // Single channel for shadow factor
+		texDesc.Format = DXGI_FORMAT_R8_UNORM;  // Single channel for shadow factor
 		texDesc.SampleDesc.Count = 1;
 		texDesc.Usage = D3D11_USAGE_DEFAULT;
 		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
 
 		contactShadowTexture = std::make_unique<Texture2D>(texDesc);
-		
+
 		logger::info("RT Contact Shadows: Created {}x{} contact shadow texture", texDesc.Width, texDesc.Height);
 	}
 
@@ -111,8 +111,8 @@ void RTContactShadows::SetupResources()
 	if (settings.Enable) {
 		InitializeRaytracing();
 	}
-	
-	logger::info("RT Contact Shadows: Resource setup completed, RT supported: {}, enabled: {}", 
+
+	logger::info("RT Contact Shadows: Resource setup completed, RT supported: {}, enabled: {}",
 		rtSupported, settings.Enable);
 }
 
@@ -141,7 +141,7 @@ void RTContactShadows::CheckRaytracingSupport()
 		logger::warn("RT Contact Shadows: Failed to check D3D12_OPTIONS5 feature support");
 		return;
 	}
-	
+
 	if (options5.RaytracingTier == D3D12_RAYTRACING_TIER_NOT_SUPPORTED) {
 		rtSupported = false;
 		logger::info("RT Contact Shadows: Hardware raytracing not supported (RaytracingTier: NOT_SUPPORTED)");
@@ -163,7 +163,7 @@ void RTContactShadows::CheckRaytracingSupport()
 	}
 
 	rtSupported = true;
-	logger::info("RT Contact Shadows: DirectX Raytracing supported (RaytracingTier: {})", 
+	logger::info("RT Contact Shadows: DirectX Raytracing supported (RaytracingTier: {})",
 		static_cast<int>(options5.RaytracingTier));
 }
 
@@ -179,7 +179,7 @@ void RTContactShadows::InitializeRaytracing()
 		// Step 1: Create acceleration structures
 		logger::trace("RT Contact Shadows: Creating acceleration structures...");
 		CreateAccelerationStructures();
-		
+
 		if (!bottomLevelAS || !topLevelAS) {
 			throw std::runtime_error("Failed to create acceleration structures");
 		}
@@ -187,7 +187,7 @@ void RTContactShadows::InitializeRaytracing()
 		// Step 2: Create raytracing pipeline
 		logger::trace("RT Contact Shadows: Creating raytracing pipeline...");
 		CreateRaytracingPipeline();
-		
+
 		if (!rtPipelineState) {
 			throw std::runtime_error("Failed to create raytracing pipeline state");
 		}
@@ -195,21 +195,21 @@ void RTContactShadows::InitializeRaytracing()
 		// Step 3: Create shader table
 		logger::trace("RT Contact Shadows: Creating shader table...");
 		CreateShaderTable();
-		
+
 		if (!shaderTable) {
 			throw std::runtime_error("Failed to create shader table");
 		}
 
 		initialized = true;
 		logger::info("RT Contact Shadows: Raytracing pipeline initialized successfully");
-		
+
 	} catch (const std::exception& e) {
 		logger::error("RT Contact Shadows: Initialization failed - {}", e.what());
 		logger::info("RT Contact Shadows: Disabling feature due to initialization failure");
-		
+
 		// Clean up any partially created resources
 		ClearShaderCache();
-		
+
 		// Disable the feature
 		settings.Enable = false;
 		initialized = false;
@@ -228,16 +228,16 @@ void RTContactShadows::CreateAccelerationStructures()
 	// 2. Create vertex/index buffers on GPU
 	// 3. Build BLAS for each unique mesh
 	// 4. Build TLAS (Top Level AS) with instance transforms
-	
+
 	// For now, create placeholder resources
 	// In a real implementation, this would build from Skyrim's scene geometry
-	
+
 	D3D12_HEAP_PROPERTIES heapProps = {};
 	heapProps.Type = D3D12_HEAP_TYPE_DEFAULT;
-	
+
 	D3D12_RESOURCE_DESC resourceDesc = {};
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
-	resourceDesc.Width = 1024; // Placeholder size
+	resourceDesc.Width = 1024;  // Placeholder size
 	resourceDesc.Height = 1;
 	resourceDesc.DepthOrArraySize = 1;
 	resourceDesc.MipLevels = 1;
@@ -245,7 +245,7 @@ void RTContactShadows::CreateAccelerationStructures()
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	resourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-	
+
 	// Create placeholder BLAS
 	HRESULT hr = d3d12Device->CreateCommittedResource(
 		&heapProps,
@@ -254,13 +254,13 @@ void RTContactShadows::CreateAccelerationStructures()
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
 		nullptr,
 		IID_PPV_ARGS(&bottomLevelAS));
-	
+
 	if (FAILED(hr)) {
 		logger::error("Failed to create BLAS resource");
 		return;
 	}
-	
-	// Create placeholder TLAS  
+
+	// Create placeholder TLAS
 	hr = d3d12Device->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
@@ -268,7 +268,7 @@ void RTContactShadows::CreateAccelerationStructures()
 		D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE,
 		nullptr,
 		IID_PPV_ARGS(&topLevelAS));
-	
+
 	if (FAILED(hr)) {
 		logger::error("Failed to create TLAS resource");
 		return;
@@ -287,28 +287,28 @@ void RTContactShadows::CreateRaytracingPipeline()
 	// 2. Compile raygen, miss, and anyhit shaders
 	// 3. Create raytracing pipeline state object
 	// 4. Set up shader associations and local root signatures
-	
+
 	// For now, create a minimal pipeline setup
 	// In a real implementation, this would load our HLSL shaders
-	
+
 	// Create RT pipeline state object
 	D3D12_STATE_OBJECT_DESC stateObjectDesc = {};
 	stateObjectDesc.Type = D3D12_STATE_OBJECT_TYPE_RAYTRACING_PIPELINE;
-	
+
 	// Note: This is a placeholder - real implementation would need:
 	// - DXIL library subobjects for compiled shaders
 	// - Hit group subobjects
-	// - Local and global root signature subobjects  
+	// - Local and global root signature subobjects
 	// - Raytracing shader config subobjects
 	// - Raytracing pipeline config subobjects
-	
+
 	HRESULT hr = d3d12Device->CreateStateObject(&stateObjectDesc, IID_PPV_ARGS(&rtPipelineState));
 	if (FAILED(hr)) {
 		logger::warn("RT pipeline creation failed - RT Contact Shadows will be disabled");
 		settings.Enable = false;
 		return;
 	}
-	
+
 	logger::info("RT Contact Shadows pipeline created successfully");
 }
 
@@ -323,18 +323,18 @@ void RTContactShadows::CreateShaderTable()
 	// 1. Get shader identifiers from the pipeline state
 	// 2. Create buffer for shader table
 	// 3. Map and copy shader identifiers and parameters
-	
+
 	// Shader table layout:
 	// [RayGen shader identifier]
-	// [Miss shader identifier] 
+	// [Miss shader identifier]
 	// [Hit group shader identifier]
-	
+
 	const uint32_t shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
-	const uint32_t shaderTableSize = shaderIdentifierSize * 3; // raygen + miss + hitgroup
-	
+	const uint32_t shaderTableSize = shaderIdentifierSize * 3;  // raygen + miss + hitgroup
+
 	D3D12_HEAP_PROPERTIES heapProps = {};
 	heapProps.Type = D3D12_HEAP_TYPE_UPLOAD;
-	
+
 	D3D12_RESOURCE_DESC resourceDesc = {};
 	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
 	resourceDesc.Width = shaderTableSize;
@@ -344,7 +344,7 @@ void RTContactShadows::CreateShaderTable()
 	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
 	resourceDesc.SampleDesc.Count = 1;
 	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-	
+
 	HRESULT hr = d3d12Device->CreateCommittedResource(
 		&heapProps,
 		D3D12_HEAP_FLAG_NONE,
@@ -352,12 +352,12 @@ void RTContactShadows::CreateShaderTable()
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&shaderTable));
-	
+
 	if (FAILED(hr)) {
 		logger::error("Failed to create shader table");
 		return;
 	}
-	
+
 	// TODO: Map buffer and copy shader identifiers
 	// This would use ID3D12StateObjectProperties to get shader identifiers
 }
@@ -365,7 +365,7 @@ void RTContactShadows::CreateShaderTable()
 void RTContactShadows::ClearShaderCache()
 {
 	logger::trace("RT Contact Shadows: Clearing raytracing resources...");
-	
+
 	// Clear raytracing pipeline resources
 	initialized = false;
 	rtPipelineState = nullptr;
@@ -373,9 +373,9 @@ void RTContactShadows::ClearShaderCache()
 	topLevelAS = nullptr;
 	bottomLevelAS = nullptr;
 	d3d12CommandList = nullptr;
-	
+
 	// Note: d3d12Device is kept as it's shared and used for capability checking
-	
+
 	logger::trace("RT Contact Shadows: Raytracing resources cleared");
 }
 
@@ -396,19 +396,19 @@ void RTContactShadows::DispatchRays()
 
 	auto renderer = globals::game::renderer;
 	auto& mainRT = renderer->GetRuntimeData().renderTargets[RE::RENDER_TARGETS::kMAIN];
-	
+
 	// Update constant buffer with current frame data
 	RTContactShadowsCB cbData = {};
 	cbData.Intensity = settings.Intensity;
 	cbData.MaxDistance = settings.MaxDistance;
 	cbData.MaxSteps = settings.MaxSteps;
 	cbData.FrameIndex = State::GetSingleton()->uiFrameCount;
-	
+
 	D3D11_TEXTURE2D_DESC texDesc;
 	mainRT.texture->GetDesc(&texDesc);
 	cbData.ScreenSizeX = static_cast<float>(texDesc.Width);
 	cbData.ScreenSizeY = static_cast<float>(texDesc.Height);
-	
+
 	// TODO: Update constant buffer and bind resources
 	// This would:
 	// 1. Map and update the constant buffer
@@ -416,21 +416,21 @@ void RTContactShadows::DispatchRays()
 	// 3. Bind acceleration structures and textures
 	// 4. Set shader table
 	// 5. Dispatch rays
-	
+
 	// Placeholder ray dispatch
 	D3D12_DISPATCH_RAYS_DESC rayDispatchDesc = {};
 	rayDispatchDesc.Width = texDesc.Width;
 	rayDispatchDesc.Height = texDesc.Height;
 	rayDispatchDesc.Depth = 1;
-	
+
 	// TODO: Set up shader table addresses
 	// rayDispatchDesc.RayGenerationShaderRecord.StartAddress = ...
 	// rayDispatchDesc.MissShaderTable.StartAddress = ...
 	// rayDispatchDesc.HitGroupTable.StartAddress = ...
-	
+
 	// Set pipeline state and dispatch
 	// d3d12CommandList->SetPipelineState1(rtPipelineState.get());
 	// d3d12CommandList->DispatchRays(&rayDispatchDesc);
-	
+
 	logger::trace("RT Contact Shadows ray dispatch completed for frame {}", cbData.FrameIndex);
 }
