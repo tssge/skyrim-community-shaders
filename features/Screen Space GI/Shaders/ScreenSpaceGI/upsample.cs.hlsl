@@ -19,8 +19,7 @@ RWTexture2D<half4> outGiSpecular : register(u3);
 
 #define BLEND_WEIGHT(a, b, c, d, w, sumw) ((a * w.x + b * w.y + c * w.z + d * w.w) / max(sumw, 1e-5))
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
 #ifdef HALF_RES
 	int2 px00 = (dtid >> 1) + (dtid & 1) - 1;
 #else  // QUARTER_RES

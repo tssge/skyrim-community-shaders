@@ -17,8 +17,7 @@ cbuffer VanillaISCB : register(b1)
 
 #define EPSILON 1e-6
 
-[numthreads(8, 8, 1)] void main(uint3 DTid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint3 DTid : SV_DispatchThreadID) {
 	if (DTid.x >= (uint)Width || DTid.y >= (uint)Height)
 		return;
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
