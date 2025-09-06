@@ -55,8 +55,12 @@ jobs:
               run: echo "ℹ️ Running format workflow manually. If this is your fork, formatting changes will be committed to your branch."
             - name: Run Prettier
               run: npx prettier --write .
+            - name: Stash unstaged changes before rebase
+              run: git stash --include-untracked || true
             - name: Pull latest formatting changes
               run: git pull --rebase
+            - name: Apply stashed changes
+              run: git stash pop || true
             - name: Commit changes
               uses: stefanzweifel/git-auto-commit-action@v4
               with:
