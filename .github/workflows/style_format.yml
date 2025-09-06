@@ -21,12 +21,17 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
                   repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-                  fetch-depth: 2
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
             - name: Notice for manual workflow trigger
               if: github.event_name == 'workflow_dispatch'
               run: echo "ℹ️ Running format workflow manually. If this is your fork, formatting changes will be committed to your branch."
+            - name: Set up git config
+              run: |
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
             # format the latest commit
             - uses: DoozyX/clang-format-lint-action@v0.20
               with:
@@ -35,11 +40,15 @@ jobs:
                   extensions: "h,cpp,c,hlsl,hlsli"
                   clangFormatVersion: 20
                   inplace: True # commit the changes (if there are any)
-            - name: Commit changes
-              uses: stefanzweifel/git-auto-commit-action@v4
-              with:
-                  commit_message: "style: 🎨 apply clang-format changes"
-                  branch: ${{ github.head_ref }}
+            - name: Check for changes and commit
+              run: |
+                if [ -n "$(git status --porcelain)" ]; then
+                  git add .
+                  git commit -m "style: 🎨 apply clang-format changes"
+                  git push
+                else
+                  echo "No changes to commit"
+                fi
 
     prettier_format:
         needs: format
@@ -47,22 +56,25 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
+                  ref: ${{ github.event.pull_request.head.sha || github.sha }}
                   repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-                  fetch-depth: 2
+                  fetch-depth: 0
+                  token: ${{ secrets.GITHUB_TOKEN }}
             - name: Notice for manual workflow trigger
               if: github.event_name == 'workflow_dispatch'
               run: echo "ℹ️ Running format workflow manually. If this is your fork, formatting changes will be committed to your branch."
+            - name: Set up git config
+              run: |
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
             - name: Run Prettier
               run: npx prettier --write .
-            - name: Stash unstaged changes before rebase
-              run: git stash --include-untracked || true
-            - name: Pull latest formatting changes
-              run: git pull --rebase
-            - name: Apply stashed changes
-              run: git stash pop || true
-            - name: Commit changes
-              uses: stefanzweifel/git-auto-commit-action@v4
-              with:
-                  commit_message: "style: 🎨 apply Prettier formatting"
-                  branch: ${{ github.head_ref }}
+            - name: Check for changes and commit
+              run: |
+                if [ -n "$(git status --porcelain)" ]; then
+                  git add .
+                  git commit -m "style: 🎨 apply Prettier formatting"
+                  git push
+                else
+                  echo "No changes to commit"
+                fi
