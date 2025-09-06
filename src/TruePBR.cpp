@@ -675,7 +675,7 @@ struct BSLightingShaderProperty_GetRenderPasses
 			return renderPasses;
 		}
 
-		const auto issEnabledAndInteriorWithSun = globals::features::interiorSun.loaded && globals::features::interiorSun.isInteriorWithSun;
+		const auto issEnabledAndInteriorWithSun = globals::features::interiorSun->loaded && globals::features::interiorSun->isInteriorWithSun;
 
 		bool isPbr = false;
 
