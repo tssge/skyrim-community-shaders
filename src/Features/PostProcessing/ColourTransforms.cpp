@@ -4,8 +4,12 @@
 #include "Util.h"
 
 #include "ColourSpace.h"
+#include "ColourTransformRegistry.h"
 
 #include "IconsFontAwesome5.h"
+
+#include <filesystem>
+#include <fstream>
 
 template <size_t N, typename T>
 constexpr auto make_array(T value) -> std::array<T, N>
@@ -26,6 +30,93 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(
 	SavedSettings,
 	TransformType,
 	Params)
+
+std::vector<TransformFileJSON> LoadTransformConfigFiles()
+{
+	std::vector<TransformFileJSON> allConfigs;
+
+	// Define the directory where transform config files are located
+	std::filesystem::path configDir = "Data\\Shaders\\PostProcessing\\ColourTransforms\\Configs";
+
+	try {
+		if (!std::filesystem::exists(configDir)) {
+			logger::warn("Transform config directory does not exist: {}", configDir.string());
+			return allConfigs;
+		}
+
+		// Load all JSON files in the config directory
+		for (const auto& entry : std::filesystem::directory_iterator(configDir)) {
+			if (entry.is_regular_file() && entry.path().extension() == ".json") {
+				try {
+					std::ifstream file(entry.path());
+					if (!file.is_open()) {
+						logger::warn("Failed to open transform config file: {}", entry.path().string());
+						continue;
+					}
+
+					nlohmann::json j;
+					file >> j;
+
+					TransformFileJSON config = j;
+					allConfigs.push_back(config);
+
+					logger::info("Loaded transform config file: {} with {} transforms",
+						entry.path().filename().string(), config.transforms.size());
+				} catch (const std::exception& e) {
+					logger::error("Error loading transform config file {}: {}", entry.path().string(), e.what());
+				}
+			}
+		}
+	} catch (const std::exception& e) {
+		logger::error("Error reading transform config directory: {}", e.what());
+	}
+
+	return allConfigs;
+}
+
+template <int num = 3>
+bool shiftSlider(const char* label, float* v, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
+{
+	static_assert(num > 1 && num < 5);
+
+	if (ImGui::GetIO().KeyShift) {
+		auto changed = ImGui::SliderFloat(label, v, v_min, v_max, format, flags);
+		if (changed)
+			for (int i = 1; i < num; i++)
+				v[i] = v[0];
+		return changed;
+	} else {
+		if constexpr (num == 2)
+			return ImGui::SliderFloat2(label, v, v_min, v_max, format, flags);
+		else if constexpr (num == 3)
+			return ImGui::SliderFloat3(label, v, v_min, v_max, format, flags);
+		else if constexpr (num == 4)
+			return ImGui::SliderFloat4(label, v, v_min, v_max, format, flags);
+	}
+}
+
+template <int num = 1>
+bool exposureSlider(float* val)
+{
+	float tempVal[num];
+	for (int i = 0; i < num; i++)
+		tempVal[i] = log2(val[i]);
+
+	bool retval;
+	if constexpr (num == 1)
+		retval = ImGui::SliderFloat("Exposure", tempVal, -4.f, 4.f, "%+.2f EV");
+	else if constexpr (num == 2)
+		retval = shiftSlider<2>("Exposure", tempVal, -4.f, 4.f, "%+.2f EV");
+	else if constexpr (num == 3)
+		retval = shiftSlider<3>("Exposure", tempVal, -4.f, 4.f, "%+.2f EV");
+	else if constexpr (num == 4)
+		retval = shiftSlider<4>("Exposure", tempVal, -4.f, 4.f, "%+.2f EV");
+
+	for (int i = 0; i < num; i++)
+		val[i] = exp2(tempVal[i]);
+
+	return retval;
+}
 
 template <int num = 3>
 bool shiftSlider(const char* label, float* v, float v_min, float v_max, const char* format = "%.3f", ImGuiSliderFlags flags = 0)
@@ -85,410 +176,81 @@ struct TransformInfo
 
 	static auto& GetTransforms()
 	{
-		using f4 = float4;
-		constexpr auto shiftHint = []() { ImGui::TextWrapped("Press Shift to control all channels at the same time."); };
-
-		// TODO: this might be read from files.
-		static std::vector<TransformInfo> transforms = {
-			{ "_"sv, "Basic Transforms"sv,
-				"Primary operators with basic functions."sv,
-				[](CTP&) {},
-				{} },
-
-			{ "Clamp"sv, "Clamp"sv,
-				"Clamping inputs between min and max values."sv,
-				[](CTP& params) {
-					shiftSlider("Min", &params[0].x, 0.f, 4.f, "%.2f");
-					shiftSlider("Max", &params[1].x, 0.f, 4.f, "%.2f");
-					shiftHint();
-				},
-				{ f4{ 0.f, 0.f, 0.f, 0.f }, f4{ 1.f, 1.f, 1.f, 0.f } } },
-
-			{ "Gamma"sv, "Gamma"sv,
-				"Apply gamma curve. Negative values will be mirrored."sv,
-				[](CTP& params) {
-					shiftSlider("Gamma", &params[0].x, 0.f, 4.f, "%.2f");
-					shiftSlider("Black Pivot", &params[1].x, 0.f, 1.f, "%.2f");
-					shiftSlider("White Pivot", &params[2].x, 0.f, 5.f, "%.2f");
-					shiftHint();
-				},
-				{ f4{ 1.f, 1.f, 1.f, 0.f }, f4{ 0.f, 0.f, 0.f, 0.f }, f4{ 1.f, 1.f, 1.f, 1.f } } },
-
-			{ "PQ Encode"sv, "PerceptualQuantizerEncode"sv,
-				"Apply PQ curve encoding (HDR10)."sv,
-				[](CTP& params) {
-					shiftSlider("Scaling (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
-					shiftHint();
-				},
-				{ f4{ 10000.f, 0.f, 0.f, 0.f } } },
-
-			{ "PQ Decode"sv, "PerceptualQuantizerDecode"sv,
-				"Convert from PQ curve back to linear (HDR10)."sv,
-				[](CTP& params) {
-					shiftSlider("Input Peak (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
-					shiftHint();
-				},
-				{ f4{ 10000.f, 0.f, 0.f, 0.f } } },
-
-			{ "Exposure/Constrast"sv, "ExposureContrast"sv,
-				"Basic exposure and contrast adjustment in linear space. "sv,
-				[](CTP& params) {
-					exposureSlider<3>(&params[0].x);
-					shiftSlider("Contrast", &params[1].x, 0.f, 3.f, "%.2f");
-					shiftSlider("Pivot", &params[2].x, 0.f, 4.f, "%.2f");
-					shiftHint();
-				},
-				{ f4{ 1.f, 1.f, 1.f, 0.f }, f4{ 1.f, 1.f, 1.f, 0.f }, f4{ .5f, .5f, .5f, .5f } } },
-
-			{ "ASC CDL"sv, "ASC_CDL"sv,
-				"ASC Color Decision List.\n"
-				"out = clamp( (in * slope) + offset ) ^ power"sv,
-				[](CTP& params) {
-					shiftSlider("Slope", &params[0].x, 0.f, 2.f, "%.2f");
-					shiftSlider("Power", &params[1].x, 0.f, 2.f, "%.2f");
-					shiftSlider("Offset", &params[2].x, -1.f, 1.f, "%.2f");
-					shiftHint();
-				},
-				{ f4{ 1.f, 1.f, 1.f, 0.f }, f4{ 1.f, 1.f, 1.f, 0.f }, f4{ 0.f, 0.f, 0.f, 0.f } } },
-
-			{ "Lift Gamma Gain"sv, "LiftGammaGain"sv,
-				"Basic lift gamma gain control (Luma+RGB) like Davinci Resolve, affecting dark tones/midtones/highlights respectively. "
-				"Expects inputs between [0, 1]."sv,
-				[](CTP& params) {
-					ImGui::DragFloat4("Lift", &params[0].x, 1e-3f, -1.f, 1.f, "%.3f");
-					ImGui::DragFloat4("Gamma", &params[1].x, 1e-3f, -1.5f, 1.5f, "%.3f");
-					ImGui::DragFloat4("Gain", &params[2].x, 1e-3f, 0.f, 2.f, "%.3f");
-				},
-				{ f4{ 0.f, 0.f, 0.f, 0.f }, f4{ 0.f, 0.f, 0.f, 0.f }, f4{ 1.f, 1.f, 1.f, 1.f } } },
-
-			{ "Saturation/Hue"sv, "SaturationHue"sv,
-				"Adjust saturation and hue shift. Expects linear RGB inputs."sv,
-				[](CTP& params) {
-					ImGui::SliderFloat("Saturation", &params[0].x, 0.f, 3.f, "%.3f");
-					ImGui::SliderFloat("Hue Shift", &params[0].y, -1.f, 1.f, "%.3f");
-				},
-				{ f4{ 1.f, 0.f, 0.f, 0.f } } },
-
-			{ "OKLCH Saturation"sv, "OklchSaturation"sv,
-				"Adjust saturation and hue shift in the perceptually uniform OKLCH space. Expects LDR linear RGB inputs."sv,
-				[](CTP& params) {
-					ImGui::SliderFloat("Saturation", &params[0].x, 0.f, 2.f, "%.3f");
-					ImGui::SliderFloat("Vibrance", &params[0].y, 0.f, 3.f, "%.3f");
-					ImGui::SliderFloat("Hue Shift", &params[0].z, -1.f, 1.f, "%.3f");
-				},
-				{ f4{ 1.f, 1.f, 0.f, 0.f } } },
-
-			{ "OKLCH Colour Mixer"sv, "OklchColourMixer"sv,
-				"Adjust brightness, vibrance and hue shift of specific hues in the perceptually uniform OKLCH space. Expects LDR linear RGB inputs."sv,
-				[](CTP& params) {
-					constexpr std::array<ImColor, 7> hues = { {
-						{ 255, 0, 0 },
-						{ 182, 124, 1 },
-						{ 87, 159, 0 },
-						{ 0, 161, 145 },
-						{ 0, 149, 217 },
-						{ 133, 100, 255 },
-						{ 255, 35, 189 },
-					} };
-					static int hueId = 0;
-
-					if (ImGui::BeginTable("##HueTable", 7)) {
-						for (int i = 0; i < 7; i++) {
-							ImGui::TableNextColumn();
-
-							ImGui::PushID(i);
-							ImGui::PushStyleColor(ImGuiCol_Text, hues[i].Value);
-							ImGui::RadioButton(ICON_FA_SQUARE, &hueId, i);
-							ImGui::PopStyleColor();
-							ImGui::PopID();
-						}
-						ImGui::EndTable();
-					}
-					ImGui::SliderFloat("Hue Shift", &params[hueId].x, -1.f, 1.f, "%.3f");
-					ImGui::SliderFloat("Vibrance", &params[hueId].y, 0.f, 3.f, "%.3f");
-					ImGui::SliderFloat("Brightness", &params[hueId].z, -1.f, 1.f, "%.3f");
-				},
-				make_array<8>(f4{ 0.f, 1.f, 0.f, 0.f }) },
-
-			{ "Linear to Log"sv, "LinearToLog"sv,
-				"Convert between linear and ACEScct."sv,
-				[](CTP& params) {
-					auto spaces = std::array{ "ACEScct", "ARRI LogC4", "Sony S-Log3" };
-					bool inverse = (bool)params[0].x;
-					int space = (int)params[0].y;
-					if (ImGui::Checkbox("Inverse", &inverse))
-						params[0].x = (float)inverse;
-					if (ImGui::Combo("Output Space", &space, spaces.data(), (int)spaces.size()))
-						params[0].y = (float)space;
-				},
-				{ f4{ 0.f, 0.f, 0.f, 0.f } } },
-
-			{ "_"sv, "Colour Space Conversions"sv,
-				"Converting to other colour spaces to exploit their characteristic."sv,
-				[](CTP&) {},
-				{} },
-
-			{ "RGB Spaces"sv, "MatMul"sv,
-				"Convert between linear RGB spaces with different sets of gamuts, or any colour spaces using matrix multiplication."sv,
-				[](CTP& params) {
-					auto& spaces = getAvailableColourSpaces();
-
-					bool manualInput = params[2].w > 0;
-					if (ImGui::Checkbox("Manual Input", &manualInput))
-						params[2].w = manualInput * 2.f - 1.f;
-
-					if (manualInput) {
-						ImGui::InputFloat3("Row 1", &params[0].x);
-						ImGui::InputFloat3("Row 2", &params[1].x);
-						ImGui::InputFloat3("Row 3", &params[2].x);
-					} else {
-						int in_space = (int)params[0].w;
-						int out_space = (int)params[1].w;
-						if (ImGui::Combo("Input Space", &in_space, spaces.data(), (int)spaces.size()))
-							params[0].w = (float)in_space;
-						if (ImGui::Combo("Output Space", &out_space, spaces.data(), (int)spaces.size()))
-							params[1].w = (float)out_space;
-
-						auto mat = getRGBMatrix(spaces[in_space], spaces[out_space]);
-
-						params[0] = { mat(0, 0), mat(0, 1), mat(0, 2), params[0].w };
-						params[1] = { mat(1, 0), mat(1, 1), mat(1, 2), params[1].w };
-						params[2] = { mat(2, 0), mat(2, 1), mat(2, 2), params[2].w };
-					}
-				},
-				{ f4{ 1.f, 0.f, 0.f, 0.f }, f4{ 0.f, 1.f, 0.f, 0.f }, f4{ 0.f, 0.f, 1.f, -1.f } } },
-
-			{ "_"sv, "Tonemapping Operators"sv,
-				"Transforms HDR values into a displayable image while retaining contrast and colours. "
-				"The outputs of below operators are in linear space, as the game will apply gamma afterwards."sv,
-				[](CTP&) {},
-				{} },
-
-			{ "Reinhard"sv, "Reinhard"sv,
-				"Mapping proposed in \"Photographic Tone Reproduction for Digital Images\" by Reinhard et al. 2002."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "Reinhard Extended"sv, "ReinhardExt"sv,
-				"Extended mapping proposed in \"Photographic Tone Reproduction for Digital Images\" by Reinhard et al. 2002. "
-				"An additional user parameter specifies the smallest luminance that is mapped to 1, which allows high luminances to burn out."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("White Point", &params[0].y, 0.f, 10.f, "%.2f"); },
-				{ f4{ 2.f, 2.f, 0.f, 0.f } } },
-
-			{ "Hejl Burgess-Dawson Filmic"sv, "HejlBurgessDawsonFilmic"sv,
-				"Variation of the Hejl and Burgess-Dawson filmic curve done by Graham Aldridge. "
-				"See his blog post about \"Approximating Film with Tonemapping\"."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "Aldridge Filmic"sv, "AldridgeFilmic"sv,
-				"Variation of the Hejl and Burgess-Dawson filmic curve done by Graham Aldridge. "
-				"See his blog post about \"Approximating Film with Tonemapping\"."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Cutoff", &params[0].y, 0.f, .5f, "%.2f"); },
-				{ f4{ 2.f, .19f, 0.f, 0.f } } },
-
-			{ "Lottes Filmic/AMD Curve"sv, "LottesFilmic"sv,
-				"Filmic curve by Timothy Lottes, described in his GDC talk \"Advanced Techniques and Optimization of HDR Color Pipelines\". "
-				"Also known as the \"AMD curve\"."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Contrast", &params[0].y, 1.f, 2.f, "%.2f");
-					ImGui::SliderFloat("Shoulder", &params[0].z, 0.01f, 2.f, "%.2f");
-					ImGui::SliderFloat("Maximum HDR Value", &params[0].w, 1.f, 10.f, "%.2f");
-					ImGui::SliderFloat("Input Mid-Level", &params[1].x, 0.f, 1.f, "%.2f");
-					ImGui::SliderFloat("Output Mid-Level", &params[1].y, 0.f, 1.f, "%.2f"); },
-				{ f4{ 2.f, 1.6f, 0.977f, 8.f }, f4{ 0.18f, 0.267f, 0.f, 0.f } } },
-
-			{ "Day Filmic/Insomniac Curve"sv, "DayFilmic"sv,
-				"Filmic curve by Mike Day, described in his document \"An efficient and user-friendly tone mapping operator\". "
-				"Also known as the \"Insomniac curve\"."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Black Point", &params[0].y, 0.f, 5.f, "%.2f");
-					ImGui::SliderFloat("White Point", &params[0].z, 0.f, 5.f, "%.2f");
-
-					ImGui::SliderFloat("Cross-over Point", &params[0].w, 0.f, 5.f, "%.2f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text("Point where the toe and shoulder are pieced together into a single curve.");
-					ImGui::SliderFloat("Shoulder Strength", &params[1].x, 0.f, 1.f, "%.2f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text("Amount of blending between a straight-line curve and a purely asymptotic curve for the shoulder.");
-					ImGui::SliderFloat("Toe Strength", &params[1].y, 0.f, 1.f, "%.2f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text("Amount of blending between a straight-line curve and a purely asymptotic curve for the toe."); },
-				{ f4{ 2.f, 0.f, 2.f, 0.3f }, f4{ 0.8f, 0.7f, 0.f, 0.f } } },
-
-			{ "Uchimura/Grand Turismo Curve"sv, "UchimuraFilmic"sv,
-				"Filmic curve by Hajime Uchimura, described in his CEDEC talk \"HDR Theory and Practice\". Characterised by its middle linear section. "
-				"Also known as the \"Gran Turismo curve\"."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Max Brightness", &params[0].y, 0.01f, 2.f, "%.2f");
-					ImGui::SliderFloat("Contrast", &params[0].z, 0.f, 5.f, "%.2f");
-					ImGui::SliderFloat("Linear Section Start", &params[0].w, 0.f, 1.f, "%.2f");
-					ImGui::SliderFloat("Linear Section Length", &params[1].x, .01f, .99f, "%.2f");
-					ImGui::SliderFloat("Black Tightness Shape", &params[1].y, 1.f, 3.f, "%.2f");
-					ImGui::SliderFloat("Black Tightness Offset", &params[1].z, 0.f, 1.f, "%.2f"); },
-				{ f4{ 2.f, 1.f, 1.f, .22f }, f4{ 0.4f, 1.33f, 0.f, 0.f } } },
-
-			{ "ACES (Hill)"sv, "AcesHill"sv,
-				"ACES curve fit by Stephen Hill."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "ACES (Narkowicz)"sv, "AcesNarkowicz"sv,
-				"ACES curve fit by Krzysztof Narkowicz. See his blog post \"ACES Filmic Tone Mapping Curve\"."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "ACES (Guy)"sv, "AcesGuy"sv,
-				"Curve from Unreal 3 adapted by to close to the ACES curve by Romain Guy."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "AgX Minimal"sv, "AgxMinimal"sv,
-				"Minimal version of Troy Sobotka's AgX using a 6th order polynomial approximation. "
-				"Originally created by bwrensch, and improved by Troy Sobotka."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Slope", &params[0].y, 0.f, 2.f, "%.2f");
-					ImGui::SliderFloat("Power", &params[0].z, 0.f, 2.f, "%.2f");
-					ImGui::SliderFloat("Offset", &params[0].w, -1.f, 1.f, "%.2f");
-					ImGui::SliderFloat("Saturation", &params[1].x, 0.f, 2.f, "%.2f"); },
-				{ f4{ 2.f, 1.f, 1.f, 0.f }, f4{ 1.f, 0.f, 0.f, 0.f } } },
-
-			{ "Melon"sv, "MelonTonemap"sv,
-				"Tonemapper designed by TripleMelon to fix the ACES issue of intense colour being shifted."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "Kajiya"sv, "KajiyaTonemap"sv,
-				"Tonemapper designed by Tomasz Stachowiak/Embark for their real time ray tracing engine Kajiya."sv,
-				[](CTP& params) { exposureSlider(&params[0].x); },
-				{ f4{ 2.f, 0.f, 0.f, 0.f } } },
-
-			{ "_"sv, "HDR Enhancement"sv,
-				"Advanced HDR processing features inspired by SpecialK."sv,
-				[](CTP&) {},
-				{} },
-
-			{ "Perceptual Boost"sv, "PerceptualBoost"sv,
-				"Enhanced perceptual processing using PQ curve manipulation for better HDR highlights and color intensity."sv,
-				[](CTP& params) {
-					ImGui::SliderFloat("Perceptual Strength", &params[0].x, 0.0f, 20.0f, "%.2f");
-					ImGui::SliderFloat("Color Boost", &params[0].y, 0.0f, 1.0f, "%.3f");
-					ImGui::SliderFloat("Luminance Threshold", &params[0].z, 0.1f, 5.0f, "%.2f");
-					ImGui::SliderFloat("Blend Factor", &params[0].w, 0.5f, 2.0f, "%.2f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text(
-							"Perceptual boost enhances HDR content using PQ curve manipulation.\n"
-							"Color Boost: Enhances highly saturated colors\n"
-							"Luminance Threshold: Controls where boost begins\n"
-							"Blend Factor: Controls boost curve shape");
-				},
-				{ f4{ 8.8f, 0.333f, 1.0f, 1.0f } } },
-
-			{ "Enhanced Gamut Expansion"sv, "EnhancedGamutExpansion"sv,
-				"Advanced gamut expansion for wider color reproduction, expanding sRGB to P3/BT2020-like gamut."sv,
-				[](CTP& params) {
-					ImGui::SliderFloat("Expansion Factor", &params[0].x, 0.0f, 1.0f, "%.3f");
-					ImGui::SliderFloat("Saturation Threshold", &params[0].y, 0.0f, 2.0f, "%.3f");
-					ImGui::SliderFloat("Luminance Weight", &params[0].z, 0.0f, 5.0f, "%.3f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text(
-							"Enhanced gamut expansion using advanced algorithm for better wide-gamut rendering.\n"
-							"Expansion Factor: Strength of gamut expansion\n"
-							"Saturation Threshold: Minimum saturation for expansion\n"
-							"Luminance Weight: How much luminance affects expansion");
-				},
-				{ f4{ 0.015f, 1.0f, 4.0f, 0.0f } } },
-
-			{ "Content EOTF"sv, "ContentEOTF"sv,
-				"Apply electro-optical transfer function for different content types (sRGB, Linear, Custom Gamma)."sv,
-				[](CTP& params) {
-					int eotf_type = (int)params[0].x;
-					const char* eotf_types[] = { "Linear (1.0)", "sRGB (2.2 + sRGB curve)", "Gamma 2.2", "Gamma 2.4", "Custom" };
-					if (ImGui::Combo("EOTF Type", &eotf_type, eotf_types, 5))
-						params[0].x = (float)eotf_type;
-
-					if (eotf_type == 4) {  // Custom
-						ImGui::SliderFloat("Custom Gamma", &params[0].y, 1.0f, 3.0f, "%.2f");
-					}
-
-					ImGui::SliderFloat("Mid-Gray Adjustment", &params[0].z, -0.5f, 0.5f, "%.3f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text(
-							"Content EOTF handles different source gamma/transfer functions.\n"
-							"Linear: No gamma correction\n"
-							"sRGB: Standard sRGB transfer function\n"
-							"Gamma 2.2/2.4: Simple power law\n"
-							"Mid-Gray: Adjusts middle gray levels");
-				},
-				{ f4{ 1.0f, 2.2f, 0.0f, 0.0f } } },
-
-			{ "HDR Visualization"sv, "HDRVisualization"sv,
-				"HDR debugging and analysis tools for luminance, gamut coverage, and quantization analysis."sv,
-				[](CTP& params) {
-					int viz_type = (int)params[0].x;
-					const char* viz_types[] = {
-						"None",
-						"Luminance Heatmap",
-						"Exposure Stops",
-						"Gamut Coverage (Rec.709)",
-						"Gamut Coverage (P3)",
-						"8-bit Quantization",
-						"10-bit Quantization",
-						"Overbright Detection"
-					};
-					if (ImGui::Combo("Visualization Type", &viz_type, viz_types, 8))
-						params[0].x = (float)viz_type;
-
-					if (viz_type == 1 || viz_type == 2) {  // Luminance or Exposure
-						ImGui::SliderFloat("Max Luminance (nits)", &params[0].y, 100.0f, 10000.0f, "%.1f");
-						ImGui::SliderFloat("Reference White (nits)", &params[0].z, 80.0f, 400.0f, "%.1f");
-					}
-
-					if (viz_type >= 3 && viz_type <= 4) {  // Gamut
-						ImGui::SliderFloat("Gamut Scale", &params[0].w, 0.5f, 2.0f, "%.2f");
-					}
-
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text(
-							"HDR visualization tools for debugging and analysis.\n"
-							"Luminance Heatmap: Shows luminance distribution\n"
-							"Exposure Stops: Shows exposure in photographic stops\n"
-							"Gamut Coverage: Shows colors outside target gamut\n"
-							"Quantization: Shows bit depth limitations");
-				},
-				{ f4{ 0.0f, 1000.0f, 203.0f, 1.0f } } },
-
-			{ "Enhanced ACES"sv, "EnhancedACES"sv,
-				"ACES tonemapping with enhanced saturation preservation and highlight handling, similar to SpecialK's approach."sv,
-				[](CTP& params) {
-					exposureSlider(&params[0].x);
-					ImGui::SliderFloat("Saturation", &params[0].y, 0.5f, 2.0f, "%.3f");
-					ImGui::SliderFloat("Highlight Protection", &params[0].z, 0.0f, 1.0f, "%.3f");
-					ImGui::SliderFloat("Shoulder Strength", &params[0].w, 0.5f, 2.0f, "%.3f");
-					if (auto _tt = Util::HoverTooltipWrapper())
-						ImGui::Text(
-							"Enhanced ACES with better color preservation.\n"
-							"Saturation: Preserves color intensity in highlights\n"
-							"Highlight Protection: Prevents color shifting\n"
-							"Shoulder Strength: Controls highlight rolloff");
-				},
-				{ f4{ 2.f, 1.125f, 0.5f, 1.0f } } },
-		};
-
+		static std::vector<TransformInfo> transforms;
 		static std::once_flag flag;
-		std::call_once(flag,
-			[&]() {
-				for (auto& t : transforms)
+
+		std::call_once(flag, []() {
+			// Initialize the UI function registry
+			UIFunctionRegistry::GetInstance().InitializeDefaultFunctions();
+
+			// Load transforms from JSON configuration files
+			auto configFiles = LoadTransformConfigFiles();
+
+			for (const auto& configFile : configFiles) {
+				for (const auto& transformConfig : configFile.transforms) {
+					TransformInfo info;
+
+					// Convert JSON strings to string_view (we need to store the strings permanently)
+					static std::vector<std::string> permanent_names;
+					static std::vector<std::string> permanent_func_names;
+					static std::vector<std::string> permanent_descs;
+
+					permanent_names.push_back(transformConfig.name);
+					permanent_func_names.push_back(transformConfig.func_name);
+					permanent_descs.push_back(transformConfig.description);
+
+					info.name = permanent_names.back();
+					info.func_name = permanent_func_names.back();
+					info.desc = permanent_descs.back();
+					info.default_settings = transformConfig.default_settings;
+					info.cached_settings = transformConfig.default_settings;
+
+					// Get the UI function from the registry
+					info.draw_settings_func = UIFunctionRegistry::GetInstance().GetUIFunction(
+						transformConfig.ui_type, transformConfig.ui_params);
+
+					transforms.push_back(info);
+				}
+			}
+
+			// If no transforms were loaded from files, fall back to a minimal set
+			if (transforms.empty()) {
+				logger::warn("No transforms loaded from JSON files, using fallback transforms");
+
+				// Add a basic separator and one simple transform as fallback
+				static std::string fallback_name1 = "_";
+				static std::string fallback_func1 = "Basic Transforms";
+				static std::string fallback_desc1 = "Primary operators with basic functions.";
+
+				static std::string fallback_name2 = "ASC CDL";
+				static std::string fallback_func2 = "ASC_CDL";
+				static std::string fallback_desc2 = "ASC Color Decision List.";
+
+				transforms.push_back({ fallback_name1,
+					fallback_func1,
+					fallback_desc1,
+					[](CTP&) {},
+					{} });
+
+				transforms.push_back({ fallback_name2,
+					fallback_func2,
+					fallback_desc2,
+					[](CTP& params) {
+						using f4 = float4;
+						constexpr auto shiftHint = []() { ImGui::TextWrapped("Press Shift to control all channels at the same time."); };
+						shiftSlider("Slope", &params[0].x, 0.f, 2.f, "%.2f");
+						shiftSlider("Power", &params[1].x, 0.f, 2.f, "%.2f");
+						shiftSlider("Offset", &params[2].x, -1.f, 1.f, "%.2f");
+						shiftHint();
+					},
+					{ float4{ 1.f, 1.f, 1.f, 0.f }, float4{ 1.f, 1.f, 1.f, 0.f }, float4{ 0.f, 0.f, 0.f, 0.f } } });
+
+				// Set cached settings for fallback transforms
+				for (auto& t : transforms) {
 					t.cached_settings = t.default_settings;
-			});
+				}
+			}
+		});
 
 		return transforms;
 	}
