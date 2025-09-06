@@ -13,10 +13,10 @@
 
 #include "DX12SwapChain.h"
 #include "Deferred.h"
-<<<<<<< HEAD
 #include "Feature.h"
 #include "FeatureIssues.h"
 #include "FeatureVersions.h"
+#include "HDR.h"
 #include "Menu/AdvancedSettingsRenderer.h"
 #include "Menu/DisplaySettingsRenderer.h"
 #include "Menu/FeatureListRenderer.h"
@@ -24,9 +24,6 @@
 #include "Menu/OverlayRenderer.h"
 #include "Menu/SettingsTabRenderer.h"
 #include "Menu/ThemeManager.h"
-=======
-#include "HDR.h"
->>>>>>> 7d5aac61 (HDR)
 #include "ShaderCache.h"
 #include "State.h"
 #include "Streamline.h"
@@ -174,9 +171,6 @@ void Menu::Init()
 	font_config.PixelSnapH = ThemeManager::Constants::FCONF_PIXELSNAP_H;
 	font_config.RasterizerMultiply = ThemeManager::Constants::FCONF_RASTERIZER_MULTIPLY;
 
-<<<<<<< HEAD
-	DXGI_SWAP_CHAIN_DESC desc{};
-=======
 	imgui_io.Fonts->AddFontFromFileTTF("Data\\Interface\\CommunityShaders\\Fonts\\Jost-Regular.ttf", 36, &font_config);
 
 	// add font awesome 5
@@ -189,7 +183,6 @@ void Menu::Init()
 	imgui_io.Fonts->AddFontFromFileTTF("Data\\Interface\\CommunityShaders\\Fonts\\fa-solid-900.ttf", 24, &icons_config, icons_ranges);
 
 	DXGI_SWAP_CHAIN_DESC desc;
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 	globals::d3d::swapChain->GetDesc(&desc);
 
 	float fontSize = settings.Theme.FontSize;
@@ -421,12 +414,6 @@ void Menu::DrawDisableAtBootSettings()
  */
 void Menu::DrawDisplaySettings()
 {
-<<<<<<< HEAD
-	DisplaySettingsRenderer::RenderDisplaySettings(
-		globals::state->upscalerLoaded,
-		[](const std::string& featureName) { return globals::state->IsFeatureDisabled(featureName); },
-		[]() { globals::upscaling->DrawSettings(); });
-=======
 	if (!globals::state->upscalerLoaded) {
 		auto& themeSettings = settings.Theme;
 
@@ -461,7 +448,6 @@ void Menu::DrawDisplaySettings()
 	} else {
 		ImGui::Text("Display options disabled due to Skyrim Upscaler");
 	}
->>>>>>> 7d5aac61 (HDR)
 }
 
 void Menu::DrawFooter()

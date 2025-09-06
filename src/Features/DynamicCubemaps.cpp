@@ -25,18 +25,6 @@ std::vector<std::pair<std::string_view, std::string_view>> DynamicCubemaps::GetS
 
 void DynamicCubemaps::DrawSettings()
 {
-<<<<<<< HEAD
-	if (ImGui::TreeNodeEx("Screen Space Reflections", ImGuiTreeNodeFlags_DefaultOpen)) {
-		recompileFlag |= ImGui::Checkbox("Enable Screen Space Reflections", reinterpret_cast<bool*>(&settings.EnabledSSR));
-		if (auto _tt = Util::HoverTooltipWrapper()) {
-			ImGui::Text("Enable Screen Space Reflections on Water");
-			if (REL::Module::IsVR() && !enabledAtBoot) {
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-				ImGui::Text(
-					"A restart is required to enable in VR. "
-					"Save Settings after enabling and restart the game.");
-				ImGui::PopStyleColor();
-=======
 	if (ImGui::TreeNodeEx("Settings", ImGuiTreeNodeFlags_DefaultOpen)) {
 		if (ImGui::TreeNodeEx("Screen Space Reflections", ImGuiTreeNodeFlags_DefaultOpen)) {
 			recompileFlag |= ImGui::Checkbox("Enable Screen Space Reflections", reinterpret_cast<bool*>(&settings.EnabledSSR));
@@ -137,7 +125,6 @@ void DynamicCubemaps::DrawSettings()
 				Util::RenderImGuiSettingsTree(iniVRCubeMapSettings, "VR");
 				Util::RenderImGuiSettingsTree(hiddenVRCubeMapSettings, "hiddenVR");
 				ImGui::TreePop();
->>>>>>> 7d5aac61 (HDR)
 			}
 		}
 		ImGui::TreePop();

@@ -8,11 +8,8 @@
 #include "Deferred.h"
 #include "FeatureIssues.h"
 #include "Features/CloudShadows.h"
-<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
-=======
 #include "Features/Skin.h"
->>>>>>> 86fc4180 (Advanced Skin)
 #include "Features/TerrainBlending.h"
 #include "Features/TerrainHelper.h"
 #include "HDR.h"
@@ -27,16 +24,10 @@ void State::Draw()
 {
 	auto shaderCache = globals::shaderCache;
 	auto deferred = globals::deferred;
-<<<<<<< HEAD
-	auto& terrainBlending = globals::features::terrainBlending;
-	auto& terrainHelper = globals::features::terrainHelper;
-	auto& cloudShadows = globals::features::cloudShadows;
-=======
 	auto terrainBlending = globals::features::terrainBlending;
 	auto terrainHelper = globals::features::terrainHelper;
 	auto cloudShadows = globals::features::cloudShadows;
 	auto skin = globals::features::skin;
->>>>>>> 86fc4180 (Advanced Skin)
 	auto truePBR = globals::truePBR;
 	auto context = globals::d3d::context;
 
@@ -352,9 +343,6 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 			logger::warn("Missing settings for Upscaling, using default.");
 		}
 
-<<<<<<< HEAD
-		// Feature loading with new override tracking system
-=======
 		auto hdr = globals::hdr;
 		auto& hdrJson = settings[HDR::GetShortName()];
 		if (hdrJson.is_object()) {
@@ -369,7 +357,7 @@ void State::Load(ConfigMode a_configMode, bool a_allowReload)
 			logger::warn("Missing settings for HDR, using default.");
 		}
 
->>>>>>> 7d5aac61 (HDR)
+		// Feature loading with new override tracking system
 		for (auto* feature : Feature::GetFeatureList()) {
 			try {
 				const std::string featureName = feature->GetShortName();
