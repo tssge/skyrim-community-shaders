@@ -159,50 +159,109 @@ struct DirectXHookCoordinator {
 
 ## Resolution Approaches
 
-### Approach 1: Hook Ordering
+### Approach 1: SpecialK Cooperation API (Recommended)
+SpecialK provides exported functions for cooperative hook management:
+
+```cpp
+// SpecialK exported functions for cooperation
+extern "C" {
+    DWORD   WINAPI SK_GetDLLRole();
+    HMODULE WINAPI SK_GetDLL();
+    BOOL    WINAPI SK_CreateFuncHook(LPCWSTR pwszFuncName, LPVOID pTarget, LPVOID pDetour, LPVOID* ppOriginal);
+    BOOL    WINAPI SK_EnableHook(LPVOID pTarget);
+    BOOL    WINAPI SK_DisableHook(LPVOID pTarget);
+    BOOL    WINAPI SK_RemoveHook(LPVOID pTarget);
+    VOID    WINAPI SK_ApplyQueuedHooks();
+}
+
+// Cooperative hooking implementation
+bool InitializeWithSpecialK() {
+    HMODULE hSpecialK = GetModuleHandle(L"SpecialK64.dll");
+    if (!hSpecialK) {
+        // Check for proxy DLLs
+        hSpecialK = GetModuleHandle(L"dxgi.dll");
+        if (hSpecialK && !GetProcAddress(hSpecialK, "SK_GetDLLRole")) {
+            hSpecialK = nullptr; // Not SpecialK proxy
+        }
+    }
+    
+    if (hSpecialK) {
+        auto SK_CreateFuncHook_Proc = (decltype(&SK_CreateFuncHook))GetProcAddress(hSpecialK, "SK_CreateFuncHook");
+        auto SK_EnableHook_Proc = (decltype(&SK_EnableHook))GetProcAddress(hSpecialK, "SK_EnableHook");
+        
+        if (SK_CreateFuncHook_Proc && SK_EnableHook_Proc) {
+            // Use SpecialK's hook manager instead of direct hooking
+            SK_CreateFuncHook_Proc(L"D3D11CreateDeviceAndSwapChain", 
+                                   D3D11CreateDeviceAndSwapChain_Real,
+                                   hk_D3D11CreateDeviceAndSwapChain,
+                                   (LPVOID*)&ptrD3D11CreateDeviceAndSwapChain);
+            SK_EnableHook_Proc(D3D11CreateDeviceAndSwapChain_Real);
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+**Benefits:**
+- No hook chain conflicts
+- Centralized hook management
+- Both tools can coexist seamlessly
+- SpecialK handles the low-level DirectX interaction
+
+### Approach 2: Hook Ordering
 Implement a deterministic hook installation order:
 1. SpecialK installs base hooks
 2. Community Shaders installs hooks with awareness of existing hooks
 3. Proper chain-through calling conventions
 
-### Approach 2: Shared Hook Manager
+### Approach 3: Shared Hook Manager
 Create a common hooking library that both tools can use:
 - Centralized hook management
 - Proper chain management
 - Conflict resolution
 - Resource sharing
 
-### Approach 3: API Abstraction Layer
+### Approach 4: API Abstraction Layer
 Develop an abstraction layer for DirectX operations:
 - Both tools interact through the abstraction
 - Abstraction manages actual DirectX calls
 - Reduces direct hook conflicts
 
-### Approach 4: Configuration-Based Coexistence
+### Approach 5: Configuration-Based Coexistence
 Implement configuration options:
 ```ini
 [Compatibility]
 SpecialKDetected=true
 DisableConflictingFeatures=true
 UseCompatibilityMode=true
+PreferSpecialKHooks=true
 ```
 
 ## Implementation Timeline
 
-### Phase 1: Detection and Warning
+### Phase 1: Detection and Warning (Immediate)
 - Implement SpecialK detection
 - Add warning messages
 - Document incompatibility
 
-### Phase 2: Basic Compatibility
+### Phase 2: SpecialK Cooperation API (Recommended)
+- Detect SpecialK's exported hook management functions
+- Use SpecialK's `SK_CreateFuncHook` and related APIs
+- Coordinate hook installation through SpecialK
+- Fall back to compatibility mode if cooperation fails
+
+### Phase 3: Basic Compatibility (Fallback)
 - Implement hook chain validation
 - Add compatibility mode flags
 - Basic conflict avoidance
+- Configuration-based feature toggling
 
-### Phase 3: Full Cooperation
+### Phase 4: Full Cooperation
 - Shared hooking protocol
 - Resource coordination
 - Full feature compatibility
+- Advanced coordination with other graphics tools
 
 ## Testing Strategy
 
