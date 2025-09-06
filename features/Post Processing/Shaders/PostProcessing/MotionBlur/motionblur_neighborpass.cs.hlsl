@@ -1,6 +1,6 @@
 /**
  * Motion Blur - Neighbor Max Pass (Pass 2 of 3)
- * 
+ *
  * Examines 3x3 grid neighborhoods to find maximum velocities
  * Handles diagonal neighbors by checking if velocity points toward current cell
  * Outputs final neighborhood-aware velocity data for blur pass
