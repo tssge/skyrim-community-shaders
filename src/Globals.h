@@ -27,11 +27,11 @@ struct VolumetricLighting;
 struct VR;
 struct WaterEffects;
 struct WeatherPicker;
-struct PerformanceOverlay;
 struct WetnessEffects;
 struct ExtendedTranslucency;
 struct PostProcessing;
 struct Skin;
+struct PerformanceOverlay;
 
 class ParticleLights;
 

@@ -189,6 +189,8 @@ namespace globals
 		features::waterEffects = WaterEffects::GetSingleton();
 		features::wetnessEffects = WetnessEffects::GetSingleton();
 		features::postProcessing = PostProcessing::GetSingleton();
+		features::weatherPicker = WeatherPicker::GetSingleton();
+		features::performanceOverlay = PerformanceOverlay::GetSingleton();
 
 		features::llf::particleLights = ParticleLights::GetSingleton();
 	}
