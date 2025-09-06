@@ -4,7 +4,7 @@
 
 /**
  * Motion Blur Effect
- * 
+ *
  * Three-pass compute shader approach based on CoD:AW:
  * 1. Reduction: Horizontal pass to [grid×height], then vertical to [grid×grid]
  * 2. Neighbor: Calculate neighborhood max velocities in 3×3 grid groups

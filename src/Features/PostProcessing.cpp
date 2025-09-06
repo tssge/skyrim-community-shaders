@@ -447,8 +447,8 @@ void PostProcessing::PreProcess()
 	auto destRenderTarget = isrefraction ? RE::RENDER_TARGETS::kMAIN : RE::RENDER_TARGETS::kMAIN_COPY;
 
 	// Check if this render target has already been processed this frame
-	uint64_t* lastProcessedFrame = (srcRenderTarget == RE::RENDER_TARGETS::kMAIN) 
-		? &lastProcessedMainFrame 
+	uint64_t* lastProcessedFrame = (srcRenderTarget == RE::RENDER_TARGETS::kMAIN)
+		? &lastProcessedMainFrame
 		: &lastProcessedMainCopyFrame;
 
 	if (*lastProcessedFrame == currentFrameCount) {
@@ -470,7 +470,7 @@ void PostProcessing::PreProcess()
 
 	D3D11_TEXTURE2D_DESC desc;
 	lastTexColor.tex->GetDesc(&desc);
-	
+
 	// Only copy back to the source render target, not both
 	if (desc.Format == texCopy->desc.Format) {
 		context->CopySubresourceRegion(gameTexMain.texture, 0, 0, 0, 0, lastTexColor.tex, 0, nullptr);
