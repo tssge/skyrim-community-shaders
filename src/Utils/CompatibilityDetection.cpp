@@ -1,3 +1,17 @@
+/*
+ * SpecialK Compatibility Detection and Cooperation API Implementation
+ * 
+ * This file implements SpecialK cooperation using the public API.
+ * SpecialK is licensed under the GNU General Public License v3.0
+ * Copyright (c) 2015-2024 Andon "Kaldaien" Coleman
+ * 
+ * Function signatures and cooperation concepts adapted from:
+ * https://github.com/SpecialKO/SpecialK
+ * 
+ * Detection logic and API integration designed to work with SpecialK's
+ * hook cooperation system for seamless DirectX compatibility.
+ */
+
 #include "CompatibilityDetection.h"
 
 #include <filesystem>
@@ -15,9 +29,11 @@ namespace Compatibility
 		specialK.moduleNames = {
 			L"SpecialK64.dll",
 			L"SpecialK32.dll",
-			L"dxgi.dll",    // Common SpecialK proxy
-			L"d3d11.dll",   // Possible SpecialK proxy
-			L"dinput8.dll"  // Another SpecialK proxy option
+			// Note: Proxy DLLs are validated via IsModuleSpecialK() to avoid false positives
+			// In modded Skyrim, these could be ReShade, ENB, or other proxy DLLs
+			L"dxgi.dll",    // Validated proxy - could be SpecialK
+			L"d3d11.dll",   // Validated proxy - could be SpecialK
+			L"dinput8.dll"  // Validated proxy - could be SpecialK
 		};
 		specialK.exportNames = {
 			"SKX_GetCommandProcessor",
@@ -60,21 +76,27 @@ namespace Compatibility
 
 	bool CompatibilityChecker::DetectSpecialK()
 	{
+		// First check for explicit SpecialK modules
 		for (const auto& moduleName : { L"SpecialK64.dll", L"SpecialK32.dll" }) {
 			HMODULE handle = GetModuleHandle(moduleName);
 			if (handle && IsModuleSpecialK(handle)) {
+				logger::info(L"SpecialK detected via module: {}", moduleName);
 				return true;
 			}
 		}
 
 		// Check for proxy DLLs that might be SpecialK
+		// Note: In modded Skyrim, these are often other tools (ReShade, ENB, etc.)
+		// So we use robust validation in IsModuleSpecialK()
 		for (const auto& proxyName : { L"dxgi.dll", L"d3d11.dll", L"dinput8.dll" }) {
 			HMODULE handle = GetModuleHandle(proxyName);
 			if (handle && IsModuleSpecialK(handle)) {
+				logger::info(L"SpecialK detected via validated proxy: {}", proxyName);
 				return true;
 			}
 		}
 
+		logger::debug("SpecialK not detected in any loaded modules");
 		return false;
 	}
 
@@ -159,7 +181,7 @@ namespace Compatibility
 		if (!module)
 			return false;
 
-		// Check for SpecialK-specific exports
+		// First check for SpecialK-specific exports (most reliable)
 		const char* specialKExports[] = {
 			"SKX_GetCommandProcessor",
 			"SK_GetDLLRole",
@@ -168,16 +190,39 @@ namespace Compatibility
 			"SK_CreateFuncHook"  // Key indicator of cooperation support
 		};
 
+		int exportMatchCount = 0;
 		for (const auto& exportName : specialKExports) {
 			if (GetProcAddress(module, exportName)) {
-				return true;
+				exportMatchCount++;
 			}
 		}
 
-		// Check module description/version info
+		// Require multiple SpecialK exports to avoid false positives
+		// In modded Skyrim, proxy DLLs are common and may have some overlapping exports
+		if (exportMatchCount >= 2) {
+			logger::debug("Module identified as SpecialK via {} export matches", exportMatchCount);
+			return true;
+		}
+
+		// If we only have one export match, be more cautious - check version info
+		if (exportMatchCount == 1) {
+			std::wstring description = GetModuleDescription(module);
+			if (description.find(L"Special K") != std::wstring::npos ||
+				description.find(L"SpecialK") != std::wstring::npos) {
+				logger::debug("Module identified as SpecialK via export + version info");
+				return true;
+			} else {
+				logger::debug("Single export match but no SpecialK in version info - likely different proxy DLL");
+				return false;
+			}
+		}
+
+		// Check module description/version info as fallback
+		// This handles cases where SpecialK might be injected differently
 		std::wstring description = GetModuleDescription(module);
 		if (description.find(L"Special K") != std::wstring::npos ||
 			description.find(L"SpecialK") != std::wstring::npos) {
+			logger::debug("Module identified as SpecialK via version info only");
 			return true;
 		}
 

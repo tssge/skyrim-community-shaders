@@ -8,6 +8,7 @@
 #include "State.h"
 #include "TruePBR.h"
 #include "Util.h"
+#include "Utils/CompatibilityDetection.h"
 
 #include "Features/InteriorSun.h"
 #include "Features/LightLimitFix.h"
@@ -1349,6 +1350,75 @@ namespace Hooks
 	 */
 	void InstallD3DHooks()
 	{
+		auto* compatibility = Compatibility::CompatibilityChecker::GetSingleton();
+		compatibility->CheckAllConflicts();
+		compatibility->LogWarnings();
+
+		// Attempt SpecialK cooperation first
+		if (compatibility->ShouldUseCooperativeHooks()) {
+			logger::info("Using SpecialK cooperation mode for DirectX hooks");
+
+			const auto& skAPI = compatibility->GetSpecialKAPI();
+
+			if (skAPI.available) {
+				// Install hooks through SpecialK's API
+				bool success = true;
+
+				// Get function pointers to hook
+				LPVOID d3d11CreateTarget = GetProcAddress(GetModuleHandle(L"d3d11.dll"), "D3D11CreateDeviceAndSwapChain");
+				LPVOID dxgiCreateTarget = GetProcAddress(GetModuleHandle(L"dxgi.dll"),
+					!REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1");
+
+				if (d3d11CreateTarget) {
+					success &= compatibility->CreateHookThroughSpecialK(
+						L"D3D11CreateDeviceAndSwapChain",
+						d3d11CreateTarget,
+						hk_D3D11CreateDeviceAndSwapChain,
+						(LPVOID*)&ptrD3D11CreateDeviceAndSwapChain);
+				}
+
+				if (dxgiCreateTarget) {
+					success &= compatibility->CreateHookThroughSpecialK(
+						!REL::Module::IsVR() ? L"CreateDXGIFactory" : L"CreateDXGIFactory1",
+						dxgiCreateTarget,
+						hk_CreateDXGIFactory,
+						(LPVOID*)&ptrCreateDXGIFactory);
+				}
+
+				if (success) {
+					logger::info("Successfully installed DirectX hooks through SpecialK cooperation");
+					// Apply queued hooks if function is available
+					if (skAPI.ApplyQueuedHooks) {
+						skAPI.ApplyQueuedHooks();
+					}
+
+					// Initialize FidelityFX - it will work through the cooperative hooks
+					globals::fidelityFX->LoadFFX();
+					return;
+				} else {
+					logger::warn("Failed to install hooks through SpecialK, falling back to compatibility mode");
+				}
+			}
+		}
+
+		// Fallback: Check if we should skip direct hooks due to conflicts
+		if (compatibility->ShouldSkipDirectXHooks()) {
+			logger::info("Skipping DirectX hooks due to compatibility mode");
+
+			// Load FidelityFX in limited mode without DirectX hooks
+			globals::fidelityFX->LoadFFX();
+
+			// Show user notification about limited functionality
+			logger::warn("=== LIMITED FUNCTIONALITY MODE ===");
+			logger::warn("DirectX hooks disabled due to detected conflicts.");
+			logger::warn("Some Community Shaders features may not be available.");
+			logger::warn("Consider using SpecialK cooperation mode for full functionality.");
+			logger::warn("====================================");
+			return;
+		}
+
+		// Standard mode: Install hooks directly (original behavior)
+		logger::info("Installing DirectX hooks in standard mode");
 		globals::fidelityFX->LoadFFX();
 
 		*(uintptr_t*)&ptrD3D11CreateDeviceAndSwapChain = SKSE::PatchIAT(hk_D3D11CreateDeviceAndSwapChain, "d3d11.dll", "D3D11CreateDeviceAndSwapChain");
