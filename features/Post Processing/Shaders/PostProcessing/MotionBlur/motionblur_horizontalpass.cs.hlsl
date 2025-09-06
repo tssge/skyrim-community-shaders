@@ -22,7 +22,8 @@ cbuffer MotionBlurCB : register(b0)
 static const uint GRID_SIZE = 20;  // Fixed grid size
 
 // Process horizontal strips
-[numthreads(8, 8, 1)] void main(uint3 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint3 DTid
+								: SV_DispatchThreadID) {
 	// Get dimensions and check bounds
 	uint2 dimensions;
 	TexVelocity.GetDimensions(dimensions.x, dimensions.y);

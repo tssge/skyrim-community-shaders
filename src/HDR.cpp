@@ -100,12 +100,15 @@ void HDR::RestoreDefaultSettings()
 
 void HDR::SetupResources()
 {
+
 }
 
 void HDR::DestroyResources() const
 {
+
 }
 
 void HDR::ClearShaderCache()
 {
+
 }
