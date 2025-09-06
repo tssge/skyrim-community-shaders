@@ -1,6 +1,7 @@
 # Technical Analysis: SpecialK and Community Shaders DirectX Hook Conflicts
 
 ## Overview
+
 This document provides a deep technical analysis of the DirectX hooking conflicts between Skyrim Community Shaders and SpecialK, including specific code locations, hooking mechanisms, and potential resolution strategies.
 
 ## DirectX Hook Analysis
@@ -8,6 +9,7 @@ This document provides a deep technical analysis of the DirectX hooking conflict
 ### Community Shaders Hook Points
 
 #### 1. Streamline Integration (src/Streamline.h)
+
 ```cpp
 // Function pointers for hooked DirectX functions
 decltype(&CreateDXGIFactory1) slCreateDXGIFactory1{};
@@ -18,6 +20,7 @@ decltype(&D3D11CreateDeviceAndSwapChain) slD3D11CreateDeviceAndSwapChain{};
 **Conflict Risk**: High - These are core DXGI/D3D11 creation functions that SpecialK also hooks
 
 #### 2. DX12 Swap Chain Management (src/DX12SwapChain.cpp)
+
 ```cpp
 HRESULT DX12SwapChain::Present(UINT SyncInterval, UINT Flags)
 {
@@ -30,6 +33,7 @@ HRESULT DX12SwapChain::Present(UINT SyncInterval, UINT Flags)
 **Conflict Risk**: Critical - Present() is a primary hook point for SpecialK
 
 #### 3. Device Creation (src/DX12SwapChain.cpp)
+
 ```cpp
 DX::ThrowIfFailed(D3D12CreateDevice(a_adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_ARGS(&d3d12Device)));
 ```
@@ -38,6 +42,7 @@ DX::ThrowIfFailed(D3D12CreateDevice(a_adapter, D3D_FEATURE_LEVEL_12_0, IID_PPV_A
 **Conflict Risk**: High - Device creation is hooked by SpecialK for monitoring and enhancement
 
 #### 4. Core Hooks (src/Hooks.cpp, src/Hooks.h)
+
 ```cpp
 struct BSShader_BeginTechnique {
     static bool thunk(RE::BSShader* shader, uint32_t vertexDescriptor, uint32_t pixelDescriptor, bool skipPixelShader);
@@ -53,30 +58,36 @@ void InstallD3DHooks();
 ### SpecialK Hook Points (External Analysis)
 
 #### Common SpecialK Hooks:
+
 1. **DXGI Functions**:
-   - `CreateDXGIFactory1/2`
-   - `IDXGISwapChain::Present`
-   - `IDXGISwapChain::ResizeBuffers`
+
+    - `CreateDXGIFactory1/2`
+    - `IDXGISwapChain::Present`
+    - `IDXGISwapChain::ResizeBuffers`
 
 2. **D3D11 Functions**:
-   - `D3D11CreateDevice`
-   - `D3D11CreateDeviceAndSwapChain`
-   - Device context methods
+
+    - `D3D11CreateDevice`
+    - `D3D11CreateDeviceAndSwapChain`
+    - Device context methods
 
 3. **D3D12 Functions**:
-   - `D3D12CreateDevice`
-   - Command queue operations
-   - Swap chain management
+    - `D3D12CreateDevice`
+    - Command queue operations
+    - Swap chain management
 
 ## Hook Chain Interference Scenarios
 
 ### Scenario 1: Double Hooking
+
 ```
 Original Function -> SpecialK Hook -> Community Shaders Hook -> Original Implementation
 ```
+
 **Problem**: Second hook may not properly call through to first hook, breaking the chain.
 
 ### Scenario 2: State Modification Conflicts
+
 ```cpp
 // SpecialK modifies swap chain parameters
 SwapChainDesc.BufferCount = 3;  // SpecialK optimization
@@ -86,27 +97,32 @@ assert(SwapChainDesc.BufferCount == 2);  // Assertion failure
 ```
 
 ### Scenario 3: Resource Management Conflicts
+
 Both tools may:
-- Create their own command queues
-- Modify present parameters
-- Install different present callbacks
-- Use conflicting synchronization primitives
+
+-   Create their own command queues
+-   Modify present parameters
+-   Install different present callbacks
+-   Use conflicting synchronization primitives
 
 ## Memory Layout Analysis
 
 ### Hook Installation Methods
 
 #### Community Shaders (SKSE-based)
-- Uses SKSE's REL (Runtime Error Library) for address resolution
-- Employs template-based hook installation
-- Utilizes CommonLibSSE hooking mechanisms
 
-#### SpecialK (Injection-based)  
-- Uses DLL injection and IAT (Import Address Table) hooking
-- Employs detour-based function interception
-- May use inline assembly patching
+-   Uses SKSE's REL (Runtime Error Library) for address resolution
+-   Employs template-based hook installation
+-   Utilizes CommonLibSSE hooking mechanisms
+
+#### SpecialK (Injection-based)
+
+-   Uses DLL injection and IAT (Import Address Table) hooking
+-   Employs detour-based function interception
+-   May use inline assembly patching
 
 ### Memory Protection Conflicts
+
 ```cpp
 // Both tools may attempt to modify the same memory regions
 VirtualProtect(targetFunction, size, PAGE_EXECUTE_READWRITE, &oldProtect);
@@ -117,17 +133,18 @@ VirtualProtect(targetFunction, size, oldProtect, &dummy);
 ## Detection and Mitigation Strategies
 
 ### 1. Runtime Detection
+
 ```cpp
 bool DetectSpecialK() {
     // Check for SpecialK modules
     static const wchar_t* specialKModules[] = {
         L"SpecialK64.dll",
-        L"SpecialK32.dll", 
+        L"SpecialK32.dll",
         L"dxgi.dll",      // SpecialK proxy
         L"d3d11.dll",     // SpecialK proxy
         L"dinput8.dll"    // SpecialK proxy
     };
-    
+
     for (const auto& module : specialKModules) {
         if (GetModuleHandle(module)) {
             return true;
@@ -138,6 +155,7 @@ bool DetectSpecialK() {
 ```
 
 ### 2. Hook Chain Validation
+
 ```cpp
 bool ValidateHookChain(void* targetFunction) {
     // Verify hook chain integrity
@@ -148,6 +166,7 @@ bool ValidateHookChain(void* targetFunction) {
 ```
 
 ### 3. Cooperative Hooking Protocol
+
 ```cpp
 // Shared interface for DirectX hook coordination
 struct DirectXHookCoordinator {
@@ -160,6 +179,7 @@ struct DirectXHookCoordinator {
 ## Resolution Approaches
 
 ### Approach 1: SpecialK Cooperation API (Recommended)
+
 SpecialK provides exported functions for cooperative hook management:
 
 ```cpp
@@ -184,14 +204,14 @@ bool InitializeWithSpecialK() {
             hSpecialK = nullptr; // Not SpecialK proxy
         }
     }
-    
+
     if (hSpecialK) {
         auto SK_CreateFuncHook_Proc = (decltype(&SK_CreateFuncHook))GetProcAddress(hSpecialK, "SK_CreateFuncHook");
         auto SK_EnableHook_Proc = (decltype(&SK_EnableHook))GetProcAddress(hSpecialK, "SK_EnableHook");
-        
+
         if (SK_CreateFuncHook_Proc && SK_EnableHook_Proc) {
             // Use SpecialK's hook manager instead of direct hooking
-            SK_CreateFuncHook_Proc(L"D3D11CreateDeviceAndSwapChain", 
+            SK_CreateFuncHook_Proc(L"D3D11CreateDeviceAndSwapChain",
                                    D3D11CreateDeviceAndSwapChain_Real,
                                    hk_D3D11CreateDeviceAndSwapChain,
                                    (LPVOID*)&ptrD3D11CreateDeviceAndSwapChain);
@@ -204,32 +224,41 @@ bool InitializeWithSpecialK() {
 ```
 
 **Benefits:**
-- No hook chain conflicts
-- Centralized hook management
-- Both tools can coexist seamlessly
-- SpecialK handles the low-level DirectX interaction
+
+-   No hook chain conflicts
+-   Centralized hook management
+-   Both tools can coexist seamlessly
+-   SpecialK handles the low-level DirectX interaction
 
 ### Approach 2: Hook Ordering
+
 Implement a deterministic hook installation order:
+
 1. SpecialK installs base hooks
 2. Community Shaders installs hooks with awareness of existing hooks
 3. Proper chain-through calling conventions
 
 ### Approach 3: Shared Hook Manager
+
 Create a common hooking library that both tools can use:
-- Centralized hook management
-- Proper chain management
-- Conflict resolution
-- Resource sharing
+
+-   Centralized hook management
+-   Proper chain management
+-   Conflict resolution
+-   Resource sharing
 
 ### Approach 4: API Abstraction Layer
+
 Develop an abstraction layer for DirectX operations:
-- Both tools interact through the abstraction
-- Abstraction manages actual DirectX calls
-- Reduces direct hook conflicts
+
+-   Both tools interact through the abstraction
+-   Abstraction manages actual DirectX calls
+-   Reduces direct hook conflicts
 
 ### Approach 5: Configuration-Based Coexistence
+
 Implement configuration options:
+
 ```ini
 [Compatibility]
 SpecialKDetected=true
@@ -241,37 +270,43 @@ PreferSpecialKHooks=true
 ## Implementation Timeline
 
 ### Phase 1: Detection and Warning (Immediate)
-- Implement SpecialK detection
-- Add warning messages
-- Document incompatibility
+
+-   Implement SpecialK detection
+-   Add warning messages
+-   Document incompatibility
 
 ### Phase 2: SpecialK Cooperation API (Recommended)
-- Detect SpecialK's exported hook management functions
-- Use SpecialK's `SK_CreateFuncHook` and related APIs
-- Coordinate hook installation through SpecialK
-- Fall back to compatibility mode if cooperation fails
+
+-   Detect SpecialK's exported hook management functions
+-   Use SpecialK's `SK_CreateFuncHook` and related APIs
+-   Coordinate hook installation through SpecialK
+-   Fall back to compatibility mode if cooperation fails
 
 ### Phase 3: Basic Compatibility (Fallback)
-- Implement hook chain validation
-- Add compatibility mode flags
-- Basic conflict avoidance
-- Configuration-based feature toggling
+
+-   Implement hook chain validation
+-   Add compatibility mode flags
+-   Basic conflict avoidance
+-   Configuration-based feature toggling
 
 ### Phase 4: Full Cooperation
-- Shared hooking protocol
-- Resource coordination
-- Full feature compatibility
-- Advanced coordination with other graphics tools
+
+-   Shared hooking protocol
+-   Resource coordination
+-   Full feature compatibility
+-   Advanced coordination with other graphics tools
 
 ## Testing Strategy
 
 ### Test Environment Setup
+
 1. Clean Skyrim installation
 2. Community Shaders installation
 3. SpecialK installation
 4. Controlled testing scenarios
 
 ### Test Cases
+
 1. **Basic Functionality**: Each tool independently
 2. **Conflict Detection**: Both tools simultaneously
 3. **Hook Chain Integrity**: Validate hook installation order
@@ -281,14 +316,16 @@ PreferSpecialKHooks=true
 ## Performance Considerations
 
 ### Hook Overhead
-- Additional indirection in hook chains
-- Validation overhead in compatibility mode
-- Memory overhead for coordination structures
+
+-   Additional indirection in hook chains
+-   Validation overhead in compatibility mode
+-   Memory overhead for coordination structures
 
 ### Optimization Opportunities
-- Lazy hook installation
-- Shared resource pools
-- Optimized hook chain traversal
+
+-   Lazy hook installation
+-   Shared resource pools
+-   Optimized hook chain traversal
 
 ---
 

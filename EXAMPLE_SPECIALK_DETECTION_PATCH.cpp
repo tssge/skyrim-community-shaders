@@ -1,7 +1,7 @@
 /*
  * Enhanced implementation for SpecialK cooperation in Community Shaders
  * This implementation includes both detection and cooperative hook management
- * 
+ *
  * File: src/Utils/CompatibilityDetection.h
  */
 
@@ -79,9 +79,9 @@ namespace Compatibility
 }
 
 /*
- * Enhanced implementation for SpecialK cooperation in Community Shaders  
+ * Enhanced implementation for SpecialK cooperation in Community Shaders
  * This implementation includes both detection and cooperative hook management
- * 
+ *
  * File: src/Utils/CompatibilityDetection.cpp
  */
 
@@ -422,36 +422,36 @@ void InstallD3DHooks()
     // Attempt SpecialK cooperation first
     if (compatibility->ShouldUseCooperativeHooks()) {
         logger::info("Using SpecialK cooperation mode for DirectX hooks");
-        
+
         // Use SpecialK's hook management API
         const auto& skAPI = compatibility->GetSpecialKAPI();
-        
+
         if (skAPI.available) {
             // Install hooks through SpecialK
             bool success = true;
-            
+
             success &= compatibility->CreateHookThroughSpecialK(
                 L"D3D11CreateDeviceAndSwapChain",
                 GetProcAddress(GetModuleHandle(L"d3d11.dll"), "D3D11CreateDeviceAndSwapChain"),
                 hk_D3D11CreateDeviceAndSwapChain,
                 (LPVOID*)&ptrD3D11CreateDeviceAndSwapChain
             );
-            
+
             success &= compatibility->CreateHookThroughSpecialK(
-                L"CreateDXGIFactory1", 
-                GetProcAddress(GetModuleHandle(L"dxgi.dll"), 
+                L"CreateDXGIFactory1",
+                GetProcAddress(GetModuleHandle(L"dxgi.dll"),
                                !REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1"),
                 hk_CreateDXGIFactory,
                 (LPVOID*)&ptrCreateDXGIFactory
             );
-            
+
             if (success) {
                 logger::info("Successfully installed DirectX hooks through SpecialK cooperation");
                 // Apply queued hooks if function is available
                 if (skAPI.ApplyQueuedHooks) {
                     skAPI.ApplyQueuedHooks();
                 }
-                
+
                 // Still initialize FidelityFX, but it will work through the cooperative hooks
                 globals::fidelityFX->LoadFFX();
                 return;
@@ -464,10 +464,10 @@ void InstallD3DHooks()
     // Fallback: Check if we should skip direct hooks due to conflicts
     if (compatibility->ShouldSkipDirectXHooks()) {
         logger::info("Skipping DirectX hooks due to compatibility mode");
-        
+
         // Load FidelityFX in limited mode without DirectX hooks
         globals::fidelityFX->LoadFFX();
-        
+
         // Show user notification about limited functionality
         logger::warn("=== LIMITED FUNCTIONALITY MODE ===");
         logger::warn("DirectX hooks disabled due to detected conflicts.");

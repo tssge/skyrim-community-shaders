@@ -1,13 +1,13 @@
 /*
  * SpecialK Compatibility Detection and Cooperation API Implementation
- * 
+ *
  * This file implements SpecialK cooperation using the public API.
  * SpecialK is licensed under the GNU General Public License v3.0
  * Copyright (c) 2015-2024 Andon "Kaldaien" Coleman
- * 
+ *
  * Function signatures and cooperation concepts adapted from:
  * https://github.com/SpecialKO/SpecialK
- * 
+ *
  * Detection logic and API integration designed to work with SpecialK's
  * hook cooperation system for seamless DirectX compatibility.
  */

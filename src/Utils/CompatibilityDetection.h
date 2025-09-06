@@ -2,14 +2,14 @@
 
 /*
  * SpecialK Compatibility Detection and Cooperation API
- * 
+ *
  * This file uses SpecialK's public cooperation API function signatures.
  * SpecialK is licensed under the GNU General Public License v3.0
  * Copyright (c) 2015-2024 Andon "Kaldaien" Coleman
- * 
+ *
  * Function signatures and cooperation concepts adapted from:
  * https://github.com/SpecialKO/SpecialK
- * 
+ *
  * Integration approach follows SpecialK's cooperation guidelines for
  * shared DirectX hook management to avoid conflicts.
  */
