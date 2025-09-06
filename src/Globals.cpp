@@ -23,11 +23,8 @@
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
 #include "Features/LightLimitFix.h"
-<<<<<<< HEAD
 #include "Features/PerformanceOverlay.h"
-=======
 #include "Features/PostProcessing.h"
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 #include "Features/ScreenSpaceGI.h"
 #include "Features/ScreenSpacePointLightShadows.h"
 #include "Features/ScreenSpaceShadows.h"
@@ -61,35 +58,6 @@ namespace globals
 
 	namespace features
 	{
-<<<<<<< HEAD
-		CloudShadows cloudShadows{};
-		DynamicCubemaps dynamicCubemaps{};
-		ExtendedMaterials extendedMaterials{};
-		GrassCollision grassCollision{};
-		GrassLighting grassLighting{};
-		IBL ibl{};
-		LightLimitFix lightLimitFix{};
-		LODBlending lodBlending{};
-		HairSpecular hairSpecular{};
-		InteriorSun interiorSun{};
-		InverseSquareLighting inverseSquareLighting{};
-		ScreenSpaceGI screenSpaceGI{};
-		ScreenSpaceShadows screenSpaceShadows{};
-		Skylighting skylighting{};
-		TerrainVariation terrainVariation{};
-		SkySync skySync{};
-		SubsurfaceScattering subsurfaceScattering{};
-		TerrainBlending terrainBlending{};
-		TerrainHelper terrainHelper{};
-		TerrainShadows terrainShadows{};
-		VolumetricLighting volumetricLighting{};
-		VR vr{};
-		WaterEffects waterEffects{};
-		WeatherPicker weatherPicker{};
-		PerformanceOverlay performanceOverlay{};
-		WetnessEffects wetnessEffects{};
-		ExtendedTranslucency extendedTranslucency{};
-=======
 		CloudShadows* cloudShadows = nullptr;
 		DynamicCubemaps* dynamicCubemaps = nullptr;
 		ExtendedMaterials* extendedMaterials = nullptr;
@@ -115,15 +83,8 @@ namespace globals
 		VR* vr = nullptr;
 		WaterEffects* waterEffects = nullptr;
 		WetnessEffects* wetnessEffects = nullptr;
-<<<<<<< HEAD
->>>>>>> 93c3c432 (Screen Space Point Light Shadows)
-=======
 		Skin* skin = nullptr;
-<<<<<<< HEAD
->>>>>>> 86fc4180 (Advanced Skin)
-=======
 		PostProcessing* postProcessing = nullptr;
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 
 		namespace llf
 		{
@@ -194,8 +155,6 @@ namespace globals
 		upscaling = Upscaling::GetSingleton();
 		dx12SwapChain = DX12SwapChain::GetSingleton();
 		fidelityFX = FidelityFX::GetSingleton();
-<<<<<<< HEAD
-=======
 		hdr = HDR::GetSingleton();
 
 		features::cloudShadows = CloudShadows::GetSingleton();
@@ -227,7 +186,6 @@ namespace globals
 		features::postProcessing = PostProcessing::GetSingleton();
 
 		features::llf::particleLights = ParticleLights::GetSingleton();
->>>>>>> 7d5aac61 (HDR)
 	}
 
 	void ReInit()

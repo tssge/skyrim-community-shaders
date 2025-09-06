@@ -28,15 +28,9 @@ struct WaterEffects;
 struct WeatherPicker;
 struct PerformanceOverlay;
 struct WetnessEffects;
-<<<<<<< HEAD
-<<<<<<< HEAD
 struct ExtendedTranslucency;
-=======
-=======
 struct PostProcessing;
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 struct Skin;
->>>>>>> 86fc4180 (Advanced Skin)
 
 class ParticleLights;
 
@@ -65,35 +59,6 @@ namespace globals
 
 	namespace features
 	{
-<<<<<<< HEAD
-		extern CloudShadows cloudShadows;
-		extern DynamicCubemaps dynamicCubemaps;
-		extern ExtendedMaterials extendedMaterials;
-		extern GrassCollision grassCollision;
-		extern GrassLighting grassLighting;
-		extern HairSpecular hairSpecular;
-		extern IBL ibl;
-		extern LightLimitFix lightLimitFix;
-		extern LODBlending lodBlending;
-		extern InteriorSun interiorSun;
-		extern InverseSquareLighting inverseSquareLighting;
-		extern ScreenSpaceGI screenSpaceGI;
-		extern ScreenSpaceShadows screenSpaceShadows;
-		extern Skylighting skylighting;
-		extern TerrainVariation terrainVariation;
-		extern SkySync skySync;
-		extern SubsurfaceScattering subsurfaceScattering;
-		extern TerrainBlending terrainBlending;
-		extern TerrainHelper terrainHelper;
-		extern TerrainShadows terrainShadows;
-		extern VolumetricLighting volumetricLighting;
-		extern VR vr;
-		extern WaterEffects waterEffects;
-		extern WeatherPicker weatherPicker;
-		extern PerformanceOverlay performanceOverlay;
-		extern WetnessEffects wetnessEffects;
-		extern ExtendedTranslucency extendedTranslucency;
-=======
 		extern CloudShadows* cloudShadows;
 		extern DynamicCubemaps* dynamicCubemaps;
 		extern ExtendedMaterials* extendedMaterials;
@@ -119,15 +84,26 @@ namespace globals
 		extern VR* vr;
 		extern WaterEffects* waterEffects;
 		extern WetnessEffects* wetnessEffects;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 93c3c432 (Screen Space Point Light Shadows)
-=======
-=======
+		extern HairSpecular* hairSpecular;
+		extern IBL* ibl;
+		extern LightLimitFix* lightLimitFix;
+		extern LODBlending* lodBlending;
+		extern InteriorSunShadows* interiorSunShadows;
+		extern InverseSquareLighting* inverseSquareLighting;
+		extern ScreenSpaceGI* screenSpaceGI;
+		extern ScreenSpacePointLightShadows* screenSpacePointLightShadows;
+		extern ScreenSpaceShadows* screenSpaceShadows;
+		extern Skylighting* skylighting;
+		extern TerrainVariation* terrainVariation;
+		extern SkySync* skySync;
+		extern SubsurfaceScattering* subsurfaceScattering;
+		extern TerrainBlending* terrainBlending;
+		extern TerrainHelper* terrainHelper;
+		extern TerrainShadows* terrainShadows;
+		extern VolumetricLighting* volumetricLighting;
+		extern VR* vr;
 		extern PostProcessing* postProcessing;
->>>>>>> fb9dff05 (feat: postprocessing framework and ui)
 		extern Skin* skin;
->>>>>>> 86fc4180 (Advanced Skin)
 
 		namespace llf
 		{
