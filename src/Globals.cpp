@@ -68,7 +68,7 @@ namespace globals
 		LightLimitFix* lightLimitFix = nullptr;
 		LODBlending* lodBlending = nullptr;
 		HairSpecular* hairSpecular = nullptr;
-		InteriorSunShadows* interiorSunShadows = nullptr;
+		InteriorSun* interiorSun = nullptr;
 		InverseSquareLighting* inverseSquareLighting = nullptr;
 		ScreenSpaceGI* screenSpaceGI = nullptr;
 		ScreenSpacePointLightShadows* screenSpacePointLightShadows = nullptr;
@@ -168,7 +168,7 @@ namespace globals
 		features::ibl = IBL::GetSingleton();
 		features::lightLimitFix = LightLimitFix::GetSingleton();
 		features::lodBlending = LODBlending::GetSingleton();
-		features::interiorSunShadows = InteriorSunShadows::GetSingleton();
+		features::interiorSun = InteriorSun::GetSingleton();
 		features::inverseSquareLighting = InverseSquareLighting::GetSingleton();
 		features::screenSpaceGI = ScreenSpaceGI::GetSingleton();
 		features::screenSpacePointLightShadows = ScreenSpacePointLightShadows::GetSingleton();
