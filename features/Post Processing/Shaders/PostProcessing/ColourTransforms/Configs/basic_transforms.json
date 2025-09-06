@@ -1,122 +1,118 @@
 {
-  "version": "1.0.0",
-  "description": "Basic color transform operations",
-  "transforms": [
-    {
-      "name": "_",
-      "func_name": "Basic Transforms",
-      "description": "Primary operators with basic functions.",
-      "ui_type": "none",
-      "ui_params": {},
-      "default_settings": []
-    },
-    {
-      "name": "Clamp",
-      "func_name": "Clamp", 
-      "description": "Clamping inputs between min and max values.",
-      "ui_type": "shift_slider_pairs",
-      "ui_params": {
-        "sliders": [
-          {
-            "label": "Min",
-            "param_path": [0, 0],
-            "min": 0.0,
-            "max": 4.0,
-            "format": "%.2f"
-          },
-          {
-            "label": "Max", 
-            "param_path": [1, 0],
-            "min": 0.0,
-            "max": 4.0,
-            "format": "%.2f"
-          }
-        ],
-        "show_shift_hint": true
-      },
-      "default_settings": [
-        [0.0, 0.0, 0.0, 0.0],
-        [1.0, 1.0, 1.0, 0.0]
-      ]
-    },
-    {
-      "name": "Gamma",
-      "func_name": "Gamma",
-      "description": "Apply gamma curve. Negative values will be mirrored.",
-      "ui_type": "shift_slider_pairs", 
-      "ui_params": {
-        "sliders": [
-          {
-            "label": "Gamma",
-            "param_path": [0, 0],
-            "min": 0.0,
-            "max": 4.0,
-            "format": "%.2f"
-          },
-          {
-            "label": "Black Pivot",
-            "param_path": [1, 0], 
-            "min": 0.0,
-            "max": 1.0,
-            "format": "%.2f"
-          },
-          {
-            "label": "White Pivot",
-            "param_path": [2, 0],
-            "min": 0.0,
-            "max": 5.0,
-            "format": "%.2f"
-          }
-        ],
-        "show_shift_hint": true
-      },
-      "default_settings": [
-        [1.0, 1.0, 1.0, 0.0],
-        [0.0, 0.0, 0.0, 0.0], 
-        [1.0, 1.0, 1.0, 1.0]
-      ]
-    },
-    {
-      "name": "PQ Encode",
-      "func_name": "PerceptualQuantizerEncode",
-      "description": "Apply PQ curve encoding (HDR10).",
-      "ui_type": "shift_slider_pairs",
-      "ui_params": {
-        "sliders": [
-          {
-            "label": "Scaling (nits)",
-            "param_path": [0, 0],
-            "min": 200.0,
-            "max": 10000.0,
-            "format": "%.1f"
-          }
-        ],
-        "show_shift_hint": true
-      },
-      "default_settings": [
-        [10000.0, 0.0, 0.0, 0.0]
-      ]
-    },
-    {
-      "name": "PQ Decode",
-      "func_name": "PerceptualQuantizerDecode", 
-      "description": "Convert from PQ curve back to linear (HDR10).",
-      "ui_type": "shift_slider_pairs",
-      "ui_params": {
-        "sliders": [
-          {
-            "label": "Input Peak (nits)",
-            "param_path": [0, 0],
-            "min": 200.0,
-            "max": 10000.0,
-            "format": "%.1f"
-          }
-        ],
-        "show_shift_hint": true
-      },
-      "default_settings": [
-        [10000.0, 0.0, 0.0, 0.0]
-      ]
-    }
-  ]
+    "version": "1.0.0",
+    "description": "Basic color transform operations",
+    "transforms": [
+        {
+            "name": "_",
+            "func_name": "Basic Transforms",
+            "description": "Primary operators with basic functions.",
+            "ui_type": "none",
+            "ui_params": {},
+            "default_settings": []
+        },
+        {
+            "name": "Clamp",
+            "func_name": "Clamp",
+            "description": "Clamping inputs between min and max values.",
+            "ui_type": "shift_slider_pairs",
+            "ui_params": {
+                "sliders": [
+                    {
+                        "label": "Min",
+                        "param_path": [0, 0],
+                        "min": 0.0,
+                        "max": 4.0,
+                        "format": "%.2f"
+                    },
+                    {
+                        "label": "Max",
+                        "param_path": [1, 0],
+                        "min": 0.0,
+                        "max": 4.0,
+                        "format": "%.2f"
+                    }
+                ],
+                "show_shift_hint": true
+            },
+            "default_settings": [
+                [0.0, 0.0, 0.0, 0.0],
+                [1.0, 1.0, 1.0, 0.0]
+            ]
+        },
+        {
+            "name": "Gamma",
+            "func_name": "Gamma",
+            "description": "Apply gamma curve. Negative values will be mirrored.",
+            "ui_type": "shift_slider_pairs",
+            "ui_params": {
+                "sliders": [
+                    {
+                        "label": "Gamma",
+                        "param_path": [0, 0],
+                        "min": 0.0,
+                        "max": 4.0,
+                        "format": "%.2f"
+                    },
+                    {
+                        "label": "Black Pivot",
+                        "param_path": [1, 0],
+                        "min": 0.0,
+                        "max": 1.0,
+                        "format": "%.2f"
+                    },
+                    {
+                        "label": "White Pivot",
+                        "param_path": [2, 0],
+                        "min": 0.0,
+                        "max": 5.0,
+                        "format": "%.2f"
+                    }
+                ],
+                "show_shift_hint": true
+            },
+            "default_settings": [
+                [1.0, 1.0, 1.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0],
+                [1.0, 1.0, 1.0, 1.0]
+            ]
+        },
+        {
+            "name": "PQ Encode",
+            "func_name": "PerceptualQuantizerEncode",
+            "description": "Apply PQ curve encoding (HDR10).",
+            "ui_type": "shift_slider_pairs",
+            "ui_params": {
+                "sliders": [
+                    {
+                        "label": "Scaling (nits)",
+                        "param_path": [0, 0],
+                        "min": 200.0,
+                        "max": 10000.0,
+                        "format": "%.1f"
+                    }
+                ],
+                "show_shift_hint": true
+            },
+            "default_settings": [[10000.0, 0.0, 0.0, 0.0]]
+        },
+        {
+            "name": "PQ Decode",
+            "func_name": "PerceptualQuantizerDecode",
+            "description": "Convert from PQ curve back to linear (HDR10).",
+            "ui_type": "shift_slider_pairs",
+            "ui_params": {
+                "sliders": [
+                    {
+                        "label": "Input Peak (nits)",
+                        "param_path": [0, 0],
+                        "min": 200.0,
+                        "max": 10000.0,
+                        "format": "%.1f"
+                    }
+                ],
+                "show_shift_hint": true
+            },
+            "default_settings": [[10000.0, 0.0, 0.0, 0.0]]
+        }
+    ]
 }
