@@ -22,9 +22,9 @@ Override files must follow these naming patterns:
 
 Examples:
 
--   `MyMod_Skylighting.json` - Overrides for Skylighting feature
--   `EnhancedSSGI_ScreenSpaceGI.json` - Overrides for Screen Space GI feature
--   `WaterTweaks_WaterEffects.json` - Overrides for Water Effects feature
+- `MyMod_Skylighting.json` - Overrides for Skylighting feature
+- `EnhancedSSGI_ScreenSpaceGI.json` - Overrides for Screen Space GI feature
+- `WaterTweaks_WaterEffects.json` - Overrides for Water Effects feature
 
 ### Global Overrides
 
@@ -34,8 +34,8 @@ Examples:
 
 Examples:
 
--   `PerformanceOptimizer_Global.json` - Global settings changes
--   `MyMod_Global.json` - Global configuration overrides
+- `PerformanceOptimizer_Global.json` - Global settings changes
+- `MyMod_Global.json` - Global configuration overrides
 
 ## File Format
 
@@ -81,42 +81,42 @@ Override files use JSON format and should contain only the settings you want to 
 
 The `_metadata` section also required for the system to identify the override. It provides information about the override:
 
--   `modName`: Display name of your mod
--   `version`: Version of your override file
--   `description`: Description of what the override does
--   `enabled`: Whether the override is enabled by default (optional, defaults to true)
+- `modName`: Display name of your mod
+- `version`: Version of your override file
+- `description`: Description of what the override does
+- `enabled`: Whether the override is enabled by default (optional, defaults to true)
 
 ## Feature Short Names
 
 To create feature-specific overrides, you need to use the correct feature short name. The full list of feature short names is:
 
--   `CloudShadows` - Cloud Shadows
--   `DynamicCubemaps` - Dynamic Cubemaps
--   `ExtendedMaterials` - Extended Materials
--   `GrassCollision` - Grass Collision
--   `GrassLighting` - Grass Lighting
--   `HairSpecular` - Hair Specular
--   `IBL` - Image-Based Lighting
--   `LightLimitFix` - Light Limit Fix
--   `LODBlending` - LOD Blending
--   `InteriorSun` - Interior Sun
--   `InverseSquareLighting` - Inverse Square Lighting
--   `ScreenSpaceGI` - Screen Space Global Illumination
--   `ScreenSpaceShadows` - Screen-Space Shadows
--   `Skylighting` - Skylighting
--   `TerrainVariation` - Terrain Variation
--   `SkySync` - Sky Sync
--   `SubsurfaceScattering` - Subsurface Scattering
--   `TerrainBlending` - Terrain Blending
--   `TerrainHelper` - Terrain Helper
--   `TerrainShadows` - Terrain Shadows
--   `VolumetricLighting` - Volumetric Lighting
--   `VR` - VR
--   `WaterEffects` - Water Effects
--   `WeatherPicker` - Weather Picker
--   `PerformanceOverlay` - Performance Overlay
--   `WetnessEffects` - Wetness Effects
--   `ExtendedTranslucency` - Extended Translucency
+- `CloudShadows` - Cloud Shadows
+- `DynamicCubemaps` - Dynamic Cubemaps
+- `ExtendedMaterials` - Extended Materials
+- `GrassCollision` - Grass Collision
+- `GrassLighting` - Grass Lighting
+- `HairSpecular` - Hair Specular
+- `IBL` - Image-Based Lighting
+- `LightLimitFix` - Light Limit Fix
+- `LODBlending` - LOD Blending
+- `InteriorSun` - Interior Sun
+- `InverseSquareLighting` - Inverse Square Lighting
+- `ScreenSpaceGI` - Screen Space Global Illumination
+- `ScreenSpaceShadows` - Screen-Space Shadows
+- `Skylighting` - Skylighting
+- `TerrainVariation` - Terrain Variation
+- `SkySync` - Sky Sync
+- `SubsurfaceScattering` - Subsurface Scattering
+- `TerrainBlending` - Terrain Blending
+- `TerrainHelper` - Terrain Helper
+- `TerrainShadows` - Terrain Shadows
+- `VolumetricLighting` - Volumetric Lighting
+- `VR` - VR
+- `WaterEffects` - Water Effects
+- `WeatherPicker` - Weather Picker
+- `PerformanceOverlay` - Performance Overlay
+- `WetnessEffects` - Wetness Effects
+- `ExtendedTranslucency` - Extended Translucency
 
 **This list is not exhaustive. It is current as of 11/08/2025. All Feature Short Names will work.**
 
@@ -131,17 +131,17 @@ To create feature-specific overrides, you need to use the correct feature short 
 
 ### In-Game UI
 
--   Navigate to the "Overrides" tab in the Community Shaders menu
--   View all discovered override files
--   Enable/disable individual overrides
--   Refresh to discover new override files
--   View override file contents and metadata
+- Navigate to the "Overrides" tab in the Community Shaders menu
+- View all discovered override files
+- Enable/disable individual overrides
+- Refresh to discover new override files
+- View override file contents and metadata
 
 ### Enable/Disable System
 
--   The entire override system can be toggled on/off
--   Individual overrides can be enabled/disabled
--   Changes take effect on next game restart
+- The entire override system can be toggled on/off
+- Individual overrides can be enabled/disabled
+- Changes take effect on next game restart
 
 ## Best Practices for Mod Authors
 
@@ -156,26 +156,26 @@ To create feature-specific overrides, you need to use the correct feature short 
 
 ### Override Not Applied
 
--   Check file naming follows the correct pattern
--   Verify JSON syntax is valid
--   Ensure feature short name is correct
--   Check that override system is enabled in the UI
--   Look for errors in the Community Shaders log
+- Check file naming follows the correct pattern
+- Verify JSON syntax is valid
+- Ensure feature short name is correct
+- Check that override system is enabled in the UI
+- Look for errors in the Community Shaders log
 
 ### JSON Validation
 
 Use a JSON validator to ensure your override files have valid syntax:
 
--   No trailing commas
--   Proper quotation marks around strings
--   Balanced brackets and braces
+- No trailing commas
+- Proper quotation marks around strings
+- Balanced brackets and braces
 
 ### Log Messages
 
 Community Shaders logs override discovery and application:
 
--   Check `CommunityShaders.log` for override-related messages
--   Look for "Discovered X override files" and "Applied X override(s)" messages
+- Check `CommunityShaders.log` for override-related messages
+- Look for "Discovered X override files" and "Applied X override(s)" messages
 
 ## Examples
 

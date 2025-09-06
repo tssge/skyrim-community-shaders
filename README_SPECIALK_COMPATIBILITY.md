@@ -15,6 +15,7 @@ Community Shaders now includes native SpecialK cooperation support through Speci
 Community Shaders detects SpecialK at startup and uses SpecialK's cooperation API for shared DirectX hook management. Instead of fighting over the same hooks, both tools coordinate through SpecialK's centralized system.
 
 **Cooperation Mode Benefits:**
+
 - ✅ Both tools work together without conflicts
 - ✅ Full functionality maintained for both tools
 - ✅ Automatic detection and setup
@@ -25,6 +26,7 @@ Community Shaders detects SpecialK at startup and uses SpecialK's cooperation AP
 See `SPECIALK_COOPERATION_IMPLEMENTATION.md` for complete technical documentation.
 
 ### Files Added:
+
 - `src/Utils/CompatibilityDetection.h/cpp` - Core cooperation and detection system
 - `CommunityShaders.ini` - Configuration file with cooperation settings
 - Modified `src/Hooks.cpp` - Integrated SpecialK cooperation into DirectX hook installation
@@ -48,26 +50,32 @@ DelegateSwapChain=1       # Allow SpecialK to manage swap chain operations
 ## Troubleshooting
 
 ### If You See Cooperation Success Messages:
+
 ```
 [INFO] === COOPERATION MODE ===
 [INFO] SpecialK cooperation mode enabled - using shared hook management
 [INFO] Both tools should work together without conflicts
 ```
+
 ✅ **Everything is working correctly!** Both tools will function fully.
 
 ### If You See Fallback Messages:
+
 ```
 [WARN] === LIMITED FUNCTIONALITY MODE ===
 [WARN] DirectX hooks disabled due to detected conflicts.
 ```
+
 ⚠️ **Partial functionality** - Some Community Shaders features may be limited.
 
 **Solutions:**
+
 1. Update SpecialK to a version with cooperation API support
 2. Try manual SpecialK loading if using injection
 3. Check SpecialK configuration for hook management settings
 
 ### If You See No Messages:
+
 - SpecialK may not be detected
 - Check that SpecialK is properly installed and loading
 - Verify `DetectSpecialK=1` in configuration
@@ -75,21 +83,25 @@ DelegateSwapChain=1       # Allow SpecialK to manage swap chain operations
 ## Advanced Configuration
 
 ### For DirectX 12 Features on DirectX 11 Engine:
+
 The system automatically handles Community Shaders' DirectX 12 interop features (like FidelityFX Frame Generation) when used on Skyrim's DirectX 11 engine.
 
 ### For Multiple Graphics Tools:
+
 The system also detects ReShade and ENB Series, providing appropriate warnings about potential conflicts.
 
 ## Previous Documentation
 
 For historical context, see the original documentation:
-- `SpecialK_Incompatibility_Issue.md` - Original problem analysis  
+
+- `SpecialK_Incompatibility_Issue.md` - Original problem analysis
 - `SPECIALK_TECHNICAL_ANALYSIS.md` - Technical details of the conflict
 - `EXAMPLE_SPECIALK_DETECTION_PATCH.cpp` - Reference implementation (now integrated)
 
 ## Support
 
 If you experience issues:
+
 1. Check the game's log files for cooperation status messages
 2. Try different cooperation settings in `CommunityShaders.ini`
 3. Report issues with log information showing cooperation status
@@ -104,11 +116,13 @@ If you experience issues:
 ## Solution Approaches
 
 ### Immediate (Detection & Warning)
+
 - Implement SpecialK detection during Community Shaders initialization
 - Display clear warnings when conflicts are detected
 - Provide configuration options to disable conflicting features
 
 ### Short-term (SpecialK Cooperation - RECOMMENDED)
+
 - **Leverage SpecialK's Manual Loading Feature**: SpecialK provides exported functions for cooperative hook management
 - Use SpecialK's `SK_CreateFuncHook`, `SK_EnableHook`, and related APIs
 - Let SpecialK manage the DirectX hook chain while Community Shaders provides functionality
@@ -116,11 +130,13 @@ If you experience issues:
 - Automatic fallback to compatibility mode if cooperation fails
 
 ### Alternative (Compatibility Mode)
+
 - Add compatibility flags to skip problematic hooks
 - Implement graceful degradation of features
 - Provide user control over which features to disable
 
 ### Long-term (Cooperation)
+
 - Establish shared hooking protocols with other graphics tools
 - Create API abstraction layers
 - Coordinate resource management between tools
@@ -154,7 +170,7 @@ Users experiencing conflicts between Community Shaders and SpecialK should:
 ## Next Steps
 
 1. **Implement SpecialK Cooperation**: Add support for SpecialK's manual loading API to enable seamless cooperation
-2. **Test Cooperation Mode**: Verify that cooperative hook management works with real-world scenarios  
+2. **Test Cooperation Mode**: Verify that cooperative hook management works with real-world scenarios
 3. **Implement Detection and Fallback**: Add basic detection and warning functionality for cases where cooperation isn't available
 4. **Test Compatibility Modes**: Verify fallback scenarios work correctly with various tool combinations
 5. **Coordinate with SpecialK Developers**: Work with SpecialK team to optimize cooperation and address any API issues

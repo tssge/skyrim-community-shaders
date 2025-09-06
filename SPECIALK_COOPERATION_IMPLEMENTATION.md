@@ -16,6 +16,7 @@ When both Community Shaders and SpecialK are loaded:
 ### Fallback Options
 
 If cooperation fails or isn't available:
+
 - **Compatibility Mode**: Disables conflicting features but maintains basic functionality
 - **Detection Warnings**: Alerts users to potential conflicts
 - **Configuration Options**: Allows users to adjust behavior based on their setup
@@ -90,6 +91,7 @@ SK_ApplyQueuedHooks(); // Apply all hooks together
 ## User Experience
 
 ### Successful Cooperation
+
 ```
 [INFO] SpecialK cooperation API successfully loaded
 [INFO] SpecialK DLL Role: 1
@@ -102,6 +104,7 @@ SK_ApplyQueuedHooks(); // Apply all hooks together
 ```
 
 ### Fallback Mode
+
 ```
 [WARN] Failed to install hooks through SpecialK, falling back to compatibility mode
 [WARN] === LIMITED FUNCTIONALITY MODE ===
@@ -122,20 +125,25 @@ SK_ApplyQueuedHooks(); // Apply all hooks together
 ## Edge Cases Handled
 
 ### DirectX 12 on DirectX 11 Engine
+
 The system detects when Community Shaders uses DirectX 12 interop features on the DirectX 11 engine and can:
+
 - Attempt cooperation with additional validation
 - Fall back to limited functionality mode if conflicts arise
 - Provide specific warnings about mixed DirectX version scenarios
 
 ### Manual SpecialK Loading
+
 Works with SpecialK's manual loading feature where SpecialK is loaded explicitly rather than through injection.
 
 ### Proxy DLL Detection
+
 Detects SpecialK when it's loaded as a proxy DLL (dxgi.dll, d3d11.dll, dinput8.dll) rather than directly.
 
 ## Future Enhancements
 
 This framework also enables detection and potential cooperation with other graphics tools:
+
 - ReShade detection and warnings
 - ENB Series conflict detection
 - Other graphics enhancement tools

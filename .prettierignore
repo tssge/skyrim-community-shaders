@@ -3,3 +3,5 @@ extern/
 include/
 build/
 dist/
+# Ignore workflow files to prevent self-modification during CI
+.github/workflows/

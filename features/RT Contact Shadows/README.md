@@ -30,6 +30,7 @@ RT Contact Shadows uses the RT cores on modern GPUs to provide accurate contact 
 ## Technical Details
 
 The implementation uses:
+
 - DX12 raytracing pipeline with raygen, miss, and anyhit shaders
 - Scene acceleration structures (BLAS/TLAS) built from game geometry
 - Integration with existing G-buffer (depth, normals)
@@ -39,6 +40,7 @@ The implementation uses:
 ## Performance Notes
 
 RT Contact Shadows can be performance-intensive depending on:
+
 - Screen resolution
 - Scene complexity (geometry density)
 - Max distance and step count settings
