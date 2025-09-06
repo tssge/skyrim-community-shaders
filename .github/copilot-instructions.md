@@ -204,15 +204,27 @@ SKSE core plugin providing community-driven advanced graphics modifications for 
 ### Development Workflow
 
 1. Make code changes in `src/` or `features/`
-2. Run formatting: `clang-format -i [changed files]` -- takes < 5 seconds
+2. Run formatting: `clang-format -i [specific changed files only]` -- takes < 5 seconds
 3. Build: `.\BuildRelease.bat` -- takes 15-25 minutes. NEVER CANCEL. Set timeout to 60+ minutes.
 4. Test plugin loads in Skyrim (Windows game required)
 5. Run pre-commit: `pre-commit run --all-files` -- takes 30-60 seconds
 
+### Change Scope Management
+
+- **CRITICAL**: Keep changes focused on the specific issue or feature being implemented
+- **NEVER** make unrelated changes, formatting fixes, or refactoring outside the scope of your task
+- **NEVER** run broad formatting commands that affect multiple unrelated files
+- If you discover formatting issues in unrelated files, ignore them - they are not your responsibility to fix
+- Use `git status` and `git diff` frequently to ensure only intended files are modified
+- Each PR should have a clear, minimal scope focused on one specific issue or feature
+
 ### Code Style and Formatting
 
-- **ALWAYS** run `clang-format -i [files]` before committing
-- **ALWAYS** run `npx prettier --write .` for JSON/YAML files
+- **CRITICAL SCOPE RULE**: ONLY format files that are directly related to your changes. NEVER run formatting tools on the entire repository or unrelated files.
+- **ALWAYS** run `clang-format -i [specific changed files only]` before committing - specify exact file paths
+- **ALWAYS** run `npx prettier --write [specific files]` for JSON/YAML files you're modifying
+- **NEVER** run `clang-format -i src/` or broad directory formatting commands that affect unrelated files
+- **NEVER** run `npx prettier --write .` or similar broad commands that format the entire repository
 - Pre-commit hooks enforce formatting automatically
 - CI will fail if formatting is incorrect
 
