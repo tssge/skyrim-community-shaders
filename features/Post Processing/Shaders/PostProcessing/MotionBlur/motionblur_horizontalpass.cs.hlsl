@@ -1,6 +1,6 @@
 /**
  * Motion Blur - Horizontal Reduction Pass (Pass 1a of 3)
- *
+ * 
  * Performs horizontal reduction from [width x height] to [grid x height]
  * Each thread processes a horizontal strip of input pixels
  * First stage of the separable approach for maximum velocity calculation

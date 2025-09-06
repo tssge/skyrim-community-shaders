@@ -1,6 +1,6 @@
 /**
  * Motion Blur - Blur Pass (Pass 3 of 3)
- *
+ * 
  * Final pass that applies motion blur using neighborhood velocities
  * Uses depth-aware sampling to prevent foreground/background bleeding
  */
