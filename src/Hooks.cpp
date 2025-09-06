@@ -66,7 +66,7 @@ void DumpShader(const REX::BSShader* thisClass, const ShaderType* shader, const 
 		}
 	}
 
-	if (FILE* file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
+	if (FILE * file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
 		fwrite(dxbcData, 1, dxbcLen, file);
 		fclose(file);
 	}
@@ -1357,43 +1357,41 @@ namespace Hooks
 		// Attempt SpecialK cooperation first
 		if (compatibility->ShouldUseCooperativeHooks()) {
 			logger::info("Using SpecialK cooperation mode for DirectX hooks");
-			
+
 			const auto& skAPI = compatibility->GetSpecialKAPI();
-			
+
 			if (skAPI.available) {
 				// Install hooks through SpecialK's API
 				bool success = true;
-				
+
 				// Get function pointers to hook
 				LPVOID d3d11CreateTarget = GetProcAddress(GetModuleHandle(L"d3d11.dll"), "D3D11CreateDeviceAndSwapChain");
-				LPVOID dxgiCreateTarget = GetProcAddress(GetModuleHandle(L"dxgi.dll"), 
-														!REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1");
-				
+				LPVOID dxgiCreateTarget = GetProcAddress(GetModuleHandle(L"dxgi.dll"),
+					!REL::Module::IsVR() ? "CreateDXGIFactory" : "CreateDXGIFactory1");
+
 				if (d3d11CreateTarget) {
 					success &= compatibility->CreateHookThroughSpecialK(
 						L"D3D11CreateDeviceAndSwapChain",
 						d3d11CreateTarget,
 						hk_D3D11CreateDeviceAndSwapChain,
-						(LPVOID*)&ptrD3D11CreateDeviceAndSwapChain
-					);
+						(LPVOID*)&ptrD3D11CreateDeviceAndSwapChain);
 				}
-				
+
 				if (dxgiCreateTarget) {
 					success &= compatibility->CreateHookThroughSpecialK(
 						!REL::Module::IsVR() ? L"CreateDXGIFactory" : L"CreateDXGIFactory1",
 						dxgiCreateTarget,
 						hk_CreateDXGIFactory,
-						(LPVOID*)&ptrCreateDXGIFactory
-					);
+						(LPVOID*)&ptrCreateDXGIFactory);
 				}
-				
+
 				if (success) {
 					logger::info("Successfully installed DirectX hooks through SpecialK cooperation");
 					// Apply queued hooks if function is available
 					if (skAPI.ApplyQueuedHooks) {
 						skAPI.ApplyQueuedHooks();
 					}
-					
+
 					// Initialize FidelityFX - it will work through the cooperative hooks
 					globals::fidelityFX->LoadFFX();
 					return;
@@ -1406,10 +1404,10 @@ namespace Hooks
 		// Fallback: Check if we should skip direct hooks due to conflicts
 		if (compatibility->ShouldSkipDirectXHooks()) {
 			logger::info("Skipping DirectX hooks due to compatibility mode");
-			
+
 			// Load FidelityFX in limited mode without DirectX hooks
 			globals::fidelityFX->LoadFFX();
-			
+
 			// Show user notification about limited functionality
 			logger::warn("=== LIMITED FUNCTIONALITY MODE ===");
 			logger::warn("DirectX hooks disabled due to detected conflicts.");
