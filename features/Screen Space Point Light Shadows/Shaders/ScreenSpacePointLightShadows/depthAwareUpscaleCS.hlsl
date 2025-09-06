@@ -30,8 +30,7 @@ const float2 offsets[OFFSET_COUNT] = {
 	float2(0, 1)
 };
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
 	float2 texCoord = (dtid + 0.5) / float2(ResX, ResY);
 	float center_depth = texDepth.SampleLevel(linearSampler, texCoord, 0).x;
 	float4 shadow = 0;
