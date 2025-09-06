@@ -45,7 +45,7 @@ jobs:
                 if [ -n "$(git status --porcelain)" ]; then
                   git add .
                   git commit -m "style: 🎨 apply clang-format changes"
-                  git push
+                  git push origin ${{ github.head_ref }}
                 else
                   echo "No changes to commit"
                 fi
@@ -66,6 +66,10 @@ jobs:
               run: |
                 git config --local user.email "action@github.com"
                 git config --local user.name "GitHub Action"
+            - name: Fetch latest changes
+              run: git fetch origin ${{ github.head_ref }}
+            - name: Reset to latest HEAD to get any changes from format job
+              run: git reset --hard origin/${{ github.head_ref }}
             - name: Run Prettier
               run: npx prettier --write .
             - name: Check for changes and commit
@@ -73,7 +77,7 @@ jobs:
                 if [ -n "$(git status --porcelain)" ]; then
                   git add .
                   git commit -m "style: 🎨 apply Prettier formatting"
-                  git push
+                  git push origin ${{ github.head_ref }}
                 else
                   echo "No changes to commit"
                 fi
