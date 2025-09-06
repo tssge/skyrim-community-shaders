@@ -84,7 +84,8 @@ float2x2 getRotationMatrix(float noise)
 	return float2x2(sin_cos.x, sin_cos.y, -sin_cos.y, sin_cos.x);
 }
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid
+								: SV_DispatchThreadID) {
 	const float2 frameScale = FrameDim * RcpTexDim;
 
 	float radius = BlurRadius;

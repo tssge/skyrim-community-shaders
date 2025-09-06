@@ -455,13 +455,15 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	return fragment;
 }
 
-[numthreads(1, 1, 1)] void CS_UpdateFocus(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(1, 1, 1)] void CS_UpdateFocus(uint2 DTid
+										  : SV_DispatchThreadID) {
 	float depth = AutoFocus ? GetDepth(FocusCoord) : ManualFocusPlane;
 	float previousFocus = max(TexPreviousFocus.SampleLevel(DepthSampler, float2(0.5f, 0.5f), 0), EPSILON);
 	RWFocus[DTid] = lerp(previousFocus, depth, TransitionSpeed);
 }
 
-	[numthreads(8, 8, 1)] void CS_CalculateCoC(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_CalculateCoC(uint2 DTid
+											   : SV_DispatchThreadID)
 {
 	if (DTid.x >= (uint)Width || DTid.y >= (uint)Height)
 		return;
@@ -478,34 +480,40 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	// RWTexCoC[DTid] = GetDepth(uv);
 }
 
-[numthreads(8, 8, 1)] void CS_CoCTile1(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_CoCTile1(uint2 DTid
+									   : SV_DispatchThreadID) {
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
 	RWTexCoC[DTid] = PerformTileGatherHorizontal(uv);
 }
 
-	[numthreads(8, 8, 1)] void CS_CoCTile2(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_CoCTile2(uint2 DTid
+										   : SV_DispatchThreadID)
 {
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
 	RWTexCoC[DTid] = PerformTileGatherVertical(uv);
 }
 
-[numthreads(8, 8, 1)] void CS_CoCTileNeighbor(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_CoCTileNeighbor(uint2 DTid
+											  : SV_DispatchThreadID) {
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
 	RWTexCoC[DTid] = PerformNeighborTileGather(uv);
 }
 
-	[numthreads(8, 8, 1)] void CS_CoCGaussian1(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_CoCGaussian1(uint2 DTid
+											   : SV_DispatchThreadID)
 {
 	float2 uv = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
 	RWTexCoC[DTid] = PerformSingleValueGaussianBlur(TexCoCInput, DepthSampler, uv, float2(2.0f / Width, 0.0f), true);
 }
 
-[numthreads(8, 8, 1)] void CS_CoCGaussian2(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_CoCGaussian2(uint2 DTid
+										   : SV_DispatchThreadID) {
 	float2 uv = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
 	RWTexCoC[DTid] = PerformSingleValueGaussianBlur(TexCoCInput, DepthSampler, uv, float2(0.0f, 2.0f / Height), false);
 }
 
-	[numthreads(8, 8, 1)] void CS_Blur(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_Blur(uint2 DTid
+									   : SV_DispatchThreadID)
 {
 	DISCBLURINFO blurInfo;
 	blurInfo.texcoord = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
@@ -519,7 +527,8 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	RWTexOut[DTid] = color;
 }
 
-[numthreads(8, 8, 1)] void CS_FarBlur(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_FarBlur(uint2 DTid
+									  : SV_DispatchThreadID) {
 	DISCBLURINFO blurInfo;
 	blurInfo.texcoord = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
 	blurInfo.numberOfRings = round(BlurQuality);
@@ -531,7 +540,8 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	RWTexOut[DTid] = color;
 }
 
-	[numthreads(8, 8, 1)] void CS_NearBlur(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_NearBlur(uint2 DTid
+										   : SV_DispatchThreadID)
 {
 	DISCBLURINFO blurInfo;
 	blurInfo.texcoord = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
@@ -544,7 +554,8 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	RWTexOut[DTid] = color;
 }
 
-[numthreads(8, 8, 1)] void CS_TentFilter(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_TentFilter(uint2 DTid
+										 : SV_DispatchThreadID) {
 	float4 coord = (0.5f / float4(Width, Height, Width, Height)) * float4(1, 1, -1, 0);
 	float4 average;
 	float2 uv = 2.0f * (DTid.xy + 0.5f) / float2(Width, Height);
@@ -561,7 +572,8 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	RWTexOut[DTid] = average;
 }
 
-	[numthreads(8, 8, 1)] void CS_Combiner(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_Combiner(uint2 DTid
+										   : SV_DispatchThreadID)
 {
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
 	// first blend far plane with original buffer, then near plane on top of that.
@@ -582,13 +594,15 @@ float4 PerformFullFragmentGaussianBlur(Texture2D source, SamplerState samp, floa
 	RWTexOut[DTid] = color;
 }
 
-[numthreads(8, 8, 1)] void CS_PostSmoothing1(uint2 DTid : SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void CS_PostSmoothing1(uint2 DTid
+											 : SV_DispatchThreadID) {
 	float2 uv = (DTid.xy + 0.5f) / float2(Width, Height);
 
 	RWTexOut[DTid] = PerformFullFragmentGaussianBlur(TexColor, ImageSampler, uv, float2((1.0f / Width), 0.0));
 }
 
-	[numthreads(8, 8, 1)] void CS_PostSmoothing2AndFocusing(uint2 DTid : SV_DispatchThreadID)
+	[numthreads(8, 8, 1)] void CS_PostSmoothing2AndFocusing(uint2 DTid
+															: SV_DispatchThreadID)
 {
 	float2 texcoord = (DTid.xy + 0.5f) / float2(Width, Height);
 

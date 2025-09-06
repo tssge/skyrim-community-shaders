@@ -16,7 +16,8 @@ cbuffer blurBuffer : register(b1)
 
 #define BLUR_RADIUS 2
 
-[numthreads(4, 4, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
+[numthreads(4, 4, 1)] void main(const uint2 dtid
+								: SV_DispatchThreadID) {
 	if (MipLevel == 0) {
 		outBlurredDepth[dtid] = LinearDepth[dtid];
 		return;
