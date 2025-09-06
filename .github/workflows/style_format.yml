@@ -21,7 +21,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  ref: ${{ github.ref_name || github.head_ref }}
+                  ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
                   repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
                   fetch-depth: 2
             - name: Notice for manual workflow trigger
@@ -47,7 +47,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
               with:
-                  ref: ${{ github.ref_name || github.head_ref }}
+                  ref: ${{ github.event.pull_request.head.ref || github.head_ref }}
                   repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
                   fetch-depth: 2
             - name: Notice for manual workflow trigger
