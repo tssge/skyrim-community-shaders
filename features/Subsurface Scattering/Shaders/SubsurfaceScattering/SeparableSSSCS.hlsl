@@ -30,8 +30,7 @@ cbuffer PerFrameSSS : register(b1)
 #	include "SubsurfaceScattering/SeparableSSS.hlsli"
 #endif
 
-[numthreads(8, 8, 1)] void main(uint3 DTid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(uint3 DTid : SV_DispatchThreadID) {
 	float2 texCoord = (DTid.xy + 0.5) * SharedData::BufferDim.zw;
 	uint eyeIndex = Stereo::GetEyeIndexFromTexCoord(texCoord);
 

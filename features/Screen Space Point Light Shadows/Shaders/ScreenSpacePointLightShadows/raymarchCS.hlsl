@@ -54,8 +54,7 @@ int GetLevelStartMultipleScale(int mip_level)
 	return int((1 - pow(level_mult, mip_level)) / (1 - level_mult));
 }
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
 	float2 texCoord = (dtid + 0.5) / float2(ResX, ResY);
 
 	float depth = texDepth.SampleLevel(linearSampler, texCoord, MipLevel).x;
