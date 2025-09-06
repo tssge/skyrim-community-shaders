@@ -114,21 +114,23 @@ struct TransformInfo
 				},
 				{ f4{ 1.f, 1.f, 1.f, 0.f }, f4{ 0.f, 0.f, 0.f, 0.f }, f4{ 1.f, 1.f, 1.f, 1.f } } },
 
-			{ "PQ Encode"sv, "PerceptualQuantizerEncode"sv,
-				"Apply PQ curve encoding (HDR10)."sv,
-				[](CTP& params) {
-					shiftSlider("Scaling (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
-					shiftHint();
-				},
-				{ f4{ 10000.f, 0.f, 0.f, 0.f } } },
+            { "PQ Encode"sv, "PerceptualQuantizerEncode"sv,
+                "Apply PQ curve encoding (HDR10)."sv,
+                [](CTP& params) {
+                    shiftSlider("Scaling (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
+                    shiftHint();
+                },
+                { f4{ 10000.f, 0.f, 0.f, 0.f } }
+            },
 
-			{ "PQ Decode"sv, "PerceptualQuantizerDecode"sv,
-				"Convert from PQ curve back to linear (HDR10)."sv,
-				[](CTP& params) {
-					shiftSlider("Input Peak (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
-					shiftHint();
-				},
-				{ f4{ 10000.f, 0.f, 0.f, 0.f } } },
+            { "PQ Decode"sv, "PerceptualQuantizerDecode"sv,
+                "Convert from PQ curve back to linear (HDR10)."sv,
+                [](CTP& params) {
+                    shiftSlider("Input Peak (nits)", &params[0].x, 200.f, 10000.f, "%.1f");
+                    shiftHint();
+                },
+                { f4{ 10000.f, 0.f, 0.f, 0.f } }
+            },
 
 			{ "Exposure/Constrast"sv, "ExposureContrast"sv,
 				"Basic exposure and contrast adjustment in linear space. "sv,
