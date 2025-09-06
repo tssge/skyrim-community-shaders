@@ -19,8 +19,7 @@ cbuffer blurBuffer : register(b1)
 
 #define UNIT_TO_M_SCALED (0.01428f / Scale)
 
-[numthreads(8, 8, 1)] void main(const uint2 dtid
-								: SV_DispatchThreadID) {
+[numthreads(8, 8, 1)] void main(const uint2 dtid : SV_DispatchThreadID) {
 	float linearDepth = 0;
 	float linearSquared = 0;
 	float2 texCoord = (dtid + 0.5) / float2(ResX, ResY);

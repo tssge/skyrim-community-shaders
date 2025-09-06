@@ -106,14 +106,10 @@ float3 GetHDRNeighborhoodBounds(float2 uv, out float3 minColor, out float3 maxCo
 }
 
 void main(
-	float4 position
-	: SV_POSITION0,
-	float2 texCoord
-	: TEXCOORD0,
-	out float4 outColor
-	: SV_Target0,
-	out float4 outHistory
-	: SV_Target1)
+	float4 position : SV_POSITION0,
+	float2 texCoord : TEXCOORD0,
+	out float4 outColor : SV_Target0,
+	out float4 outHistory : SV_Target1)
 {
 	float3 debugInfo;
 	float3 minColor, maxColor;

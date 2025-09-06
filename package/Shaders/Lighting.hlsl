@@ -1050,7 +1050,7 @@ float GetSnowParameterY(float texProjTmp, float alpha)
 
 #	if defined(TERRAIN_VARIATION)
 #		include "TerrainVariation/TerrainVariation.hlsli"
-#   endif
+#	endif
 
 #	if defined(SSPLS)
 #		include "ScreenSpacePointLightShadows/SSPLS.hlsli"
