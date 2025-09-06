@@ -423,10 +423,25 @@ void RTContactShadows::DispatchRays()
 	rayDispatchDesc.Height = texDesc.Height;
 	rayDispatchDesc.Depth = 1;
 
-	// TODO: Set up shader table addresses
-	// rayDispatchDesc.RayGenerationShaderRecord.StartAddress = ...
-	// rayDispatchDesc.MissShaderTable.StartAddress = ...
-	// rayDispatchDesc.HitGroupTable.StartAddress = ...
+	// Set up shader table addresses based on layout from CreateShaderTable
+	if (shaderTable) {
+		D3D12_GPU_VIRTUAL_ADDRESS shaderTableAddress = shaderTable->GetGPUVirtualAddress();
+		const uint32_t shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+
+		// RayGen shader record (first entry in shader table)
+		rayDispatchDesc.RayGenerationShaderRecord.StartAddress = shaderTableAddress;
+		rayDispatchDesc.RayGenerationShaderRecord.SizeInBytes = shaderIdentifierSize;
+
+		// Miss shader table (second entry in shader table)
+		rayDispatchDesc.MissShaderTable.StartAddress = shaderTableAddress + shaderIdentifierSize;
+		rayDispatchDesc.MissShaderTable.SizeInBytes = shaderIdentifierSize;
+		rayDispatchDesc.MissShaderTable.StrideInBytes = shaderIdentifierSize;
+
+		// Hit group table (third entry in shader table)
+		rayDispatchDesc.HitGroupTable.StartAddress = shaderTableAddress + (shaderIdentifierSize * 2);
+		rayDispatchDesc.HitGroupTable.SizeInBytes = shaderIdentifierSize;
+		rayDispatchDesc.HitGroupTable.StrideInBytes = shaderIdentifierSize;
+	}
 
 	// Set pipeline state and dispatch
 	// d3d12CommandList->SetPipelineState1(rtPipelineState.get());
