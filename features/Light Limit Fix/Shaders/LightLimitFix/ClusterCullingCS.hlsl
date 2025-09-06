@@ -26,7 +26,11 @@ bool LightIntersectsCluster(float3 position, float radius, ClusterAABB cluster)
 }
 
 [numthreads(NUMTHREAD_X, NUMTHREAD_Y, NUMTHREAD_Z)] void main(
-	uint3 groupId : SV_GroupID, uint3 dispatchThreadId : SV_DispatchThreadID, uint3 groupThreadId : SV_GroupThreadID, uint groupIndex : SV_GroupIndex) {
+	uint3 groupId
+	: SV_GroupID, uint3 dispatchThreadId
+	: SV_DispatchThreadID, uint3 groupThreadId
+	: SV_GroupThreadID, uint groupIndex
+	: SV_GroupIndex) {
 	if (any(dispatchThreadId >= uint3(CLUSTER_BUILDING_DISPATCH_SIZE_X, CLUSTER_BUILDING_DISPATCH_SIZE_Y, CLUSTER_BUILDING_DISPATCH_SIZE_Z)))
 		return;
 
