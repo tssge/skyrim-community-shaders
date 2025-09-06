@@ -1,0 +1,133 @@
+{
+  "version": "1.0.0",
+  "description": "Advanced exposure and color grading transforms",
+  "transforms": [
+    {
+      "name": "Exposure/Constrast",
+      "func_name": "ExposureContrast",
+      "description": "Basic exposure and contrast adjustment in linear space.",
+      "ui_type": "exposure_contrast",
+      "ui_params": {
+        "exposure_channels": 3,
+        "contrast_param": [1, 0],
+        "pivot_param": [2, 0],
+        "show_shift_hint": true
+      },
+      "default_settings": [
+        [1.0, 1.0, 1.0, 0.0],
+        [1.0, 1.0, 1.0, 0.0],
+        [0.5, 0.5, 0.5, 0.5]
+      ]
+    },
+    {
+      "name": "ASC CDL",
+      "func_name": "ASC_CDL",
+      "description": "ASC Color Decision List.\\nout = clamp( (in * slope) + offset ) ^ power",
+      "ui_type": "shift_slider_pairs",
+      "ui_params": {
+        "sliders": [
+          {
+            "label": "Slope",
+            "param_path": [0, 0],
+            "min": 0.0,
+            "max": 2.0,
+            "format": "%.2f"
+          },
+          {
+            "label": "Power",
+            "param_path": [1, 0],
+            "min": 0.0,
+            "max": 2.0,
+            "format": "%.2f"
+          },
+          {
+            "label": "Offset",
+            "param_path": [2, 0],
+            "min": -1.0,
+            "max": 1.0,
+            "format": "%.2f"
+          }
+        ],
+        "show_shift_hint": true
+      },
+      "default_settings": [
+        [1.0, 1.0, 1.0, 0.0],
+        [1.0, 1.0, 1.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0]
+      ]
+    },
+    {
+      "name": "Lift Gamma Gain",
+      "func_name": "LiftGammaGain",
+      "description": "Basic lift gamma gain control (Luma+RGB) like Davinci Resolve, affecting dark tones/midtones/highlights respectively. Expects inputs between [0, 1].",
+      "ui_type": "lift_gamma_gain",
+      "ui_params": {},
+      "default_settings": [
+        [0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0],
+        [1.0, 1.0, 1.0, 1.0]
+      ]
+    },
+    {
+      "name": "Saturation/Hue",
+      "func_name": "SaturationHue",
+      "description": "Adjust saturation and hue shift. Expects linear RGB inputs.",
+      "ui_type": "simple_sliders",
+      "ui_params": {
+        "sliders": [
+          {
+            "label": "Saturation",
+            "param_path": [0, 0],
+            "min": 0.0,
+            "max": 3.0,
+            "format": "%.3f"
+          },
+          {
+            "label": "Hue Shift",
+            "param_path": [0, 1],
+            "min": -1.0,
+            "max": 1.0,
+            "format": "%.3f"
+          }
+        ]
+      },
+      "default_settings": [
+        [1.0, 0.0, 0.0, 0.0]
+      ]
+    },
+    {
+      "name": "OKLCH Saturation", 
+      "func_name": "OklchSaturation",
+      "description": "Adjust saturation and hue shift in the perceptually uniform OKLCH space. Expects LDR linear RGB inputs.",
+      "ui_type": "simple_sliders",
+      "ui_params": {
+        "sliders": [
+          {
+            "label": "Saturation",
+            "param_path": [0, 0],
+            "min": 0.0,
+            "max": 2.0,
+            "format": "%.3f"
+          },
+          {
+            "label": "Vibrance",
+            "param_path": [0, 1],
+            "min": 0.0,
+            "max": 3.0,
+            "format": "%.3f"
+          },
+          {
+            "label": "Hue Shift",
+            "param_path": [0, 2],
+            "min": -1.0,
+            "max": 1.0,
+            "format": "%.3f"
+          }
+        ]
+      },
+      "default_settings": [
+        [1.0, 1.0, 0.0, 0.0]
+      ]
+    }
+  ]
+}
