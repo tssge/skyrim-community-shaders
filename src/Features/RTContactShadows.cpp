@@ -358,8 +358,43 @@ void RTContactShadows::CreateShaderTable()
 		return;
 	}
 
-	// TODO: Map buffer and copy shader identifiers
-	// This would use ID3D12StateObjectProperties to get shader identifiers
+	// Get shader identifiers from the pipeline state
+	winrt::com_ptr<ID3D12StateObjectProperties> pipelineProperties;
+	HRESULT hr = rtPipelineState->QueryInterface(IID_PPV_ARGS(&pipelineProperties));
+	if (FAILED(hr)) {
+		logger::error("Failed to query pipeline state properties for shader identifiers");
+		return;
+	}
+
+	// Get shader identifiers for each shader type
+	// Note: These shader names must match the entry points in ContactShadowsRT.hlsl
+	void* rayGenIdentifier = pipelineProperties->GetShaderIdentifier(L"ContactShadowRayGen");
+	void* missIdentifier = pipelineProperties->GetShaderIdentifier(L"ContactShadowMiss");
+	void* anyHitIdentifier = pipelineProperties->GetShaderIdentifier(L"ContactShadowAnyHit");
+
+	if (!rayGenIdentifier || !missIdentifier || !anyHitIdentifier) {
+		logger::error("Failed to get shader identifiers from pipeline state");
+		return;
+	}
+
+	// Map the shader table buffer and copy shader identifiers
+	uint8_t* mappedData = nullptr;
+	hr = shaderTable->Map(0, nullptr, reinterpret_cast<void**>(&mappedData));
+	if (FAILED(hr)) {
+		logger::error("Failed to map shader table buffer");
+		return;
+	}
+
+	// Copy shader identifiers to the mapped buffer
+	// Layout: [RayGen][Miss][AnyHit] - each entry is D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES
+	memcpy(mappedData, rayGenIdentifier, shaderIdentifierSize);
+	memcpy(mappedData + shaderIdentifierSize, missIdentifier, shaderIdentifierSize);
+	memcpy(mappedData + (shaderIdentifierSize * 2), anyHitIdentifier, shaderIdentifierSize);
+
+	// Unmap the buffer
+	shaderTable->Unmap(0, nullptr);
+
+	logger::info("RT Contact Shadows: Shader table created with {} shader identifiers", 3);
 }
 
 void RTContactShadows::ClearShaderCache()
@@ -423,10 +458,23 @@ void RTContactShadows::DispatchRays()
 	rayDispatchDesc.Height = texDesc.Height;
 	rayDispatchDesc.Depth = 1;
 
-	// TODO: Set up shader table addresses
-	// rayDispatchDesc.RayGenerationShaderRecord.StartAddress = ...
-	// rayDispatchDesc.MissShaderTable.StartAddress = ...
-	// rayDispatchDesc.HitGroupTable.StartAddress = ...
+	// Set up shader table addresses
+	const uint32_t shaderIdentifierSize = D3D12_SHADER_IDENTIFIER_SIZE_IN_BYTES;
+	D3D12_GPU_VIRTUAL_ADDRESS shaderTableAddress = shaderTable->GetGPUVirtualAddress();
+
+	// Ray generation shader record (first entry in shader table)
+	rayDispatchDesc.RayGenerationShaderRecord.StartAddress = shaderTableAddress;
+	rayDispatchDesc.RayGenerationShaderRecord.SizeInBytes = shaderIdentifierSize;
+
+	// Miss shader table (second entry in shader table)
+	rayDispatchDesc.MissShaderTable.StartAddress = shaderTableAddress + shaderIdentifierSize;
+	rayDispatchDesc.MissShaderTable.SizeInBytes = shaderIdentifierSize;
+	rayDispatchDesc.MissShaderTable.StrideInBytes = shaderIdentifierSize;
+
+	// Hit group table (third entry in shader table)
+	rayDispatchDesc.HitGroupTable.StartAddress = shaderTableAddress + (shaderIdentifierSize * 2);
+	rayDispatchDesc.HitGroupTable.SizeInBytes = shaderIdentifierSize;
+	rayDispatchDesc.HitGroupTable.StrideInBytes = shaderIdentifierSize;
 
 	// Set pipeline state and dispatch
 	// d3d12CommandList->SetPipelineState1(rtPipelineState.get());
