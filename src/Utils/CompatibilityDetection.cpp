@@ -153,18 +153,24 @@ namespace Compatibility
 
 		if (specialK_API.CreateFuncHook(functionName, target, detour, original)) {
 			if (specialK_API.EnableHook(target)) {
-				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+				std::string functionNameStr(size - 1, '\0');
+				WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 				logger::info("Successfully created hook through SpecialK: {}", functionNameStr);
 				return true;
 			} else {
-				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+				std::string functionNameStr(size - 1, '\0');
+				WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 				logger::warn("Failed to enable hook through SpecialK: {}", functionNameStr);
 				if (specialK_API.RemoveHook) {
 					specialK_API.RemoveHook(target);
 				}
 			}
 		} else {
-			std::string functionNameStr(functionName, functionName + wcslen(functionName));
+			int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+			std::string functionNameStr(size - 1, '\0');
+			WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 			logger::warn("Failed to create hook through SpecialK: {}", functionNameStr);
 		}
 

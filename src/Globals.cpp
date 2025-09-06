@@ -87,6 +87,8 @@ namespace globals
 		WetnessEffects* wetnessEffects = nullptr;
 		Skin* skin = nullptr;
 		PostProcessing* postProcessing = nullptr;
+		WeatherPicker* weatherPicker = nullptr;
+		PerformanceOverlay* performanceOverlay = nullptr;
 
 		namespace llf
 		{

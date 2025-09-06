@@ -88,6 +88,8 @@ namespace globals
 		extern WetnessEffects* wetnessEffects;
 		extern PostProcessing* postProcessing;
 		extern Skin* skin;
+		extern WeatherPicker* weatherPicker;
+		extern PerformanceOverlay* performanceOverlay;
 
 		namespace llf
 		{
