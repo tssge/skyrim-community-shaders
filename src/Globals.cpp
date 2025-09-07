@@ -62,6 +62,7 @@ namespace globals
 		CloudShadows* cloudShadows = nullptr;
 		DynamicCubemaps* dynamicCubemaps = nullptr;
 		ExtendedMaterials* extendedMaterials = nullptr;
+		ExtendedTranslucency* extendedTranslucency = nullptr;
 		GrassCollision* grassCollision = nullptr;
 		GrassLighting* grassLighting = nullptr;
 		IBL* ibl = nullptr;
@@ -164,6 +165,7 @@ namespace globals
 		features::cloudShadows = CloudShadows::GetSingleton();
 		features::dynamicCubemaps = DynamicCubemaps::GetSingleton();
 		features::extendedMaterials = ExtendedMaterials::GetSingleton();
+		features::extendedTranslucency = ExtendedTranslucency::GetSingleton();
 		features::grassCollision = GrassCollision::GetSingleton();
 		features::grassLighting = GrassLighting::GetSingleton();
 		features::hairSpecular = HairSpecular::GetSingleton();

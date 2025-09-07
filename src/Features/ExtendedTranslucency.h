@@ -7,6 +7,12 @@ struct ExtendedTranslucency final : Feature
 {
 	static constexpr std::string_view MOD_ID = "150755"sv;
 
+	static ExtendedTranslucency* GetSingleton()
+	{
+		static ExtendedTranslucency singleton;
+		return &singleton;
+	}
+
 	virtual inline std::string GetName() override { return "Extended Translucency"; }
 	virtual inline std::string GetShortName() override { return "ExtendedTranslucency"; }
 	virtual inline std::string GetFeatureModLink() override { return MakeNexusModURL(MOD_ID); }

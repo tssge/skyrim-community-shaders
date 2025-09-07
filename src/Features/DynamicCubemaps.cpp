@@ -280,8 +280,8 @@ RE::BSEventNotifyControl MenuOpenCloseEventHandler::ProcessEvent(const RE::MenuO
 	if (a_event->menuName == RE::LoadingMenu::MENU_NAME) {
 		if (!a_event->opening) {
 			auto& dynamicCubemaps = globals::features::dynamicCubemaps;
-			dynamicCubemaps.resetCapture[0] = true;
-			dynamicCubemaps.resetCapture[1] = true;
+			dynamicCubemaps->resetCapture[0] = true;
+			dynamicCubemaps->resetCapture[1] = true;
 		}
 	}
 	return RE::BSEventNotifyControl::kContinue;

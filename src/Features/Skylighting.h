@@ -6,6 +6,12 @@ private:
 	static constexpr std::string_view MOD_ID = "139352";
 
 public:
+	static Skylighting* GetSingleton()
+	{
+		static Skylighting singleton;
+		return &singleton;
+	}
+
 	virtual bool SupportsVR() override { return true; };
 
 	virtual inline std::string GetName() override { return "Skylighting"; }

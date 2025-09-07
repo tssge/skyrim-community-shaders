@@ -237,7 +237,7 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		// Helper function to build VR feature list
 		static auto BuildVRList = []() -> std::vector<Feature*> {
 			auto v = features;
-			v.push_back(&globals::features::vr);
+			v.push_back(globals::features::vr);
 
 			// In developer mode, keep all features for testing
 			// In production mode, filter to VR-compatible only

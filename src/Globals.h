@@ -63,6 +63,7 @@ namespace globals
 		extern CloudShadows* cloudShadows;
 		extern DynamicCubemaps* dynamicCubemaps;
 		extern ExtendedMaterials* extendedMaterials;
+		extern ExtendedTranslucency* extendedTranslucency;
 		extern GrassCollision* grassCollision;
 		extern GrassLighting* grassLighting;
 		extern HairSpecular* hairSpecular;

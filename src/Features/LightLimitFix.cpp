@@ -322,8 +322,8 @@ void LightLimitFix::BSLightingShader_SetupGeometry_GeometrySetupConstantPointLig
 		light.color = { runtimeData.diffuse.red, runtimeData.diffuse.green, runtimeData.diffuse.blue };
 		light.lightFlags = std::bit_cast<LightFlags>(runtimeData.ambient.red);
 
-		if (isl.loaded) {
-			isl.ProcessLight(light, bsLight, niLight);
+		if (isl->loaded) {
+			isl->ProcessLight(light, bsLight, niLight);
 		} else {
 			light.radius = runtimeData.radius.x;
 			light.color *= runtimeData.fade;
@@ -789,8 +789,8 @@ void LightLimitFix::UpdateLights()
 					light.color = { runtimeData.diffuse.red, runtimeData.diffuse.green, runtimeData.diffuse.blue };
 					light.lightFlags = std::bit_cast<LightFlags>(runtimeData.ambient.red);
 
-					if (isl.loaded) {
-						isl.ProcessLight(light, bsLight, niLight);
+					if (isl->loaded) {
+						isl->ProcessLight(light, bsLight, niLight);
 					} else {
 						light.radius = runtimeData.radius.x;
 						light.color *= runtimeData.fade;
