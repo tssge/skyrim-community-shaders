@@ -6,6 +6,7 @@ struct ExtendedMaterials;
 struct GrassCollision;
 struct GrassLighting;
 struct HairSpecular;
+struct HDR;
 struct IBL;
 struct LightLimitFix;
 struct LODBlending;
@@ -61,6 +62,7 @@ namespace globals
 		extern GrassCollision grassCollision;
 		extern GrassLighting grassLighting;
 		extern HairSpecular hairSpecular;
+		extern HDR hdr;
 		extern IBL ibl;
 		extern LightLimitFix lightLimitFix;
 		extern LODBlending lodBlending;

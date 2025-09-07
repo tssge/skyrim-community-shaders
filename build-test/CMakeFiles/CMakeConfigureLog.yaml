@@ -1,0 +1,2414 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+      - "/bin/"
+    searched_directories:
+      - "/home/tssge/.cargo/bin/uname"
+      - "/home/tssge/.local/bin/uname"
+      - "/usr/local/sbin/uname"
+      - "/usr/local/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      The system is: Linux - 6.16.4-2-cachyos - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/home/tssge/.cargo/bin/gmake"
+      - "/home/tssge/.local/bin/gmake"
+      - "/usr/local/sbin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/opt/android-sdk/emulator/gmake"
+      - "/opt/android-sdk/platform-tools/gmake"
+      - "/opt/android-sdk/tools/gmake"
+      - "/opt/android-sdk/tools/bin/gmake"
+      - "/Applications/gmake"
+      - "/opt/cuda/bin/gmake"
+      - "/opt/cuda/nsight_compute/gmake"
+      - "/opt/cuda/nsight_systems/bin/gmake"
+      - "/var/lib/flatpak/exports/bin/gmake"
+      - "/usr/lib/jvm/default/bin/gmake"
+      - "/usr/bin/site_perl/gmake"
+      - "/usr/bin/vendor_perl/gmake"
+      - "/usr/bin/core_perl/gmake"
+      - "/usr/lib/rustup/bin/gmake"
+      - "/var/lib/snapd/snap/bin/gmake"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gmake"
+      - "/home/tssge/.cargo/bin/make"
+      - "/home/tssge/.local/bin/make"
+      - "/usr/local/sbin/make"
+      - "/usr/local/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:69 (_cmake_find_compiler)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER"
+    description: "CXX compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "c++"
+      - "CC"
+      - "g++"
+      - "aCC"
+      - "cl"
+      - "bcc"
+      - "xlC"
+      - "icpx"
+      - "icx"
+      - "clang++"
+    candidate_directories:
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/home/tssge/.cargo/bin/c++"
+      - "/home/tssge/.local/bin/c++"
+      - "/usr/local/sbin/c++"
+      - "/usr/local/bin/c++"
+    found: "/usr/bin/c++"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "/usr/share/cmake/Modules/"
+    found: "/usr/share/cmake/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler: /usr/bin/c++ 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+      
+      The CXX compiler identification is GNU, found in:
+        /home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/4.1.1/CompilerIdCXX/a.out
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/objcopy"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/readelf"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/home/tssge/.cargo/bin/dlltool"
+      - "/home/tssge/.local/bin/dlltool"
+      - "/usr/local/sbin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/opt/android-sdk/emulator/dlltool"
+      - "/opt/android-sdk/platform-tools/dlltool"
+      - "/opt/android-sdk/tools/dlltool"
+      - "/opt/android-sdk/tools/bin/dlltool"
+      - "/Applications/dlltool"
+      - "/opt/cuda/bin/dlltool"
+      - "/opt/cuda/nsight_compute/dlltool"
+      - "/opt/cuda/nsight_systems/bin/dlltool"
+      - "/var/lib/flatpak/exports/bin/dlltool"
+      - "/usr/lib/jvm/default/bin/dlltool"
+      - "/usr/bin/site_perl/dlltool"
+      - "/usr/bin/vendor_perl/dlltool"
+      - "/usr/bin/core_perl/dlltool"
+      - "/usr/lib/rustup/bin/dlltool"
+      - "/var/lib/snapd/snap/bin/dlltool"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    found: "/usr/bin/addr2line"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindBinUtils.cmake:238 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/home/tssge/.cargo/bin/tapi"
+      - "/home/tssge/.local/bin/tapi"
+      - "/usr/local/sbin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/opt/android-sdk/emulator/tapi"
+      - "/opt/android-sdk/platform-tools/tapi"
+      - "/opt/android-sdk/tools/tapi"
+      - "/opt/android-sdk/tools/bin/tapi"
+      - "/Applications/tapi"
+      - "/opt/cuda/bin/tapi"
+      - "/opt/cuda/nsight_compute/tapi"
+      - "/opt/cuda/nsight_systems/bin/tapi"
+      - "/var/lib/flatpak/exports/bin/tapi"
+      - "/usr/lib/jvm/default/bin/tapi"
+      - "/usr/bin/site_perl/tapi"
+      - "/usr/bin/vendor_perl/tapi"
+      - "/usr/bin/core_perl/tapi"
+      - "/usr/lib/rustup/bin/tapi"
+      - "/var/lib/snapd/snap/bin/tapi"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake:18 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_AR"
+    description: "A wrapper around 'ar' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ar-15.2"
+      - "gcc-ar-15"
+      - "gcc-ar15"
+      - "gcc-ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ar-15.2"
+      - "/home/tssge/.cargo/bin/gcc-ar-15.2"
+      - "/home/tssge/.local/bin/gcc-ar-15.2"
+      - "/usr/local/sbin/gcc-ar-15.2"
+      - "/usr/local/bin/gcc-ar-15.2"
+      - "/opt/android-sdk/emulator/gcc-ar-15.2"
+      - "/opt/android-sdk/platform-tools/gcc-ar-15.2"
+      - "/opt/android-sdk/tools/gcc-ar-15.2"
+      - "/opt/android-sdk/tools/bin/gcc-ar-15.2"
+      - "/Applications/gcc-ar-15.2"
+      - "/opt/cuda/bin/gcc-ar-15.2"
+      - "/opt/cuda/nsight_compute/gcc-ar-15.2"
+      - "/opt/cuda/nsight_systems/bin/gcc-ar-15.2"
+      - "/var/lib/flatpak/exports/bin/gcc-ar-15.2"
+      - "/usr/lib/jvm/default/bin/gcc-ar-15.2"
+      - "/usr/bin/site_perl/gcc-ar-15.2"
+      - "/usr/bin/vendor_perl/gcc-ar-15.2"
+      - "/usr/bin/core_perl/gcc-ar-15.2"
+      - "/usr/lib/rustup/bin/gcc-ar-15.2"
+      - "/var/lib/snapd/snap/bin/gcc-ar-15.2"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ar-15.2"
+      - "/usr/bin/gcc-ar-15"
+      - "/home/tssge/.cargo/bin/gcc-ar-15"
+      - "/home/tssge/.local/bin/gcc-ar-15"
+      - "/usr/local/sbin/gcc-ar-15"
+      - "/usr/local/bin/gcc-ar-15"
+      - "/opt/android-sdk/emulator/gcc-ar-15"
+      - "/opt/android-sdk/platform-tools/gcc-ar-15"
+      - "/opt/android-sdk/tools/gcc-ar-15"
+      - "/opt/android-sdk/tools/bin/gcc-ar-15"
+      - "/Applications/gcc-ar-15"
+      - "/opt/cuda/bin/gcc-ar-15"
+      - "/opt/cuda/nsight_compute/gcc-ar-15"
+      - "/opt/cuda/nsight_systems/bin/gcc-ar-15"
+      - "/var/lib/flatpak/exports/bin/gcc-ar-15"
+      - "/usr/lib/jvm/default/bin/gcc-ar-15"
+      - "/usr/bin/site_perl/gcc-ar-15"
+      - "/usr/bin/vendor_perl/gcc-ar-15"
+      - "/usr/bin/core_perl/gcc-ar-15"
+      - "/usr/lib/rustup/bin/gcc-ar-15"
+      - "/var/lib/snapd/snap/bin/gcc-ar-15"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ar-15"
+      - "/usr/bin/gcc-ar15"
+      - "/home/tssge/.cargo/bin/gcc-ar15"
+      - "/home/tssge/.local/bin/gcc-ar15"
+      - "/usr/local/sbin/gcc-ar15"
+      - "/usr/local/bin/gcc-ar15"
+      - "/opt/android-sdk/emulator/gcc-ar15"
+      - "/opt/android-sdk/platform-tools/gcc-ar15"
+      - "/opt/android-sdk/tools/gcc-ar15"
+      - "/opt/android-sdk/tools/bin/gcc-ar15"
+      - "/Applications/gcc-ar15"
+      - "/opt/cuda/bin/gcc-ar15"
+      - "/opt/cuda/nsight_compute/gcc-ar15"
+      - "/opt/cuda/nsight_systems/bin/gcc-ar15"
+      - "/var/lib/flatpak/exports/bin/gcc-ar15"
+      - "/usr/lib/jvm/default/bin/gcc-ar15"
+      - "/usr/bin/site_perl/gcc-ar15"
+      - "/usr/bin/vendor_perl/gcc-ar15"
+      - "/usr/bin/core_perl/gcc-ar15"
+      - "/usr/lib/rustup/bin/gcc-ar15"
+      - "/var/lib/snapd/snap/bin/gcc-ar15"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ar15"
+    found: "/usr/bin/gcc-ar"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake:30 (find_program)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake:207 (include)"
+      - "CMakeLists.txt:3 (project)"
+    mode: "program"
+    variable: "CMAKE_CXX_COMPILER_RANLIB"
+    description: "A wrapper around 'ranlib' adding the appropriate '--plugin' option for the GCC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gcc-ranlib-15.2"
+      - "gcc-ranlib-15"
+      - "gcc-ranlib15"
+      - "gcc-ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+    searched_directories:
+      - "/usr/bin/gcc-ranlib-15.2"
+      - "/home/tssge/.cargo/bin/gcc-ranlib-15.2"
+      - "/home/tssge/.local/bin/gcc-ranlib-15.2"
+      - "/usr/local/sbin/gcc-ranlib-15.2"
+      - "/usr/local/bin/gcc-ranlib-15.2"
+      - "/opt/android-sdk/emulator/gcc-ranlib-15.2"
+      - "/opt/android-sdk/platform-tools/gcc-ranlib-15.2"
+      - "/opt/android-sdk/tools/gcc-ranlib-15.2"
+      - "/opt/android-sdk/tools/bin/gcc-ranlib-15.2"
+      - "/Applications/gcc-ranlib-15.2"
+      - "/opt/cuda/bin/gcc-ranlib-15.2"
+      - "/opt/cuda/nsight_compute/gcc-ranlib-15.2"
+      - "/opt/cuda/nsight_systems/bin/gcc-ranlib-15.2"
+      - "/var/lib/flatpak/exports/bin/gcc-ranlib-15.2"
+      - "/usr/lib/jvm/default/bin/gcc-ranlib-15.2"
+      - "/usr/bin/site_perl/gcc-ranlib-15.2"
+      - "/usr/bin/vendor_perl/gcc-ranlib-15.2"
+      - "/usr/bin/core_perl/gcc-ranlib-15.2"
+      - "/usr/lib/rustup/bin/gcc-ranlib-15.2"
+      - "/var/lib/snapd/snap/bin/gcc-ranlib-15.2"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-15.2"
+      - "/usr/bin/gcc-ranlib-15"
+      - "/home/tssge/.cargo/bin/gcc-ranlib-15"
+      - "/home/tssge/.local/bin/gcc-ranlib-15"
+      - "/usr/local/sbin/gcc-ranlib-15"
+      - "/usr/local/bin/gcc-ranlib-15"
+      - "/opt/android-sdk/emulator/gcc-ranlib-15"
+      - "/opt/android-sdk/platform-tools/gcc-ranlib-15"
+      - "/opt/android-sdk/tools/gcc-ranlib-15"
+      - "/opt/android-sdk/tools/bin/gcc-ranlib-15"
+      - "/Applications/gcc-ranlib-15"
+      - "/opt/cuda/bin/gcc-ranlib-15"
+      - "/opt/cuda/nsight_compute/gcc-ranlib-15"
+      - "/opt/cuda/nsight_systems/bin/gcc-ranlib-15"
+      - "/var/lib/flatpak/exports/bin/gcc-ranlib-15"
+      - "/usr/lib/jvm/default/bin/gcc-ranlib-15"
+      - "/usr/bin/site_perl/gcc-ranlib-15"
+      - "/usr/bin/vendor_perl/gcc-ranlib-15"
+      - "/usr/bin/core_perl/gcc-ranlib-15"
+      - "/usr/lib/rustup/bin/gcc-ranlib-15"
+      - "/var/lib/snapd/snap/bin/gcc-ranlib-15"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib-15"
+      - "/usr/bin/gcc-ranlib15"
+      - "/home/tssge/.cargo/bin/gcc-ranlib15"
+      - "/home/tssge/.local/bin/gcc-ranlib15"
+      - "/usr/local/sbin/gcc-ranlib15"
+      - "/usr/local/bin/gcc-ranlib15"
+      - "/opt/android-sdk/emulator/gcc-ranlib15"
+      - "/opt/android-sdk/platform-tools/gcc-ranlib15"
+      - "/opt/android-sdk/tools/gcc-ranlib15"
+      - "/opt/android-sdk/tools/bin/gcc-ranlib15"
+      - "/Applications/gcc-ranlib15"
+      - "/opt/cuda/bin/gcc-ranlib15"
+      - "/opt/cuda/nsight_compute/gcc-ranlib15"
+      - "/opt/cuda/nsight_systems/bin/gcc-ranlib15"
+      - "/var/lib/flatpak/exports/bin/gcc-ranlib15"
+      - "/usr/lib/jvm/default/bin/gcc-ranlib15"
+      - "/usr/bin/site_perl/gcc-ranlib15"
+      - "/usr/bin/vendor_perl/gcc-ranlib15"
+      - "/usr/bin/core_perl/gcc-ranlib15"
+      - "/usr/lib/rustup/bin/gcc-ranlib15"
+      - "/var/lib/snapd/snap/bin/gcc-ranlib15"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/gcc-ranlib15"
+    found: "/usr/bin/gcc-ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c"
+      binary: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f6b11/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_f6b11.dir/build.make CMakeFiles/cmTC_f6b11.dir/build
+        make[1]: Entering directory '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c'
+        Building CXX object CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o
+        /usr/bin/c++   -v -o CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        Target: x86_64-pc-linux-gnu
+        Configured with: /tmp/pkg/src/gcc/configure --enable-languages=ada,c,c++,d,fortran,go,lto,m2,objc,obj-c++,rust,cobol --enable-bootstrap --prefix=/usr --libdir=/usr/lib --libexecdir=/usr/lib --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://github.com/CachyOS/CachyOS-PKGBUILDS/issues --with-build-config=bootstrap-lto --with-linker-hash-style=gnu --with-system-zlib --enable-__cxa_atexit --enable-cet=auto --enable-checking=release --enable-clocale=gnu --enable-default-pie --enable-default-ssp --enable-gnu-indirect-function --enable-gnu-unique-object --enable-libstdcxx-backtrace --enable-link-serialization=1 --enable-linker-build-id --enable-lto --enable-multilib --enable-plugin --enable-shared --enable-threads=posix --disable-libssp --disable-libstdcxx-pch --disable-werror
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20250813 (GCC) 
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/'
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_f6b11.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/cc3Wt6oL.s
+        GNU C++17 (GCC) version 15.2.1 20250813 (x86_64-pc-linux-gnu)
+        	compiled by GNU C version 15.2.1 20250813, GMP version 6.3.0, MPFR version 4.2.2, MPC version 1.3.1, isl version isl-0.27-GMP
+        
+        GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+        ignoring nonexistent directory "/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/x86_64-pc-linux-gnu
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/backward
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include
+         /usr/local/include
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed
+         /usr/include
+        End of search list.
+        Compiler executable checksum: cab77a304445d9e79d1e131c5398a7c2
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/'
+         as -v --64 -o CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o /tmp/cc3Wt6oL.s
+        GNU assembler version 2.45.0 (x86_64-pc-linux-gnu) using BFD version (GNU Binutils) 2.45.0
+        COMPILER_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/:/lib/../lib/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.'
+        Linking CXX executable cmTC_f6b11
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f6b11.dir/link.txt --verbose=1
+        Using built-in specs.
+        COLLECT_GCC=/usr/bin/c++
+        COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper
+        Target: x86_64-pc-linux-gnu
+        Configured with: /tmp/pkg/src/gcc/configure --enable-languages=ada,c,c++,d,fortran,go,lto,m2,objc,obj-c++,rust,cobol --enable-bootstrap --prefix=/usr --libdir=/usr/lib --libexecdir=/usr/lib --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://github.com/CachyOS/CachyOS-PKGBUILDS/issues --with-build-config=bootstrap-lto --with-linker-hash-style=gnu --with-system-zlib --enable-__cxa_atexit --enable-cet=auto --enable-checking=release --enable-clocale=gnu --enable-default-pie --enable-default-ssp --enable-gnu-indirect-function --enable-gnu-unique-object --enable-libstdcxx-backtrace --enable-link-serialization=1 --enable-linker-build-id --enable-lto --enable-multilib --enable-plugin --enable-shared --enable-threads=posix --disable-libssp --disable-libstdcxx-pch --disable-werror
+        Thread model: posix
+        Supported LTO compression algorithms: zlib zstd
+        gcc version 15.2.1 20250813 (GCC) 
+        COMPILER_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/
+        LIBRARY_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/:/lib/../lib/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../:/lib/:/usr/lib/
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f6b11' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_f6b11.'
+         /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/collect2 -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccJjmjSm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f6b11 /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o
+        collect2 version 15.2.1 20250813
+        /usr/bin/ld -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccJjmjSm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f6b11 /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o
+        GNU ld (GNU Binutils) 2.45.0
+        COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f6b11' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_f6b11.'
+        /usr/bin/c++  -v -Wl,-v CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_f6b11
+        make[1]: Leaving directory '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c'
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Parsed CXX implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1]
+          add: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/x86_64-pc-linux-gnu]
+          add: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/backward]
+          add: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include]
+          add: [/usr/local/include]
+          add: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed]
+          add: [/usr/include]
+        end of search list found
+        collapse include dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1] ==> [/usr/include/c++/15.2.1]
+        collapse include dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/x86_64-pc-linux-gnu] ==> [/usr/include/c++/15.2.1/x86_64-pc-linux-gnu]
+        collapse include dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/backward] ==> [/usr/include/c++/15.2.1/backward]
+        collapse include dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include] ==> [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include]
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed] ==> [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed]
+        collapse include dir [/usr/include] ==> [/usr/include]
+        implicit include dirs: [/usr/include/c++/15.2.1;/usr/include/c++/15.2.1/x86_64-pc-linux-gnu;/usr/include/c++/15.2.1/backward;/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include;/usr/local/include;/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed;/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c']
+        ignore line: []
+        ignore line: [Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f6b11/fast]
+        ignore line: [/usr/bin/make  -f CMakeFiles/cmTC_f6b11.dir/build.make CMakeFiles/cmTC_f6b11.dir/build]
+        ignore line: [make[1]: Entering directory '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-87OA8c']
+        ignore line: [Building CXX object CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o]
+        ignore line: [/usr/bin/c++   -v -o CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -c /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Configured with: /tmp/pkg/src/gcc/configure --enable-languages=ada c c++ d fortran go lto m2 objc obj-c++ rust cobol --enable-bootstrap --prefix=/usr --libdir=/usr/lib --libexecdir=/usr/lib --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://github.com/CachyOS/CachyOS-PKGBUILDS/issues --with-build-config=bootstrap-lto --with-linker-hash-style=gnu --with-system-zlib --enable-__cxa_atexit --enable-cet=auto --enable-checking=release --enable-clocale=gnu --enable-default-pie --enable-default-ssp --enable-gnu-indirect-function --enable-gnu-unique-object --enable-libstdcxx-backtrace --enable-link-serialization=1 --enable-linker-build-id --enable-lto --enable-multilib --enable-plugin --enable-shared --enable-threads=posix --disable-libssp --disable-libstdcxx-pch --disable-werror]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20250813 (GCC) ]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/']
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/cc1plus -quiet -v -D_GNU_SOURCE /usr/share/cmake/Modules/CMakeCXXCompilerABI.cpp -quiet -dumpdir CMakeFiles/cmTC_f6b11.dir/ -dumpbase CMakeCXXCompilerABI.cpp.cpp -dumpbase-ext .cpp -mtune=generic -march=x86-64 -version -o /tmp/cc3Wt6oL.s]
+        ignore line: [GNU C++17 (GCC) version 15.2.1 20250813 (x86_64-pc-linux-gnu)]
+        ignore line: [	compiled by GNU C version 15.2.1 20250813  GMP version 6.3.0  MPFR version 4.2.2  MPC version 1.3.1  isl version isl-0.27-GMP]
+        ignore line: []
+        ignore line: [GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072]
+        ignore line: [ignoring nonexistent directory "/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../x86_64-pc-linux-gnu/include"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1]
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/x86_64-pc-linux-gnu]
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../include/c++/15.2.1/backward]
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/include-fixed]
+        ignore line: [ /usr/include]
+        ignore line: [End of search list.]
+        ignore line: [Compiler executable checksum: cab77a304445d9e79d1e131c5398a7c2]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/']
+        ignore line: [ as -v --64 -o CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o /tmp/cc3Wt6oL.s]
+        ignore line: [GNU assembler version 2.45.0 (x86_64-pc-linux-gnu) using BFD version (GNU Binutils) 2.45.0]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/:/lib/../lib/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.']
+        ignore line: [Linking CXX executable cmTC_f6b11]
+        ignore line: [/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f6b11.dir/link.txt --verbose=1]
+        ignore line: [Using built-in specs.]
+        ignore line: [COLLECT_GCC=/usr/bin/c++]
+        ignore line: [COLLECT_LTO_WRAPPER=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper]
+        ignore line: [Target: x86_64-pc-linux-gnu]
+        ignore line: [Configured with: /tmp/pkg/src/gcc/configure --enable-languages=ada c c++ d fortran go lto m2 objc obj-c++ rust cobol --enable-bootstrap --prefix=/usr --libdir=/usr/lib --libexecdir=/usr/lib --mandir=/usr/share/man --infodir=/usr/share/info --with-bugurl=https://github.com/CachyOS/CachyOS-PKGBUILDS/issues --with-build-config=bootstrap-lto --with-linker-hash-style=gnu --with-system-zlib --enable-__cxa_atexit --enable-cet=auto --enable-checking=release --enable-clocale=gnu --enable-default-pie --enable-default-ssp --enable-gnu-indirect-function --enable-gnu-unique-object --enable-libstdcxx-backtrace --enable-link-serialization=1 --enable-linker-build-id --enable-lto --enable-multilib --enable-plugin --enable-shared --enable-threads=posix --disable-libssp --disable-libstdcxx-pch --disable-werror]
+        ignore line: [Thread model: posix]
+        ignore line: [Supported LTO compression algorithms: zlib zstd]
+        ignore line: [gcc version 15.2.1 20250813 (GCC) ]
+        ignore line: [COMPILER_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/]
+        ignore line: [LIBRARY_PATH=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/:/lib/../lib/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../:/lib/:/usr/lib/]
+        ignore line: [COLLECT_GCC_OPTIONS='-v' '-o' 'cmTC_f6b11' '-shared-libgcc' '-mtune=generic' '-march=x86-64' '-dumpdir' 'cmTC_f6b11.']
+        link line: [ /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/collect2 -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccJjmjSm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f6b11 /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o]
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/collect2] ==> ignore
+          arg [-plugin] ==> ignore
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so] ==> ignore
+          arg [-plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper] ==> ignore
+          arg [-plugin-opt=-fresolution=/tmp/ccJjmjSm.res] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lc] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc_s] ==> ignore
+          arg [-plugin-opt=-pass-through=-lgcc] ==> ignore
+          arg [--build-id] ==> ignore
+          arg [--eh-frame-hdr] ==> ignore
+          arg [--hash-style=gnu] ==> ignore
+          arg [-m] ==> ignore
+          arg [elf_x86_64] ==> ignore
+          arg [-dynamic-linker] ==> ignore
+          arg [/lib64/ld-linux-x86-64.so.2] ==> ignore
+          arg [-pie] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_f6b11] ==> ignore
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o] ==> obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o]
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o] ==> obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o]
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o] ==> obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o]
+          arg [-L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1] ==> dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1]
+          arg [-L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib] ==> dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib]
+          arg [-L/lib/../lib] ==> dir [/lib/../lib]
+          arg [-L/usr/lib/../lib] ==> dir [/usr/lib/../lib]
+          arg [-L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../..] ==> dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../..]
+          arg [-L/lib] ==> dir [/lib]
+          arg [-L/usr/lib] ==> dir [/usr/lib]
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+          arg [-lstdc++] ==> lib [stdc++]
+          arg [-lm] ==> lib [m]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [-lc] ==> lib [c]
+          arg [-lgcc_s] ==> lib [gcc_s]
+          arg [-lgcc] ==> lib [gcc]
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o] ==> obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o]
+          arg [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o] ==> obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o]
+        ignore line: [collect2 version 15.2.1 20250813]
+        ignore line: [/usr/bin/ld -plugin /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/liblto_plugin.so -plugin-opt=/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/lto-wrapper -plugin-opt=-fresolution=/tmp/ccJjmjSm.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr --hash-style=gnu -m elf_x86_64 -dynamic-linker /lib64/ld-linux-x86-64.so.2 -pie -o cmTC_f6b11 /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1 -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../.. -L/lib -L/usr/lib -v CMakeFiles/cmTC_f6b11.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o]
+        linker tool for 'CXX': /usr/bin/ld
+        collapse obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/Scrt1.o] ==> [/usr/lib/Scrt1.o]
+        collapse obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crti.o] ==> [/usr/lib/crti.o]
+        collapse obj [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib/crtn.o] ==> [/usr/lib/crtn.o]
+        collapse library dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1] ==> [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1]
+        collapse library dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../../../lib] ==> [/usr/lib]
+        collapse library dir [/lib/../lib] ==> [/lib]
+        collapse library dir [/usr/lib/../lib] ==> [/usr/lib]
+        collapse library dir [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/../../..] ==> [/usr/lib]
+        collapse library dir [/lib] ==> [/lib]
+        collapse library dir [/usr/lib] ==> [/usr/lib]
+        implicit libs: [stdc++;m;gcc_s;gcc;c;gcc_s;gcc]
+        implicit objs: [/usr/lib/Scrt1.o;/usr/lib/crti.o;/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtbeginS.o;/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1/crtendS.o;/usr/lib/crtn.o]
+        implicit dirs: [/usr/lib/gcc/x86_64-pc-linux-gnu/15.2.1;/usr/lib;/lib]
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:36 (message)"
+      - "/usr/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/usr/share/cmake/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:3 (project)"
+    message: |
+      Running the CXX compiler's linker: "/usr/bin/ld" "-v"
+      GNU ld (GNU Binutils) 2.45.0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/usr/share/cmake/Modules/CheckCXXSourceCompiles.cmake:103 (cmake_check_source_compiles)"
+      - "/usr/share/cmake/Modules/FindThreads.cmake:99 (check_cxx_source_compiles)"
+      - "/usr/share/cmake/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "/usr/lib/cmake/spdlog/spdlogConfig.cmake:40 (find_package)"
+      - "cmake/XSEPlugin.cmake:102 (find_package)"
+      - "CMakeLists.txt:27 (include)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3"
+      binary: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/cmake"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_12f1f/fast
+        /usr/bin/make  -f CMakeFiles/cmTC_12f1f.dir/build.make CMakeFiles/cmTC_12f1f.dir/build
+        make[1]: Entering directory '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3'
+        Building CXX object CMakeFiles/cmTC_12f1f.dir/src.cxx.o
+        /usr/bin/c++ -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_12f1f.dir/src.cxx.o -c /home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3/src.cxx
+        Linking CXX executable cmTC_12f1f
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_12f1f.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_12f1f.dir/src.cxx.o -o cmTC_12f1f
+        make[1]: Leaving directory '/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/CMakeScratch/TryCompile-OOaUG3'
+        
+      exitCode: 0
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "/usr/share/cmake/Modules/CMakeFindDependencyMacro.cmake:78 (find_package)"
+      - "/usr/lib/cmake/spdlog/spdlogConfig.cmake:48 (find_dependency)"
+      - "cmake/XSEPlugin.cmake:102 (find_package)"
+      - "CMakeLists.txt:27 (include)"
+    name: "fmt"
+    configs:
+      -
+        filename: "fmtConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "fmt-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "fmt"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/fmt-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/cmake/fmt/fmtConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/cmake/fmt/fmt-config.cmake"
+      mode: "config"
+      version: "11.2.0"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "cmake/XSEPlugin.cmake:102 (find_package)"
+      - "CMakeLists.txt:27 (include)"
+    name: "spdlog"
+    configs:
+      -
+        filename: "spdlogConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "spdlog-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "spdlog"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/spdlogConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/spdlog-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found:
+      path: "/usr/lib/cmake/spdlog/spdlogConfig.cmake"
+      mode: "config"
+      version: "1.15.3"
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "CMakeLists.txt:32 (find_path)"
+    mode: "path"
+    variable: "BSHOSHANY_THREAD_POOL_INCLUDE_DIRS"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "BS_thread_pool.hpp"
+    candidate_directories:
+      - "/home/tssge/.cargo/bin/"
+      - "/home/tssge/.local/bin/"
+      - "/usr/local/sbin/"
+      - "/usr/local/bin/"
+      - "/usr/bin/"
+      - "/opt/android-sdk/emulator/"
+      - "/opt/android-sdk/platform-tools/"
+      - "/opt/android-sdk/tools/"
+      - "/opt/android-sdk/tools/bin/"
+      - "/Applications/"
+      - "/opt/cuda/bin/"
+      - "/opt/cuda/nsight_compute/"
+      - "/opt/cuda/nsight_systems/bin/"
+      - "/var/lib/flatpak/exports/bin/"
+      - "/usr/lib/jvm/default/bin/"
+      - "/usr/bin/site_perl/"
+      - "/usr/bin/vendor_perl/"
+      - "/usr/bin/core_perl/"
+      - "/usr/lib/rustup/bin/"
+      - "/var/lib/snapd/snap/bin/"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/"
+      - "/usr/local/include/"
+      - "/usr/local/"
+      - "/usr/include/"
+      - "/usr/"
+      - "/include/"
+      - "/usr/X11R6/include/"
+      - "/usr/X11R6/"
+      - "/usr/pkg/include/"
+      - "/usr/pkg/"
+      - "/opt/include/"
+      - "/opt/"
+      - "/usr/include/X11/"
+    searched_directories:
+      - "/home/tssge/.cargo/bin/BS_thread_pool.hpp"
+      - "/home/tssge/.local/bin/BS_thread_pool.hpp"
+      - "/usr/local/sbin/BS_thread_pool.hpp"
+      - "/usr/local/bin/BS_thread_pool.hpp"
+      - "/usr/bin/BS_thread_pool.hpp"
+      - "/opt/android-sdk/emulator/BS_thread_pool.hpp"
+      - "/opt/android-sdk/platform-tools/BS_thread_pool.hpp"
+      - "/opt/android-sdk/tools/BS_thread_pool.hpp"
+      - "/opt/android-sdk/tools/bin/BS_thread_pool.hpp"
+      - "/Applications/BS_thread_pool.hpp"
+      - "/opt/cuda/bin/BS_thread_pool.hpp"
+      - "/opt/cuda/nsight_compute/BS_thread_pool.hpp"
+      - "/opt/cuda/nsight_systems/bin/BS_thread_pool.hpp"
+      - "/var/lib/flatpak/exports/bin/BS_thread_pool.hpp"
+      - "/usr/lib/jvm/default/bin/BS_thread_pool.hpp"
+      - "/usr/bin/site_perl/BS_thread_pool.hpp"
+      - "/usr/bin/vendor_perl/BS_thread_pool.hpp"
+      - "/usr/bin/core_perl/BS_thread_pool.hpp"
+      - "/usr/lib/rustup/bin/BS_thread_pool.hpp"
+      - "/var/lib/snapd/snap/bin/BS_thread_pool.hpp"
+      - "/home/tssge/.local/share/JetBrains/Toolbox/scripts/BS_thread_pool.hpp"
+      - "/usr/local/include/BS_thread_pool.hpp"
+      - "/usr/local/BS_thread_pool.hpp"
+      - "/usr/include/BS_thread_pool.hpp"
+      - "/usr/BS_thread_pool.hpp"
+      - "/include/BS_thread_pool.hpp"
+      - "/usr/X11R6/include/BS_thread_pool.hpp"
+      - "/usr/X11R6/BS_thread_pool.hpp"
+      - "/usr/pkg/include/BS_thread_pool.hpp"
+      - "/usr/pkg/BS_thread_pool.hpp"
+      - "/opt/include/BS_thread_pool.hpp"
+      - "/opt/BS_thread_pool.hpp"
+      - "/usr/include/X11/BS_thread_pool.hpp"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+      CMAKE_SYSTEM_INCLUDE_PATH:
+        - "/usr/include/X11"
+  -
+    kind: "find_package-v1"
+    backtrace:
+      - "CMakeLists.txt:33 (find_package)"
+    name: "magic_enum"
+    configs:
+      -
+        filename: "magic_enumConfig.cmake"
+        kind: "cmake"
+      -
+        filename: "magic_enum-config.cmake"
+        kind: "cmake"
+    version_request:
+      exact: false
+    settings:
+      required: "required_explicit"
+      quiet: false
+      global: false
+      policy_scope: true
+      bypass_provider: false
+      names:
+        - "magic_enum"
+      path_suffixes:
+        - ""
+      paths:
+        CMAKE_FIND_USE_CMAKE_PATH: true
+        CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+        CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+        CMAKE_FIND_USE_INSTALL_PREFIX: true
+        CMAKE_FIND_USE_PACKAGE_ROOT_PATH: true
+        CMAKE_FIND_USE_CMAKE_PACKAGE_REGISTRY: true
+        CMAKE_FIND_USE_SYSTEM_PACKAGE_REGISTRY: true
+        CMAKE_FIND_ROOT_PATH_MODE: "BOTH"
+    candidates:
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/Documents/Programming/C/skyrim-community-shaders/build-test/CMakeFiles/pkgRedirects/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.cargo/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/local/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/android-sdk/emulator/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/android-sdk/emulator/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/android-sdk/tools/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/android-sdk/tools/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/nsight_compute/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/nsight_compute/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/nsight_systems/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/cuda/nsight_systems/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/var/lib/flatpak/exports/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/var/lib/flatpak/exports/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/jvm/default/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/jvm/default/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/site_perl/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/site_perl/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/vendor_perl/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/vendor_perl/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/core_perl/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/bin/core_perl/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/rustup/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/usr/lib/rustup/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/var/lib/snapd/snap/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/var/lib/snapd/snap/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/share/JetBrains/Toolbox/scripts/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/home/tssge/.local/share/JetBrains/Toolbox/scripts/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/magic_enumConfig.cmake"
+        mode: "config"
+        reason: "no_exist"
+      -
+        path: "/opt/magic_enum-config.cmake"
+        mode: "config"
+        reason: "no_exist"
+    found: null
+    search_context:
+      ENV{PATH}:
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.cargo/bin"
+        - "/home/tssge/.local/bin"
+        - "/usr/local/sbin"
+        - "/usr/local/bin"
+        - "/usr/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/platform-tools"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/opt/cuda/bin"
+        - "/opt/cuda/nsight_compute"
+        - "/opt/cuda/nsight_systems/bin"
+        - "/var/lib/flatpak/exports/bin"
+        - "/usr/lib/jvm/default/bin"
+        - "/usr/bin/site_perl"
+        - "/usr/bin/vendor_perl"
+        - "/usr/bin/core_perl"
+        - "/usr/lib/rustup/bin"
+        - "/var/lib/snapd/snap/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+        - "/opt/android-sdk/emulator"
+        - "/opt/android-sdk/tools"
+        - "/opt/android-sdk/tools/bin"
+        - "/Applications"
+        - "/home/tssge/.local/bin"
+        - "/home/tssge/.local/share/JetBrains/Toolbox/scripts"
+        - "/home/tssge/.local/bin"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "/usr/local"
+        - "/usr"
+        - "/"
+        - "/usr"
+        - "/usr/local"
+        - "/usr/X11R6"
+        - "/usr/pkg"
+        - "/opt"
+...
