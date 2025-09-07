@@ -674,7 +674,7 @@ void Menu::SelectFeatureMenu(const std::string& featureName)
  */
 void Menu::DrawWeatherDetailsWindow()
 {
-	if (!globals::features::weatherPicker.WeatherDetailsWindow.Enabled) {
+	if (!globals::features::weatherPicker->WeatherDetailsWindow.Enabled) {
 		return;
 	}
 

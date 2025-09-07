@@ -66,7 +66,7 @@ void DumpShader(const REX::BSShader* thisClass, const ShaderType* shader, const 
 		}
 	}
 
-	if (FILE* file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
+	if (FILE * file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
 		fwrite(dxbcData, 1, dxbcLen, file);
 		fclose(file);
 	}
@@ -1007,8 +1007,8 @@ namespace Hooks
 
 			// setup material for terrain helper
 			auto& terrainHelper = globals::features::terrainHelper;
-			if (vanillaResult && terrainHelper.loaded) {
-				terrainHelper.TESObjectLAND_SetupMaterial(land);
+			if (vanillaResult && terrainHelper->loaded) {
+				terrainHelper->TESObjectLAND_SetupMaterial(land);
 			}
 
 			return vanillaResult;
