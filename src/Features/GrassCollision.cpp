@@ -238,6 +238,6 @@ bool GrassCollision::HasShaderDefine(RE::BSShader::Type shaderType)
 
 void GrassCollision::Hooks::BSGrassShader_SetupGeometry::thunk(RE::BSShader* This, RE::BSRenderPass* Pass, uint32_t RenderFlags)
 {
-	globals::features::grassCollision.Update();
+	globals::features::grassCollision->Update();
 	func(This, Pass, RenderFlags);
 }

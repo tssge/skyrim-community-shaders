@@ -10,6 +10,12 @@ public:
 struct DynamicCubemaps : Feature
 {
 public:
+	static DynamicCubemaps* GetSingleton()
+	{
+		static DynamicCubemaps singleton;
+		return &singleton;
+	}
+
 	const std::string defaultDynamicCubeMapSavePath = "Data\\textures\\DynamicCubemaps";
 
 	// Specular irradiance

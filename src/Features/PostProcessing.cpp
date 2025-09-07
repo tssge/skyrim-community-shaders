@@ -442,6 +442,9 @@ void PostProcessing::PreProcess()
 	auto renderer = globals::game::renderer;
 	auto context = globals::d3d::context;
 
+	// Update current frame count
+	currentFrameCount = State::GetSingleton()->frameCount;
+
 	// Determine source and destination textures based on isrefraction flag
 	auto srcRenderTarget = isrefraction ? RE::RENDER_TARGETS::kMAIN_COPY : RE::RENDER_TARGETS::kMAIN;
 	auto destRenderTarget = isrefraction ? RE::RENDER_TARGETS::kMAIN : RE::RENDER_TARGETS::kMAIN_COPY;

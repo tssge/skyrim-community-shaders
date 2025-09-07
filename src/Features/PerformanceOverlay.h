@@ -116,6 +116,12 @@ public:
 
 struct PerformanceOverlay : OverlayFeature
 {
+	static PerformanceOverlay* GetSingleton()
+	{
+		static PerformanceOverlay singleton;
+		return &singleton;
+	}
+
 	// ============================================================================
 	// VIRTUAL OVERRIDES (Feature.h interface)
 	// ============================================================================

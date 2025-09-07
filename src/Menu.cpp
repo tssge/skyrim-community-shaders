@@ -142,7 +142,7 @@ Menu::~Menu()
 	ImGui::DestroyContext();
 	dxgiAdapter3 = nullptr;
 
-	globals::features::vr.DestroyOverlay();
+	globals::features::vr->DestroyOverlay();
 }
 
 void Menu::Load(json& o_json)
@@ -225,8 +225,8 @@ void Menu::Init()
 
 	BuildCategoryCounts();
 
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.EnsureOverlayInitialized();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->EnsureOverlayInitialized();
 	}
 
 	initialized = true;
@@ -505,7 +505,7 @@ void Menu::ProcessInputEventQueue()
 								event.device == RE::INPUT_DEVICE::kOculusPrimary || event.device == RE::INPUT_DEVICE::kOculusSecondary ||
 								event.device == RE::INPUT_DEVICE::kWMRPrimary || event.device == RE::INPUT_DEVICE::kWMRSecondary));
 
-		if (globals::features::vr.IsOpenVRCompatible() && isVRController) {
+		if (globals::features::vr->IsOpenVRCompatible() && isVRController) {
 			vrEvents.push_back(event);
 		} else {
 			nonVREvents.push_back(event);
@@ -513,8 +513,8 @@ void Menu::ProcessInputEventQueue()
 	}
 	// Process VR events in VR
 	if (!vrEvents.empty()) {
-		globals::features::vr.ProcessVREvents(vrEvents);
-		globals::features::vr.UpdateOverlayMenuStateFromInput();
+		globals::features::vr->ProcessVREvents(vrEvents);
+		globals::features::vr->UpdateOverlayMenuStateFromInput();
 	}
 	// Process non-VR events in Menu (original logic here)
 	for (auto& event : nonVREvents) {
@@ -674,14 +674,14 @@ void Menu::SelectFeatureMenu(const std::string& featureName)
  */
 void Menu::DrawWeatherDetailsWindow()
 {
-	if (!globals::features::weatherPicker.WeatherDetailsWindow.Enabled) {
+	if (!globals::features::weatherPicker->WeatherDetailsWindow.Enabled) {
 		return;
 	}
 
 	// Use Weather core feature for all window management and rendering
 	auto& weather = globals::features::weatherPicker;
-	bool* p_open = &globals::features::weatherPicker.WeatherDetailsWindow.Enabled;
-	weather.RenderWeatherDetailsWindow(p_open);
+	bool* p_open = &globals::features::weatherPicker->WeatherDetailsWindow.Enabled;
+	weather->RenderWeatherDetailsWindow(p_open);
 }
 
 /**

@@ -3,6 +3,12 @@
 struct IBL : Feature
 {
 public:
+	static IBL* GetSingleton()
+	{
+		static IBL singleton;
+		return &singleton;
+	}
+
 	virtual bool SupportsVR() override { return true; };
 	virtual bool IsCore() const override { return true; };
 

@@ -26,8 +26,8 @@ void OverlayRenderer::RenderOverlay(
 	HandleVRSetup();
 	processInputEventQueue();
 
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.ProcessControllerInputForImGui();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->ProcessControllerInputForImGui();
 	}
 
 	if (ShouldSkipRendering()) {
@@ -56,8 +56,8 @@ void OverlayRenderer::RenderOverlay(
 
 void OverlayRenderer::HandleVRSetup()
 {
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.RecreateOverlayTexturesIfNeeded();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->RecreateOverlayTexturesIfNeeded();
 	}
 }
 
@@ -72,7 +72,7 @@ bool OverlayRenderer::ShouldSkipRendering()
 			 Menu::GetSingleton()->IsEnabled ||
 			 abTestingManager->IsEnabled() ||
 			 (failed && !hide) ||
-			 globals::features::performanceOverlay.settings.ShowInOverlay);
+			 globals::features::performanceOverlay->settings.ShowInOverlay);
 }
 
 void OverlayRenderer::HandleFontReload(Menu& menu, float& cachedFontSize, float currentFontSize)
@@ -168,10 +168,10 @@ void OverlayRenderer::HandleABTesting()
 
 	// Always update test data during TEST phase, regardless of overlay visibility
 	if (abTestingManager->IsEnabled()) {
-		globals::features::performanceOverlay.UpdateAllShaderTestData();
+		globals::features::performanceOverlay->UpdateAllShaderTestData();
 
 		// Add A/B test aggregator data collection here
-		auto& overlay = globals::features::performanceOverlay;
+		auto& overlay = *globals::features::performanceOverlay;
 		auto [mainRows, summaryRows] = overlay.BuildDrawCallRows();
 		std::vector<DrawCallRow> allRows = mainRows;
 		allRows.insert(allRows.end(), summaryRows.begin(), summaryRows.end());
@@ -189,7 +189,7 @@ void OverlayRenderer::FinalizeImGuiFrame()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.SubmitOverlayFrame();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->SubmitOverlayFrame();
 	}
 }

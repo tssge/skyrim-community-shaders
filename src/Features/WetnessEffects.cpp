@@ -222,10 +222,10 @@ namespace Ripples
 	void UpdateSettings()
 	{
 		auto& wetnessEffects = globals::features::wetnessEffects;
-		s_isEnabled = wetnessEffects.settings.EnableWetnessEffects;
-		s_vanillaRipplesEnabled = wetnessEffects.settings.EnableVanillaRipples;
+		s_isEnabled = wetnessEffects->settings.EnableWetnessEffects;
+		s_vanillaRipplesEnabled = wetnessEffects->settings.EnableVanillaRipples;
 		logger::debug("[{}] UpdateSettings: EnableWetnessEffects={}, EnableVanillaRipples={}",
-			wetnessEffects.GetName(), s_isEnabled, s_vanillaRipplesEnabled);
+			wetnessEffects->GetName(), s_isEnabled, s_vanillaRipplesEnabled);
 	}
 
 	void Install()

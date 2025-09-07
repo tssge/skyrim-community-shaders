@@ -1,5 +1,8 @@
 #pragma once
 
+#include <d3d12.h>
+#include <winrt/base.h>
+
 struct RTContactShadows : Feature
 {
 	static RTContactShadows* GetSingleton()
@@ -42,8 +45,8 @@ struct RTContactShadows : Feature
 	winrt::com_ptr<ID3D12Resource> bottomLevelAS = nullptr;
 
 	// DX11 resources for integration
-	eastl::unique_ptr<Texture2D> contactShadowTexture = nullptr;
-	eastl::unique_ptr<ConstantBuffer> rtContactShadowsCB = nullptr;
+	std::unique_ptr<Texture2D> contactShadowTexture = nullptr;
+	std::unique_ptr<ConstantBuffer> rtContactShadowsCB = nullptr;
 	winrt::com_ptr<ID3D11SamplerState> linearSampler = nullptr;
 
 	bool rtSupported = false;

@@ -3,6 +3,12 @@
 struct VolumetricLighting : Feature
 {
 public:
+	static VolumetricLighting* GetSingleton()
+	{
+		static VolumetricLighting singleton;
+		return &singleton;
+	}
+
 	struct TextureSize
 	{
 		int32_t Width = 320;

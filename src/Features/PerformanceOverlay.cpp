@@ -1298,8 +1298,8 @@ void PerformanceOverlay::DrawDrawCallsTable(const std::vector<DrawCallRow>& main
 	const auto& theme = menu->GetTheme();
 
 	// Capture test data and handle clear button
-	overlay.CaptureTestData();
-	bool anyTestData = !overlay.testData.empty();
+	overlay->CaptureTestData();
+	bool anyTestData = !overlay->testData.empty();
 	if (anyTestData) {
 		if (ImGui::Button("Clear Test Data")) {
 			clearTestDataRequested = true;
@@ -1307,8 +1307,8 @@ void PerformanceOverlay::DrawDrawCallsTable(const std::vector<DrawCallRow>& main
 	}
 
 	// Build legends and column configurations
-	auto legends = overlay.BuildDrawCallLegends(theme, anyTestData);
-	auto columns = overlay.BuildDrawCallTableColumns(theme, legends, anyTestData);
+	auto legends = overlay->BuildDrawCallLegends(theme, anyTestData);
+	auto columns = overlay->BuildDrawCallTableColumns(theme, legends, anyTestData);
 
 	// Build sorters
 	std::vector<std::function<bool(const DrawCallRow&, const DrawCallRow&, bool)>> sorters;
@@ -1319,7 +1319,7 @@ void PerformanceOverlay::DrawDrawCallsTable(const std::vector<DrawCallRow>& main
 	std::vector<DrawCallRow> summaryRowsCopy = summaryRows;
 
 	// Create table row handler
-	auto rowHandler = overlay.CreateTableRowHandler(columns);
+	auto rowHandler = overlay->CreateTableRowHandler(columns);
 
 	// Render the table
 	Util::ShowSortedStringTableCustom<DrawCallRow>(
@@ -1334,7 +1334,7 @@ void PerformanceOverlay::DrawDrawCallsTable(const std::vector<DrawCallRow>& main
 
 	// Handle clear test data request
 	if (clearTestDataRequested) {
-		overlay.ClearTestData();
+		overlay->ClearTestData();
 		clearTestDataRequested = false;
 	}
 }

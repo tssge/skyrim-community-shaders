@@ -105,7 +105,7 @@ void InteriorSun::DirShadowLightCulling::thunk(RE::BSShadowDirectionalLight* dir
 	const auto cell = globals::game::tes->interiorCell;
 	auto* passedJobArrays = &jobArrays;
 
-	if (cell && singleton.isInteriorWithSun) {
+	if (cell && singleton->isInteriorWithSun) {
 		const auto* loadedData = cell->GetRuntimeData().loadedData;
 		const auto portalGraph = loadedData ? loadedData->portalGraph : nullptr;
 		if (portalGraph) {

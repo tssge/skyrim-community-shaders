@@ -262,7 +262,7 @@ void VolumetricLighting::RenderVolumetricLighting(VolumetricLightingDescriptor* 
 void VolumetricLighting::RenderDepth::thunk()
 {
 	func();
-	if (globals::features::volumetricLighting.bEnableVolumetricLighting)
+	if (globals::features::volumetricLighting->bEnableVolumetricLighting)
 		RenderVolumetricLighting(&GetVLDescriptor(), RE::Main::WorldRootCamera(), false);
 }
 
@@ -334,7 +334,7 @@ void VolumetricLighting::CopyResource::thunk(ID3D11DeviceContext* a_this, ID3D11
 	// used in the next frame.
 
 	auto& singleton = globals::features::volumetricLighting;
-	if (!(Util::IsDynamicResolution() && singleton.bEnableVolumetricLighting)) {
+	if (!(Util::IsDynamicResolution() && singleton->bEnableVolumetricLighting)) {
 		a_this->CopyResource(a_renderTarget, a_renderTargetSource);
 	}
 }

@@ -53,9 +53,14 @@ struct PostProcessing : Feature
 	bool bypass = false;
 	bool isrefraction = false;
 
+	// Frame tracking for double-processing prevention
+	uint64_t lastProcessedMainFrame = 0;
+	uint64_t lastProcessedMainCopyFrame = 0;
+	uint64_t currentFrameCount = 0;
+
 	std::vector<std::unique_ptr<PostProcessFeature>> feats = {};
 
-	eastl::unique_ptr<Texture2D> texCopy = nullptr;
+	std::unique_ptr<Texture2D> texCopy = nullptr;
 	winrt::com_ptr<ID3D11ComputeShader> copyCS = nullptr;
 
 	/////////////////////////////////////////////////////////////////////////////////

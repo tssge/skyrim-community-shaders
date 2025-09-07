@@ -228,14 +228,16 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		globals::features::terrainVariation,
 		globals::features::ibl,
 		globals::features::skin,
-		globals::features::postProcessing
+		globals::features::postProcessing,
+		globals::features::weatherPicker,
+		globals::features::performanceOverlay
 	};
 
 	if (REL::Module::IsVR()) {
 		// Helper function to build VR feature list
 		static auto BuildVRList = []() -> std::vector<Feature*> {
 			auto v = features;
-			v.push_back(&globals::features::vr);
+			v.push_back(globals::features::vr);
 
 			// In developer mode, keep all features for testing
 			// In production mode, filter to VR-compatible only

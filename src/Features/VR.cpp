@@ -127,7 +127,7 @@ void VR::EarlyPrepass()
 void VR::DrawOverlay()
 {
 	auto& vr = globals::features::vr;
-	if (!vr.openVRInfo.isCompatible)
+	if (!vr->openVRInfo.isCompatible)
 		return;
 	static LARGE_INTEGER overlayShowStart = { 0 };
 	static LARGE_INTEGER freq = { 0 };

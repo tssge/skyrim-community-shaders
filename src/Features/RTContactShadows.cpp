@@ -104,7 +104,7 @@ void RTContactShadows::SetupResources()
 		samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 		samplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 
-		DX::ThrowIfFailed(device->CreateSamplerState(&samplerDesc, &linearSampler));
+		DX::ThrowIfFailed(device->CreateSamplerState(&samplerDesc, linearSampler.put()));
 	}
 
 	// Initialize raytracing pipeline if enabled
@@ -402,7 +402,7 @@ void RTContactShadows::DispatchRays()
 	cbData.Intensity = settings.Intensity;
 	cbData.MaxDistance = settings.MaxDistance;
 	cbData.MaxSteps = settings.MaxSteps;
-	cbData.FrameIndex = State::GetSingleton()->uiFrameCount;
+	cbData.FrameIndex = State::GetSingleton()->frameCount;
 
 	D3D11_TEXTURE2D_DESC texDesc;
 	mainRT.texture->GetDesc(&texDesc);

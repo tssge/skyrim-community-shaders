@@ -14,12 +14,25 @@
 
 #include "CompatibilityDetection.h"
 
+#include <Windows.h>
 #include <filesystem>
 #include <winver.h>
 #pragma comment(lib, "version.lib")
 
 namespace Compatibility
 {
+	// Helper function to convert wide string to UTF-8 string
+	std::string WideToUtf8(const std::wstring& wide)
+	{
+		if (wide.empty())
+			return {};
+		int size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, nullptr, 0, nullptr, nullptr);
+		if (size <= 0)
+			return {};
+		std::string result(size - 1, '\0');
+		WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), -1, result.data(), size, nullptr, nullptr);
+		return result;
+	}
 
 	void CompatibilityChecker::InitializeConflictDatabase()
 	{
@@ -153,18 +166,24 @@ namespace Compatibility
 
 		if (specialK_API.CreateFuncHook(functionName, target, detour, original)) {
 			if (specialK_API.EnableHook(target)) {
-				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+				std::string functionNameStr(size - 1, '\0');
+				WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 				logger::info("Successfully created hook through SpecialK: {}", functionNameStr);
 				return true;
 			} else {
-				std::string functionNameStr(functionName, functionName + wcslen(functionName));
+				int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+				std::string functionNameStr(size - 1, '\0');
+				WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 				logger::warn("Failed to enable hook through SpecialK: {}", functionNameStr);
 				if (specialK_API.RemoveHook) {
 					specialK_API.RemoveHook(target);
 				}
 			}
 		} else {
-			std::string functionNameStr(functionName, functionName + wcslen(functionName));
+			int size = WideCharToMultiByte(CP_UTF8, 0, functionName, -1, nullptr, 0, nullptr, nullptr);
+			std::string functionNameStr(size - 1, '\0');
+			WideCharToMultiByte(CP_UTF8, 0, functionName, -1, functionNameStr.data(), size, nullptr, nullptr);
 			logger::warn("Failed to create hook through SpecialK: {}", functionNameStr);
 		}
 
@@ -288,11 +307,11 @@ namespace Compatibility
 				foundConflicts = true;
 
 				if (tool.cooperative && tool.name == L"SpecialK" && specialK_API.available) {
-					std::string toolNameStr(tool.name.begin(), tool.name.end());
+					std::string toolNameStr = WideToUtf8(tool.name);
 					logger::info("Detected cooperative tool: {} - cooperation mode available", toolNameStr);
 					cooperationAvailable = true;
 				} else {
-					std::string toolNameStr(tool.name.begin(), tool.name.end());
+					std::string toolNameStr = WideToUtf8(tool.name);
 					logger::warn("Detected conflicting tool: {}", toolNameStr);
 					logger::warn("This may cause DirectX hook conflicts and instability.");
 				}

@@ -62,6 +62,7 @@ namespace globals
 		CloudShadows* cloudShadows = nullptr;
 		DynamicCubemaps* dynamicCubemaps = nullptr;
 		ExtendedMaterials* extendedMaterials = nullptr;
+		ExtendedTranslucency* extendedTranslucency = nullptr;
 		GrassCollision* grassCollision = nullptr;
 		GrassLighting* grassLighting = nullptr;
 		IBL* ibl = nullptr;
@@ -87,6 +88,8 @@ namespace globals
 		WetnessEffects* wetnessEffects = nullptr;
 		Skin* skin = nullptr;
 		PostProcessing* postProcessing = nullptr;
+		WeatherPicker* weatherPicker = nullptr;
+		PerformanceOverlay* performanceOverlay = nullptr;
 
 		namespace llf
 		{
@@ -162,6 +165,7 @@ namespace globals
 		features::cloudShadows = CloudShadows::GetSingleton();
 		features::dynamicCubemaps = DynamicCubemaps::GetSingleton();
 		features::extendedMaterials = ExtendedMaterials::GetSingleton();
+		features::extendedTranslucency = ExtendedTranslucency::GetSingleton();
 		features::grassCollision = GrassCollision::GetSingleton();
 		features::grassLighting = GrassLighting::GetSingleton();
 		features::hairSpecular = HairSpecular::GetSingleton();
@@ -187,8 +191,10 @@ namespace globals
 		features::waterEffects = WaterEffects::GetSingleton();
 		features::wetnessEffects = WetnessEffects::GetSingleton();
 		features::postProcessing = PostProcessing::GetSingleton();
+		features::weatherPicker = WeatherPicker::GetSingleton();
+		features::performanceOverlay = PerformanceOverlay::GetSingleton();
 
-		features::llf::particleLights = ParticleLights::GetSingleton();
+		// particleLights is a global instance, not a pointer, so no assignment needed
 	}
 
 	void ReInit()

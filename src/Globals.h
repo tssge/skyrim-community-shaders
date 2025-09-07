@@ -27,11 +27,11 @@ struct VolumetricLighting;
 struct VR;
 struct WaterEffects;
 struct WeatherPicker;
-struct PerformanceOverlay;
 struct WetnessEffects;
 struct ExtendedTranslucency;
 struct PostProcessing;
 struct Skin;
+struct PerformanceOverlay;
 
 class ParticleLights;
 
@@ -63,6 +63,7 @@ namespace globals
 		extern CloudShadows* cloudShadows;
 		extern DynamicCubemaps* dynamicCubemaps;
 		extern ExtendedMaterials* extendedMaterials;
+		extern ExtendedTranslucency* extendedTranslucency;
 		extern GrassCollision* grassCollision;
 		extern GrassLighting* grassLighting;
 		extern HairSpecular* hairSpecular;
@@ -88,6 +89,8 @@ namespace globals
 		extern WetnessEffects* wetnessEffects;
 		extern PostProcessing* postProcessing;
 		extern Skin* skin;
+		extern WeatherPicker* weatherPicker;
+		extern PerformanceOverlay* performanceOverlay;
 
 		namespace llf
 		{
