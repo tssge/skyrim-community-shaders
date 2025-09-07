@@ -654,7 +654,7 @@ void WeatherPicker::RenderFeatureWeatherAnalysis()
 	for (auto* feature : Feature::GetFeatureList()) {
 		if (feature->loaded) {
 			// Skip the WeatherPicker itself to avoid recursion
-			if (feature == &globals::features::weatherPicker) {
+			if (feature == globals::features::weatherPicker) {
 				continue;
 			}
 
