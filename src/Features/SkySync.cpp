@@ -88,7 +88,7 @@ void SkySync::DisableOnConflict(std::string_view conflictName)
 void SkySync::Sky_Update::thunk(RE::Sky* sky)
 {
 	func(sky);
-	globals::features::skySync.Update(sky);
+	globals::features::skySync->Update(sky);
 }
 
 void SkySync::Update(const RE::Sky* sky)

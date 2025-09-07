@@ -200,8 +200,8 @@ Skylighting::SkylightingCB Skylighting::GetCommonBufferData(bool a_inWorld)
 	auto ambientDimmer = 1.0f;
 
 	auto& ssgi = globals::features::screenSpaceGI;
-	if (ssgi.loaded)
-		if (ssgi.settings.Enabled && ssgi.settings.EnableGI && ssgi.settings.GIStrength > 0.0f)
+	if (ssgi->loaded)
+		if (ssgi->settings.Enabled && ssgi->settings.EnableGI && ssgi->settings.GIStrength > 0.0f)
 			ambientDimmer = settings.SSGIAmbientDimmer;
 
 	return {

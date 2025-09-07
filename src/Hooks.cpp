@@ -1047,7 +1047,7 @@ namespace Hooks
 
 	void BSBatchRenderer_RenderPassImmediately1::thunk(RE::BSRenderPass* a_pass, uint32_t a_technique, bool a_alphaTest, uint32_t a_renderFlags)
 	{
-		if (globals::features::lightLimitFix.loaded && !globals::features::lightLimitFix.CheckParticleLights(a_pass, a_technique))
+		if (globals::features::lightLimitFix->loaded && !globals::features::lightLimitFix->CheckParticleLights(a_pass, a_technique))
 			return;
 
 		func(a_pass, a_technique, a_alphaTest, a_renderFlags);
@@ -1057,11 +1057,11 @@ namespace Hooks
 	{
 		static void thunk(RE::BSRenderPass* a_pass, uint32_t a_technique, bool a_alphaTest, uint32_t a_renderFlags)
 		{
-			if (globals::features::lightLimitFix.loaded && !globals::features::lightLimitFix.CheckParticleLights(a_pass, a_technique))
+			if (globals::features::lightLimitFix->loaded && !globals::features::lightLimitFix->CheckParticleLights(a_pass, a_technique))
 				return;
 
-			if (globals::features::interiorSun.loaded)
-				globals::features::interiorSun.UpdateRasterStateCullMode(a_pass, a_technique);
+			if (globals::features::interiorSun->loaded)
+				globals::features::interiorSun->UpdateRasterStateCullMode(a_pass, a_technique);
 
 			func(a_pass, a_technique, a_alphaTest, a_renderFlags);
 		}
@@ -1072,7 +1072,7 @@ namespace Hooks
 	{
 		static void thunk(RE::BSRenderPass* a_pass, uint32_t a_technique, bool a_alphaTest, uint32_t a_renderFlags)
 		{
-			if (globals::features::lightLimitFix.loaded && !globals::features::lightLimitFix.CheckParticleLights(a_pass, a_technique))
+			if (globals::features::lightLimitFix->loaded && !globals::features::lightLimitFix->CheckParticleLights(a_pass, a_technique))
 				return;
 
 			func(a_pass, a_technique, a_alphaTest, a_renderFlags);
@@ -1133,24 +1133,24 @@ namespace Hooks
 				if (state->enabledClasses[RE::BSShader::Type::ImageSpace]) {
 					RE::BSImagespaceShader* isShader = CurrentlyDispatchedShader;
 					uint32_t techniqueId = CurrentComputeShaderTechniqueId;
-					if (vl.loaded) {
+					if (vl->loaded) {
 						if (CurrentlyDispatchedShader == nullptr) {
 							techniqueId = 0;
 							if (CurrentlyDispatchedComputeShader->name == "ISVolumetricLightingGenerateCS"sv) {
-								isShader = vl.GetOrCreateGenerateCS(CurrentlyDispatchedComputeShader);
+								isShader = vl->GetOrCreateGenerateCS(CurrentlyDispatchedComputeShader);
 							} else if (CurrentlyDispatchedComputeShader->name == "ISVolumetricLightingRaymarchCS"sv) {
-								isShader = vl.GetOrCreateRaymarchCS(CurrentlyDispatchedComputeShader);
+								isShader = vl->GetOrCreateRaymarchCS(CurrentlyDispatchedComputeShader);
 							}
 						} else if (CurrentlyDispatchedComputeShader->name == "ISVolumetricLightingBlurHCS"sv) {
 							techniqueId = 0;
-							isShader = vl.GetOrCreateBlurHCS(CurrentlyDispatchedComputeShader);
-							vl.SetDimensionsCB();
-							vl.SetGroupCountsHCS(threadGroupCountX);
+							isShader = vl->GetOrCreateBlurHCS(CurrentlyDispatchedComputeShader);
+							vl->SetDimensionsCB();
+							vl->SetGroupCountsHCS(threadGroupCountX);
 						} else if (CurrentlyDispatchedComputeShader->name == "ISVolumetricLightingBlurVCS"sv) {
 							techniqueId = 0;
-							isShader = vl.GetOrCreateBlurVCS(CurrentlyDispatchedComputeShader);
-							vl.SetDimensionsCB();
-							vl.SetGroupCountsVCS(threadGroupCountY);
+							isShader = vl->GetOrCreateBlurVCS(CurrentlyDispatchedComputeShader);
+							vl->SetDimensionsCB();
+							vl->SetGroupCountsVCS(threadGroupCountY);
 						}
 					}
 					if (isShader != nullptr) {
@@ -1187,8 +1187,8 @@ namespace Hooks
 	{
 		static void thunk(RE::BSGraphics::PixelShader* PixelShader, RE::BSRenderPass* Pass, DirectX::XMMATRIX& Transform, uint32_t LightCount, uint32_t ShadowLightCount, float WorldScale, uint32_t)
 		{
-			if (globals::features::lightLimitFix.loaded)
-				globals::features::lightLimitFix.BSLightingShader_SetupGeometry_GeometrySetupConstantPointLights(Pass);
+			if (globals::features::lightLimitFix->loaded)
+				globals::features::lightLimitFix->BSLightingShader_SetupGeometry_GeometrySetupConstantPointLights(Pass);
 			else
 				func(PixelShader, Pass, Transform, LightCount, ShadowLightCount, WorldScale, 0);
 		}
