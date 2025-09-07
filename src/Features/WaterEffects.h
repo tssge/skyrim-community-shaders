@@ -8,6 +8,12 @@ private:
 	static constexpr std::string_view MOD_ID = "112762";
 
 public:
+	static WaterEffects* GetSingleton()
+	{
+		static WaterEffects singleton;
+		return &singleton;
+	}
+
 	winrt::com_ptr<ID3D11ShaderResourceView> causticsView;
 	virtual inline std::string GetName() override { return "Water Effects"; }
 	virtual inline std::string GetShortName() override { return "WaterEffects"; }

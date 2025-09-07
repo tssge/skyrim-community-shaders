@@ -189,7 +189,7 @@ void OverlayRenderer::FinalizeImGuiFrame()
 	ImGui::Render();
 	ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 
-	if (globals::features::vr.IsOpenVRCompatible()) {
-		globals::features::vr.SubmitOverlayFrame();
+	if (globals::features::vr->IsOpenVRCompatible()) {
+		globals::features::vr->SubmitOverlayFrame();
 	}
 }

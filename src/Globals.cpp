@@ -192,7 +192,7 @@ namespace globals
 		features::weatherPicker = WeatherPicker::GetSingleton();
 		features::performanceOverlay = PerformanceOverlay::GetSingleton();
 
-		features::llf::particleLights = ParticleLights::GetSingleton();
+		// particleLights is a global instance, not a pointer, so no assignment needed
 	}
 
 	void ReInit()

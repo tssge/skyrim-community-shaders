@@ -66,7 +66,7 @@ void DumpShader(const REX::BSShader* thisClass, const ShaderType* shader, const 
 		}
 	}
 
-	if (FILE* file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
+	if (FILE * file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
 		fwrite(dxbcData, 1, dxbcLen, file);
 		fclose(file);
 	}
@@ -632,7 +632,7 @@ struct BSInputDeviceManager_PollInputDevices
 						}
 						// For VR controllers, only block if OpenVR is compatible
 						else if (isVRController) {
-							blockedDevice = globals::features::vr.IsOpenVRCompatible();
+							blockedDevice = globals::features::vr->IsOpenVRCompatible();
 						}
 						// For mouse/keyboard and other devices, block them (like Flatrim)
 						else {
