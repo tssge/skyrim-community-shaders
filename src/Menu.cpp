@@ -680,8 +680,8 @@ void Menu::DrawWeatherDetailsWindow()
 
 	// Use Weather core feature for all window management and rendering
 	auto& weather = globals::features::weatherPicker;
-	bool* p_open = &globals::features::weatherPicker.WeatherDetailsWindow.Enabled;
-	weather.RenderWeatherDetailsWindow(p_open);
+	bool* p_open = &globals::features::weatherPicker->WeatherDetailsWindow.Enabled;
+	weather->RenderWeatherDetailsWindow(p_open);
 }
 
 /**

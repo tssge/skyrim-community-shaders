@@ -8,6 +8,12 @@ private:
 	static constexpr std::string_view MOD_ID = "114114";
 
 public:
+	static SubsurfaceScattering* GetSingleton()
+	{
+		static SubsurfaceScattering singleton;
+		return &singleton;
+	}
+
 	struct DiffusionProfile
 	{
 		float BlurRadius;

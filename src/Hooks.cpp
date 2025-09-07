@@ -66,7 +66,7 @@ void DumpShader(const REX::BSShader* thisClass, const ShaderType* shader, const 
 		}
 	}
 
-	if (FILE* file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
+	if (FILE * file; fopen_s(&file, dumpDir.c_str(), "wb") == 0) {
 		fwrite(dxbcData, 1, dxbcLen, file);
 		fclose(file);
 	}
@@ -1032,8 +1032,8 @@ namespace Hooks
 
 			// terrain helper
 			auto& terrainHelper = globals::features::terrainHelper;
-			if (terrainHelper.loaded) {
-				terrainHelper.BSLightingShader_SetupMaterial(material);
+			if (terrainHelper->loaded) {
+				terrainHelper->BSLightingShader_SetupMaterial(material);
 			}
 
 			// advanced skin
