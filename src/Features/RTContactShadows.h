@@ -1,5 +1,8 @@
 #pragma once
 
+#include <d3d12.h>
+#include <winrt/base.h>
+
 struct RTContactShadows : Feature
 {
 	static RTContactShadows* GetSingleton()
