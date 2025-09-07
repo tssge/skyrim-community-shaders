@@ -20,6 +20,7 @@
 #include "Features/HairSpecular.h"
 #include "Features/HDR.h"
 #include "Features/IBL.h"
+#include "Features/PostProcessing.h"
 #include "Features/InteriorSun.h"
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
@@ -60,11 +61,12 @@ namespace globals
 		ExtendedMaterials extendedMaterials{};
 		GrassCollision grassCollision{};
 		GrassLighting grassLighting{};
-		IBL ibl{};
-		LightLimitFix lightLimitFix{};
-		LODBlending lodBlending{};
 		HairSpecular hairSpecular{};
 		HDR hdr{};
+		IBL ibl{};
+		PostProcessing postProcessing{};
+		LightLimitFix lightLimitFix{};
+		LODBlending lodBlending{};
 		InteriorSun interiorSun{};
 		InverseSquareLighting inverseSquareLighting{};
 		ScreenSpaceGI screenSpaceGI{};

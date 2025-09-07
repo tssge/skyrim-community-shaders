@@ -11,6 +11,7 @@
 #include "Features/HairSpecular.h"
 #include "Features/HDR.h"
 #include "Features/IBL.h"
+#include "Features/PostProcessing.h"
 #include "Features/InteriorSun.h"
 #include "Features/InverseSquareLighting.h"
 #include "Features/LODBlending.h"
@@ -225,7 +226,8 @@ const std::vector<Feature*>& Feature::GetFeatureList()
 		&globals::features::terrainVariation,
 		&globals::features::ibl,
 		&globals::features::extendedTranslucency,
-		&globals::features::hdr
+		&globals::features::hdr,
+		&globals::features::postProcessing
 	};
 
 	if (REL::Module::IsVR()) {
